@@ -1,0 +1,84 @@
+#define _CRT_SECURE_NO_WARNINGS
+#include <stdio.h>
+#include <stdlib.h>
+/*
+меняет значения 2 эелементов между собой
+получает
+-указатели на элементы <a1>, <a2>
+*/
+void swapint(int *a1, int *a2)
+{
+  int k;
+  k = *a1;
+  *a1 = *a2;
+  *a2 = k;
+  return;
+}
+/*
+вывод решения на экран
+получает
+-кол-во элементов <N>
+-массив с элементами <arr>
+*/
+void output(int N, int *arr)
+{
+  int i;
+  for (i = 0; i < N; i++)
+    printf("%d ", arr[i]);
+  printf("\n");
+  return;
+}
+/*
+Быстрая сортировка
+получает
+-сортируемый массив <a>
+-левую границу отсортированного <l>
+-правую границу отсортированного <r>
+*/
+void qusort(int *a, int l, int r)
+{
+  int x, v, i, j;
+  i = l;
+  j = r;
+  x = a[(l+r)/2];
+  do
+  {
+    while(a[i]<x)
+      i++;
+    while(x<a[j])
+      j--;
+    if(i <= j)
+    {
+      swapint(&a[i++], &a[j--]);
+    }
+  } while(i < j);
+  if (l < j)
+    qusort(a, l, j);
+  if (l < r)
+    qusort(a, i, r);
+    return;
+}
+
+
+void main()
+{
+  int i, N, *arr;
+  /*
+  Чтение входных данных
+  */
+  scanf("%d", &N);
+  arr = (int*) calloc(N + 1, sizeof(int));
+  for(i = 0; i < N; i++)
+  {
+    scanf("%d", &arr[i]);
+  }
+  /*
+  Запуск сортировки
+  */
+  qusort(arr, 0, N - 1);
+  /*
+  Вывод решения
+  */
+  output(N, arr);
+  return;
+}
