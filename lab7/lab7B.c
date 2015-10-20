@@ -3,6 +3,14 @@
 #include <stdlib.h>
 #define codez printf("division by zero");
 #define codes printf("syntax error");
+#define braco 500
+#define bracc 501
+#define plus 502
+#define minus 503
+#define mult 504
+#define split 505
+
+short brcalc(short *toc, long long *arg, short bop)
 /*
 main calculating function
 input
@@ -18,7 +26,135 @@ output
 */
 char fullcalc(short *toc, long long *arg, short length, long long *result)
 {
+	/*counter*/
+	int i, j = 0;
+	/*every opening brackets positions*/
+	short bop[499];
+	/*last closing bracket position*/
+!!!	short bcp;
+	for (i = 0; i < lenght; i++)
+	{
+		if (toc[i] == braco)
+			bop[j++] = i;
+		if (toc[i] == bracc)
+		{
+			lenght -= brcalc(*toc, *arg, bop[j--], i);
+			/*
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+			*/
+		}
+	}
+}
+/*
+Check symbol
+input
+-expression <*toc>
+-expression arguments <*arg>
+-count of opening brackets <*bo>
+-count of closing brackets <*bc>
+-counters
+--<i>
+--<*j>
+-"in out" variable <*k>
+changes
+-all to actual values
+return
+-code <0> if syntax error
+-code <1> if completed
+*/
+char chksmb(short *toc, long long *arg, short *bo, short *bc, short i, short *j, char *k)
+{
+	if ((c >= '0') && (c <= '9'))
+	{	
+		k = 1
+		arg[j] = arg[j]*10 + c - '0'; 
+	}
+	else
+	{
+		if (k == 1)
+		{
+			toc[i] = j;
+			k = 0;
+			j++;
+		}
+		else
+		{
+		switch (c)
+		{
+			case '(':
+				toc[i] = braco;
+				*bo++;
+				break;
+			case ')':
+				toc[i] = bracc;
+				*bc++;
+				break;
+			case '+':
+				toc[i] = plus;
+				break;
+			case '-':
+				toc[i] = minus;
+				break;
+			case '*':
+				toc[i] = mult;
+				break;
+			case '/':
+				toc[i] = split;
+				break;
+		}
+		if ((bo > bc) || (toc[i - 1] == toc[i]) || ((toc[i - 1] == bracc) && (toc[i] == braco)) || ((toc[i - 1] == braco) && (toc[i] == bracc)) || ((toc[i - 1] == braco) && ((toc[i] == plus) || (toc[i] == split) || (toc[i] == mult))) || ((toc[i] == bracc) && ((toc[i - 1] == plus) || (toc[i - 1] == split) || (toc[i - 1] == mult) || (toc[i-1] == minus))))
+			return 0;
+		i++;
+		}
+	}
+	return 1;
 }
 /*
 read input
@@ -36,20 +172,21 @@ short scancalc(short *toc, long long *arg)
 {
 	/*temp*/
 	char c;
-	/*counter*/
-	short i;
+	/*counters*/
+	short i = 0, j = 0, k = 0;
 	/*
 	-count of opening brackets
 	-count of closing brackets
-	-last position of opening bracket
-	-last position of closing bracket
 	*/
-	short bo, bc, bop, bcp;
-	while (((c = getchar()) != EOF) && (c != '\n'))
+	short bo = 0, bc = 0;
+	toc[i++] = braco;
+	while (((c = getchar()) != EOF) && (c != '\n') && (i < 1001))
 	{
-		if(chksmb(*toc, *arg, bo, ) == 0)
+		if(chksmb(toc, arg, &bo, &bc, i, &j, &k) == 0)
 			return 0;
 	}
+	toc[i++] = bracc;
+	return i;
 }
 /*
 print output message
@@ -81,7 +218,7 @@ void main()
 	/*expression*/
 	short toc[1002];
 	/*arguments*/
-	long long arg[499];
+	long long arg[499] = {0};
 	/*expression length*/
 	short length;
 	/*result of calculating*/
