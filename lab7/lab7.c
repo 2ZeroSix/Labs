@@ -53,12 +53,12 @@ void lltostr(long long arg, char *args)
     args[i++] = arg % 10 + '0';
     arg /= 10;
   }
-  args[i] = '\0'
+  args[i] = '\0';
   for (j = 0; j < i / 2; j++)
   {
-    c = arg[j];
-    arg[j] = arg[i - j - 1];
-    arg[i - j - 1] = c;
+    c = args[j];
+    args[j] = args[i - j - 1];
+    args[i - j - 1] = c;
   }
   return;
 }
@@ -70,7 +70,7 @@ void lltostr(long long arg, char *args)
 Изменяет
 -записывает в <*arg> число в целочисленном представлении
 */
-void strtoll(char *args,long long *arg)
+void strll(char *args,long long *arg)
 {
   *arg = 0;
   int i;
@@ -90,7 +90,7 @@ void strtoll(char *args,long long *arg)
 Изменяет
 -в строке <*s> заменяет скобки с выражением внутри них на целое число
 */
-void calcbrackets(char *s, l, cso, csc)
+void calcbrackets(char *s, int cso, int csc)
 {
   /*счётчики*/ 
   int i, j = 0, k = 0, expr;
@@ -105,7 +105,7 @@ void calcbrackets(char *s, l, cso, csc)
     {
       k = 1;
       if (s[i] == '-')
-        argcp[j++] = s[i];
+        argc[j++] = s[i];
     }
     else
     {
@@ -116,13 +116,13 @@ void calcbrackets(char *s, l, cso, csc)
       else
       {
         expr = s[i];
-        argc[j] = '\0'
+        argc[j] = '\0';
         j = 0;
-        strtoll(argc, &arg1);
-        while ((s[i] >= '0') && (s[i] <='9')
+        strll(argc, &arg1);
+        while ((s[i] >= '0') && (s[i] <='9'))
           argc[j++] = s[i++];
           argc[j] = '\0';
-          strtoll(argc, &arg2);
+          strll(argc, &arg2);
           arg1 = calcexpr(arg1, arg2, expr);
       }
     }
@@ -143,7 +143,7 @@ void calcbrackets(char *s, l, cso, csc)
 -Возвращает
 --<0>
 */
-int fullcalc(char *s, int l, int *result)
+int fullcalc(char *s, int l, long long *result)
 {
   /*массив с позициями открывающих скобок*/
   int cso[499];
@@ -175,7 +175,7 @@ int fullcalc(char *s, int l, int *result)
 -код 0 в случае недопустимого символа
 -код 1 в случае допустимого символа
 */
-int checksimb(char c, int *so, int *sc, int *cso, int *csc, int *zn)
+int checksimb(char c, int *so, int *sc, int *cso, int *csc, int *zn, int i)
 {
   if (((c >= '0') && (c <= '9'))||(c == '(')||(c == ')')||(c == '*')||(c == '/')||(c == '+')||(c == '-'))
     {
@@ -214,7 +214,7 @@ int checksimb(char c, int *so, int *sc, int *cso, int *csc, int *zn)
 -код 0 в случае недопустимости
 -длина в случае допустимости
 */
-int fillscalc(char *s,)
+int fillscalc(char *s)
 {
   /*счётчик*/
   int i = 1;
@@ -230,9 +230,9 @@ int fillscalc(char *s,)
   */
   int cso = -1, csc = -1, zn = -1;
   s[0] = '(';
-  while(((s[i] = getchar()) != EOF) && checksimb(s[i], so, sc, cso, csc, zn) && (i < 1002))
+  while(((s[i] = getchar()) != EOF) && checksimb(s[i], &so, &sc, &cso, &csc, &zn, i) && (i < 1002))
     i++;
-  if ((s[i]!=EOF)||(so!=sc)
+  if ((s[i]!=EOF)||(so!=sc))
     return 0;
   s[i] = ')';
   return i + 1;
@@ -241,14 +241,14 @@ int fillscalc(char *s,)
 void main()
 {
   /*строка с выражением*/
-  char *scalc[1002];
+  char scalc[1002];
   /*длина выражения*/
   int l;
   /*значение выражения*/
   long long result;
   if(l = fillscalc(scalc))
   {
-    if(result = fullcalc(scalc, l))
+    if(result = fullcalc(scalc, l, &result))
     {
       printf("%lld", result);
     }
