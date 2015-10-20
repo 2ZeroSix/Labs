@@ -3,8 +3,83 @@
 #include <stdlib.h>
 #define codez printf("division by zero");
 #define codes printf("syntax error");
-
-
+/*
+Подсчёт по знаку
+Получает
+-два числа <arg1>, <arg2>
+-знак между ними <expr>
+В случае успеха
+-Возвращает
+--Значение выражения
+В случае деления на ноль
+-Возвращает
+--<0>
+-Изменяет
+--меняет expr на '0'*/
+long long calcexpr(long long arg1, long long arg2, char expr)
+{
+  switch(expr)
+  {
+    case '*':
+      return arg1 * arg2;
+    case '+':
+      return arg1 + arg2;
+    case '-':
+      return arg1 - arg2;
+    case '/':
+      if (arg2 != 0)
+        return arg1 / arg2;
+      else
+      {
+        expr = '0';
+        return 0;
+      }
+  }
+}
+/*
+Перевод из целочисленного представления в символьный
+Получает
+-число <arg>
+-строку <*args>
+Изменяет
+-записывает в <*args> число в символьном представлении
+*/
+void lltostr(long long arg, char *args)
+{
+  int i = 0, j;
+  char c;
+  while (arg > 0)
+  {
+    args[i++] = arg % 10 + '0';
+    arg /= 10;
+  }
+  args[i] = '\0'
+  for (j = 0; j < i / 2; j++)
+  {
+    c = arg[j];
+    arg[j] = arg[i - j - 1];
+    arg[i - j - 1] = c;
+  }
+  return;
+}
+/*
+Перевод из символьного представления в целочисленное
+Получает
+-строку <*args>
+-число <*arg>
+Изменяет
+-записывает в <*arg> число в целочисленном представлении
+*/
+void strtoll(char *args,long long *arg)
+{
+  *arg = 0;
+  int i;
+  while(args[i] != '\0')
+  {
+    *arg = *arg * 10 + args[i++] - '0';
+  }
+  return;
+}
 /*
 Калькулятор скобок
 Получает
@@ -17,21 +92,39 @@
 */
 void calcbrackets(char *s, l, cso, csc)
 {
-  /*счётчик*/
-  int i;
-  /*временная строка*/
-  char *t;
+  /*счётчики*/ 
+  int i, j = 0, k = 0, expr;
   /*элемент в виде строки*/
   char argc[20];
   /*последний и предпоследний элементы*/
   long long arg1, arg2;
-  t = (char*)malloc((csc - cso)*sizeof(char));
-  strncpy(t, &s[cso + 1], csc - cso - 1);
   for(i = 0; i < csc - cso; i++)
   {
-    if ((t[i] >= '0') && (t[i] <= '9'))
+
+      if (k == 0)
     {
-      argc
+      k = 1;
+      if (s[i] == '-')
+        argcp[j++] = s[i];
+    }
+    else
+    {
+      if ((s[i] >= '0') && (s[i] <= '9'))
+      {
+        argc[j++] = s[i];
+      }
+      else
+      {
+        expr = s[i];
+        argc[j] = '\0'
+        j = 0;
+        strtoll(argc, &arg1);
+        while ((s[i] >= '0') && (s[i] <='9')
+          argc[j++] = s[i++];
+          argc[j] = '\0';
+          strtoll(argc, &arg2);
+          arg1 = calcexpr(arg1, arg2, expr);
+      }
     }
   }
 }
