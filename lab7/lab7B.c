@@ -23,6 +23,7 @@ output
 -code <1> if completed*/
 char expcalc(short *toc, long long *arg, short pexp)
 {
+	printf("expcalc\n");
 	short i = pexp - 1, j = pexp + 1;
 	while (toc[i] == -1)
 		i--;
@@ -33,7 +34,22 @@ char expcalc(short *toc, long long *arg, short pexp)
 		case plus:
 			arg[i] += arg[j];
 			break;
+		case minus:
+			arg[i] -= arg[j];
+			break;
+		case mult:
+			arg[i] *= arg[j];
+			break;
+		case split:
+			if(arg[j] == 0)
+				return 0;
+			arg[i] /= arg[j];
+			break;
 	}
+	printf("%lld %lld\n",arg[i],arg[j]);
+	toc[pexp] = -1;
+	toc[j] = -1;
+	return 1;
 }
 /*
 Calculate expression in brackets
@@ -47,20 +63,23 @@ changes
 -
 -
 output
--code <-1> if division by zero
--offset to the left if completed
+-code <0> if division by zero
+-code <1> if completed
 */
-short brcalc(short *toc, long long *arg, short bop, short bcp)
+char brcalc(short *toc, long long *arg, short bop, short bcp)
 {
+	printf("brcalc\n");
 	/*counter*/
 	short i;
 	for (i = bop + 1; i < bcp - 1; i++)
 	{
 		if (toc[i] > 499)
 		{
-			expcalc(toc, arg, i);
+			if(expcalc(toc, arg, i) == 0)
+				return 0;
 		}
 	}
+	return 1;
 }
 /*
 main calculating function
@@ -77,25 +96,24 @@ output
 */
 char fullcalc(short *toc, long long *arg, short length, long long *result)
 {
+	printf("fullcalc\n");
 	/*counters*/
 	short i, j = 0;
 	/*every opening brackets positions*/
 	short bop[499];
 	/*last closing bracket position*/
-	short bcp;	/*check for using*/
-	for (i = 0; i < lenght; i++)
+	for (i = 0; i < length; i++)
 	{
 		if (toc[i] == braco)
 			bop[j++] = i;
 		if (toc[i] == bracc)
 		{
-			lenght -= brcalc(*toc, *arg, bop[j--], *i);
-			/*
-			???
-			Profit
-			*/
+			if (brcalc(toc, arg, bop[j--], i) == 0)
+				return 1;
 		}
 	}
+	*result = arg[0];
+	return 2;
 }
 /*
 Check symbol
@@ -114,20 +132,21 @@ return
 -code <0> if syntax error
 -code <1> if completed
 */
-char chksmb(short *toc, long long *arg, short *bo, short *bc, short i, short *j, char *k)
+char chksmb(char c, short *toc, long long *arg, short *bo, short *bc, short i, short *j, char *k)
 {
+	printf("chksmb\n");
 	if ((c >= '0') && (c <= '9'))
 	{	
-		k = 1
-		arg[j] = arg[j]*10 + c - '0'; 
+		*k = 1;
+		arg[*j] = arg[*j] * 10 + c - '0'; 
 	}
 	else
 	{
-		if (k == 1)
+		if (*k == 1)
 		{
-			toc[i] = j;
-			k = 0;
-			j++;
+			toc[i] = *j;
+			*k = 0;
+			*j++;
 		}
 		else
 		{
@@ -154,7 +173,7 @@ char chksmb(short *toc, long long *arg, short *bo, short *bc, short i, short *j,
 				toc[i] = split;
 				break;
 		}
-		if ((bo > bc) || (toc[i - 1] == toc[i]) || ((toc[i - 1] == bracc) && (toc[i] == braco)) || ((toc[i - 1] == braco) && (toc[i] == bracc)) || ((toc[i - 1] == braco) && ((toc[i] == plus) || (toc[i] == split) || (toc[i] == mult))) || ((toc[i] == bracc) && ((toc[i - 1] == plus) || (toc[i - 1] == split) || (toc[i - 1] == mult) || (toc[i-1] == minus))))
+		if ((*bo > *bc) || ((toc[i - 1] == bracc) && (toc[i] == braco)) || ((toc[i - 1] == braco) && (toc[i] == bracc)) || ((toc[i - 1] == braco) && ((toc[i] == plus) || (toc[i] == split) || (toc[i] == mult) || (toc[i-1] == minus))) || ((toc[i] == bracc) && ((toc[i - 1] == plus) || (toc[i - 1] == split) || (toc[i - 1] == mult) || (toc[i-1] == minus))) || (((toc[i] == plus) || (toc[i] == minus) ||(toc[i] == mult) || (toc[i] == split)) && ((toc[i - 1] == plus) || (toc[i - 1] == minus) ||(toc[i - 1] == mult) || (toc[i - 1] == split))))
 			return 0;
 		i++;
 		}
@@ -175,10 +194,11 @@ output
 */
 short scancalc(short *toc, long long *arg)
 {
+	printf("scancalc\n");
 	/*temp*/
-	char c;
+	char c, k = 0;
 	/*counters*/
-	short i = 0, j = 0, k = 0;
+	short i = 0, j = 0;
 	/*
 	-count of opening brackets
 	-count of closing brackets
@@ -187,9 +207,11 @@ short scancalc(short *toc, long long *arg)
 	toc[i++] = braco;
 	while (((c = getchar()) != EOF) && (c != '\n') && (i < 1001))
 	{
-		if(chksmb(toc, arg, &bo, &bc, i, &j, &k) == 0)
+		if((chksmb(c, toc, arg, &bo, &bc, i, &j, &k)) == 0)
 			return 0;
 	}
+	if (bo != bc)
+		return 0;
 	toc[i++] = bracc;
 	return i;
 }
@@ -201,13 +223,14 @@ input
 */
 void output(char codecalc, long long result)
 {
+	printf("output\n");
 		switch(codecalc)
 	{
 		case 0:
-			sodes;
+			codes
 			break;
 		case 1:
-			sodez;
+			codez
 			break;
 		case 2:
 			printf("%lld",result);
