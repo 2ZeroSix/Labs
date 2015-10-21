@@ -9,8 +9,59 @@
 #define minus 503
 #define mult 504
 #define split 505
-
-short brcalc(short *toc, long long *arg, short bop)
+/*
+Calculate one expression
+input
+-expression <*toc>
+-arguments <*arg>
+-position if expression <pexp>
+changes
+-replaces toc[position of arg2], ptoc[pexp]  at -1
+-toc[position of arg1] = result of calc
+output
+-code <0> if division by zero
+-code <1> if completed*/
+char expcalc(short *toc, long long *arg, short pexp)
+{
+	short i = pexp - 1, j = pexp + 1;
+	while (toc[i] == -1)
+		i--;
+	while(toc[j] == -1)
+		j++;
+	switch (pexp)
+	{
+		case plus:
+			arg[i] += arg[j];
+			break;
+	}
+}
+/*
+Calculate expression in brackets
+input
+-expression <*toc>
+-arguments <*arg>
+-opening bracket position
+-closing bracket position
+changes
+-
+-
+-
+output
+-code <-1> if division by zero
+-offset to the left if completed
+*/
+short brcalc(short *toc, long long *arg, short bop, short bcp)
+{
+	/*counter*/
+	short i;
+	for (i = bop + 1; i < bcp - 1; i++)
+	{
+		if (toc[i] > 499)
+		{
+			expcalc(toc, arg, i);
+		}
+	}
+}
 /*
 main calculating function
 input
@@ -21,73 +72,27 @@ input
 changes
 -fill <result>
 output
--code 1 if division by zero
--code 2 if completed
+-code <1> if division by zero
+-code <2> if completed
 */
 char fullcalc(short *toc, long long *arg, short length, long long *result)
 {
-	/*counter*/
-	int i, j = 0;
+	/*counters*/
+	short i, j = 0;
 	/*every opening brackets positions*/
 	short bop[499];
 	/*last closing bracket position*/
-!!!	short bcp;
+	short bcp;	/*check for using*/
 	for (i = 0; i < lenght; i++)
 	{
 		if (toc[i] == braco)
 			bop[j++] = i;
 		if (toc[i] == bracc)
 		{
-			lenght -= brcalc(*toc, *arg, bop[j--], i);
+			lenght -= brcalc(*toc, *arg, bop[j--], *i);
 			/*
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+			???
+			Profit
 			*/
 		}
 	}
