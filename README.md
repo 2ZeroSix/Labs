@@ -2,18 +2,18 @@
 Projects for cprog class
 
 # Names
-<type><number of work><status>
+"type""number of work""status"
 
 - types
 
-<HW> - homework
+"HW - homework"
 
-<lab> - laboratory work
+"lab - laboratory work"
 
 - Statuses
 
-<_complete> - completed but сheck status unknown
+"_complete - completed but сheck status unknown"
 
-<_finish> - completed and checked
+"_finish - completed and checked"
 
-any other - uncompleted
+"any other - uncompleted"
