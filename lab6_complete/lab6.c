@@ -8,6 +8,7 @@
 */
 void swapint(int *a1, int *a2)
 {
+  /*переменная для замены*/
   int k;
   k = *a1;
   *a1 = *a2;
@@ -22,6 +23,7 @@ void swapint(int *a1, int *a2)
 */
 void output(int N, int *arr)
 {
+  /*счётчик*/
   int i;
   for (i = 0; i < N; i++)
     printf("%d ", arr[i]);
@@ -34,10 +36,17 @@ void output(int N, int *arr)
 -сортируемый массив <a>
 -левую границу отсортированного <l>
 -правую границу отсортированного <r>
+изменяет
+-сортирует <*a>
 */
 void qusort(int *a, int l, int r)
 {
-  int x, v, i, j;
+  /*
+  -центральный элемент
+  -счётчик для левой части
+  -счётчик для правой части
+  */
+  int x, i, j;
   i = l;
   j = r;
   x = a[(l+r)/2];
@@ -62,6 +71,11 @@ void qusort(int *a, int l, int r)
 
 void main()
 {
+  /*
+  -счётчик
+  -кол-во элементов
+  -сортируемый массив
+  */
   int i, N, *arr;
   /*
   Чтение входных данных
