@@ -10,6 +10,7 @@
 #define minus 503
 #define mult 504
 #define split 505
+#define empty -1
 /*
 Calculate one expression
 input
@@ -17,7 +18,7 @@ input
 -arguments <*arg>
 -position of expression <pexp>
 changes
--replaces toc[position of arg2], ptoc[pexp]  at -1
+-toc[position of arg2] = empty, ptoc[pexp] = empty
 -arg[arg1 position] = result of calc
 output
 -code <0> if division by zero
@@ -27,9 +28,9 @@ char expcalc(short *toc, long long *arg, short pexp)
 {
 	/*positions of args*/
 	short arg1pos = pexp - 1, arg2pos = pexp + 1;
-	while (toc[arg1pos] == -1)
+	while (toc[arg1pos] == empty)
 		arg1pos--;
-	while(toc[arg2pos] == -1)
+	while(toc[arg2pos] == empty)
 		arg2pos++;
 	switch (toc[pexp])
 	{
@@ -48,8 +49,8 @@ char expcalc(short *toc, long long *arg, short pexp)
 			arg[toc[arg1pos]] /= arg[toc[arg2pos]];
 			break;
 	}
-	toc[pexp] = -1;
-	toc[arg2pos] = -1;
+	toc[pexp] = empty;
+	toc[arg2pos] = empty;
 	return 1;
 }
 /*
@@ -60,7 +61,7 @@ input
 -opening bracket position
 -closing bracket position
 changes
--toc[bop]=...toc[bcp]=-1
+-toc[bop]=...toc[bcp] = empty
 -arg[first in brackets] = result of calc
 output
 -code <0> if division by zero
@@ -87,8 +88,8 @@ char brcalc(short *toc, long long *arg, short bop, short bcp)
 				return 0;
 		}
 	}
-	toc[bop] = -1;
-	toc[bcp] = -1;
+	toc[bop] = empty;
+	toc[bcp] = empty;
 	return 1;
 }
 /*
