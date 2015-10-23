@@ -20,15 +20,13 @@ void encoder(FILE *in, FILE *out)
 		printf("%c", c[0] >> 2);
 		if((c[1] = getc(in)) == EOF)
 		{
-			c[1] = 0;
-			printf("%c", ((c[0] << 4) | (c[1] >> 4)) | 0x3f);
+			printf("%c", (c[0] << 4) | 0x3f);
 			return;
 		}
 		printf("%c", ((c[0] << 4) | (c[1] >> 4)) | 0x3f);
 		if((c[2] = getc(in)) == EOF)
 		{
-			c[2] = 0;
-			printf("%c", ((c[1] << 2) | c[2] >> 6) | 0x3f);
+			printf("%c", (c[1] << 2) | 0x3f);
 			return;
 		}
 		printf("%c", ((c[1] << 2) | c[2] >> 6) | 0x3f);
@@ -41,7 +39,40 @@ void encoder(FILE *in, FILE *out)
 	return;
 }
 /*
-Base64 to text*/
+Base64 to text
+Input
+-input file  <*in>
+-output file <*out>
+-ignore mode <im>
+Changes
+-print text in <*out>
+Output
+-code <1> if completed
+-code <0> if wrong value in file
+*/
+char decoder(FILE *in, FILE *out, char im)
+{
+	short i;
+	char b64[4], c[3];
+	while ((b64[0] = getc(in)) != EOF)
+	{
+		for(i = 1; i < 4; i++)
+			if(((b64[i] = getc(in)) > 0x3f) || (b64[i] < 0))
+			{
+				if(im)
+				{
+					while(((b64[i] > 0x3f) || (b64[i] < 0)) && (b64[i] != EOF))
+				}
+				else
+				{
+				return 0;
+				}
+			}
+		c[0] = (b64[0] << 2) | (b64[1] >> 4);
+		c[1] = (b64[1] << 4) | (b64[1] >> 2);
+		c[2] = (b64[2] << 6) | (b64[3]);
+	}
+}
 /*
 input
 -count of arguments <argc>
