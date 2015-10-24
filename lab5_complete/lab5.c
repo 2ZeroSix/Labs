@@ -1,4 +1,3 @@
-#define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 #include <stdlib.h>
 /*
@@ -65,11 +64,11 @@ void main()
   /*
   Чтение входных данных
   */
-  scanf("%d", &N);
+  scanf_s("%d", &N, sizeof(int));
   arr = (int*)calloc(N,sizeof(int));
   for(i = 0; i < N; i++)
   {
-    scanf("%d", &arr[i]);
+    scanf_s("%d", &arr[i], sizeof(int));
   }
   /*
   Подготовка

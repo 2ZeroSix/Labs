@@ -1,5 +1,6 @@
-#include <stdint.h>
-#include <stdlib.h>
+#define _CRT_SECURE_NO_WARNINGS
+#include <stdio.h>
+#include <string.h>
 #define encode "-e"
 #define decode "-d"
 #define ignore "-i"
@@ -15,16 +16,16 @@ void encoder(FILE *in, FILE *out)
 {
 	char c[3];
 	// char b64[4];
-	while(c[0] = getc(in) != EOF)
+	while (c[0] = getc(in) != EOF)
 	{
 		printf("%c", c[0] >> 2);
-		if((c[1] = getc(in)) == EOF)
+		if ((c[1] = getc(in)) == EOF)
 		{
 			printf("%c", (c[0] << 4) | 0x3f);
 			return;
 		}
 		printf("%c", ((c[0] << 4) | (c[1] >> 4)) | 0x3f);
-		if((c[2] = getc(in)) == EOF)
+		if ((c[2] = getc(in)) == EOF)
 		{
 			printf("%c", (c[1] << 2) | 0x3f);
 			return;
@@ -50,28 +51,29 @@ Output
 -code <1> if completed
 -code <0> if wrong value in file
 */
-char decoder(FILE *in, FILE *out, char im)
+char decoder(FILE *in, FILE *out, int im)
 {
 	short i;
 	char b64[4], c[3];
 	while ((b64[0] = getc(in)) != EOF)
 	{
-		for(i = 1; i < 4; i++)
-			if(((b64[i] = getc(in)) > 0x3f) || (b64[i] < 0))
+		for (i = 1; i < 4; i++)
+			if (((b64[i] = getc(in)) > 0x3f) || (b64[i] < 0))
 			{
-				if(im)
+				if (im)
 				{
-					while(((b64[i] > 0x3f) || (b64[i] < 0)) && (b64[i] != EOF))
+					while (((b64[i] > 0x3f) || (b64[i] < 0)) && (b64[i] != EOF));
 				}
 				else
 				{
-				return 0;
+					return 0;
 				}
 			}
 		c[0] = (b64[0] << 2) | (b64[1] >> 4);
 		c[1] = (b64[1] << 4) | (b64[1] >> 2);
 		c[2] = (b64[2] << 6) | (b64[3]);
 	}
+	return 1;
 }
 /*
 input
@@ -88,17 +90,17 @@ output
 -code <0> if arguments incorrect
 -code <1> if arguments correct
 */
-char checkmode(int argc, char **argv, FILE *in, FILE *out, char *check)
+char checkmode(int argc, char **argv, FILE **in, FILE **out, int *check)
 {
 	/*counter*/
 	short i = 1;
 	/*checker*/
 	int checkall = 1;
-	if((argc == 3) || (argc == 4)
+	if ((argc == 3) || (argc == 4))
 	{
 		if (argc == 4)
 		{
-			if(strcmp(argv[i], ignore) == 0)
+			if (strcmp(argv[i], ignore) == 0)
 				check[i - 1] = 1;
 			checkall *= check[i - 1];
 		}
@@ -108,14 +110,18 @@ char checkmode(int argc, char **argv, FILE *in, FILE *out, char *check)
 		if (strcmp(argv[i++], decode) == 0)
 			check[i - 2] = 'd';
 		checkall *= check[i - 2];
-		if((in = fopen(argv[i++], "r") == NULL)
+		if (fopen_s(in, argv[i++], "r") == NULL)
 			check[i - 2] = 1;
 		checkall *= check[i - 2];
-		if((out = fopen(argv[i], "w")) == NULL)
+		if (fopen_s(out, argv[i], "w") == NULL)
 			check[i - 1] = 1;
-			checkall *= check[i - 1];
+		checkall *= check[i - 1];
 	}
-	if (checkall)
+	else
+	{
+		return 0;
+	}
+	if (checkall != 0)
 		return 1;
 	return 0;
 }
@@ -127,9 +133,9 @@ Input
 -count of arguments <argc>
 -argumentts <**argv>
 */
-void output(char *check, int argc, char **argv)
+void output(int *check, int argc, char **argv)
 {
-	char outcode[] = {"wrong ignore mode: ", "Wrong decode/encode mode: ", "Wrong input file: ", "COMPLETEED\nResult in output file", "ERROR\nInterface: <ignore mode> <decode/encode mode> <input file> <output file>\nIgnore modes:\n- <-i> - ignore nonBase64 symbols while decoding\n- empty - not ignore nonBase64 symbols\nDecode/encode modes:\n- <-d> - decode\n- <-e> - encode\nInput file\nOutput file\n"}
+	char *outcode[5] = { "Wrong ignore mode: ", "Wrong decode/encode mode: ", "Wrong input file: ", "COMPLETEED\nResult in output file", "ERROR\nInterface: <ignore mode> <decode/encode mode> <input file> <output file>\nIgnore modes:\n- <-i> - ignore nonBase64 symbols while decoding\n- empty - not ignore nonBase64 symbols\nDecode/encode modes:\n- <-d> - decode\n- <-e> - encode\nInput file\nOutput file\n" };
 	short i = 0;
 	int checkall = 1;
 	if (argc == 4)
@@ -143,28 +149,28 @@ void output(char *check, int argc, char **argv)
 	checkall *= check[i++];
 	if (check[i] == 0)
 		printf("%s %s\n", outcode[i], argv[i + 1]);
-	checkall *=check[i++];
+	checkall *= check[i++];
 	if (check[i] == 0)
 		printf("%s %s\n", outcode[i], argv[i + 1]);
-	checkall *=check[i++];
+	checkall *= check[i++];
 	if (checkall)
 	{
 		printf("%s\n", outcode[i]);
 	}
 	else
 	{
-		printf("%s\n" outcode[i + 1]);
+		printf("%s\n", outcode[i + 1]);
 	}
 	return;
 }
 
 void main(int argc, char **argv)
 {
-	char mode, check[4] = {0};
+	int check[4] = { 0 };
 	FILE *in, *out;
-	if(checkmode(argc, argv, in, out, check))
+	if (checkmode(argc, argv, &in, &out, check))
 	{
-		if(check[2] == encode)
+		if (check[2] == 'e')
 		{
 			encoder(in, out);
 		}

@@ -63,7 +63,7 @@ void main()
   int lp;
   if(lp = readl(p))
   {
-    scanf("%d", &n);
+    scanf_s("%d", &n, sizeof(int));
     for (i = 0; i < n && printp(p, lp); i++);
   }
   else
