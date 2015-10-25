@@ -1,4 +1,4 @@
-# Labs
+﻿# Labs
 Projects for cprog class
 
 # Names
@@ -6,7 +6,7 @@ Projects for cprog class
 
 Types
 
-- "HW" - homework
+- "HW_" - homework
 - "lab" - laboratory work
 
 Statuses
