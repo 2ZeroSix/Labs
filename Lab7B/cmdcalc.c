@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include "cmdcalc.h"
 
-static const char *outcode[] = {"Syntax error", "Division by zero"};
+static char *outcode[] = {"Syntax error", "Division by zero"};
 /*
 Read with check
 INPUT
