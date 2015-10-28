@@ -4,11 +4,11 @@
 void main()
 {
 	char checker;
-	long long result;
-	char excep[1000];
-	if(checker = readexep(stack, excep))
+	long long args[500] = {0};
+	short excep[1001];
+	if(checker = readexep(excep, args))
 	{
-		checker = fullcalc(excep, &result);
+		checker = fullcalc(excep, args);
 	}
 	output(checker, result);
 }

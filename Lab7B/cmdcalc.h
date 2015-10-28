@@ -1,7 +1,7 @@
 #ifndef __CMDCALC_H__
 #define __CMDCALC_H__
 
-char readexep(char *excep);
+char readexep(short *excep, long long *args);
 void output(char checker, long long result);
 
 
