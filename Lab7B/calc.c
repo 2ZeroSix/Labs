@@ -22,6 +22,27 @@ char fullcalc(short *excep, long long *args)
 			arg1 = arg2;
 			arg2 = i;
 		}
-		if (excep[i] == )
+		else
+		{
+			switch(excep[i])
+			{
+				case plus:
+					args[arg1] += args[arg2];
+					break;
+				case minus:
+					args[arg1] -= args[arg2];
+					break;
+				case mult:
+					args[arg1] *= args[arg2];
+					break;
+				case split:
+					if(args[arg2] == 0)
+						return 1;
+					args[arg1] /= args[arg2];
+					break;
+			}
+			arg1--;
+			arg2--;
+		}
 	}
 }

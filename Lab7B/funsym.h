@@ -1,12 +1,12 @@
 #ifdef __FUNSYM_H__
 #define __FUNSYM_H__
 
-#define plus 500
-#define minus 501
-#define mult 502
-#define split 503
-#define obra 504
-#define cbra 505
-#define exend 506
+#define obra 500
+#define cbra 501
+#define exend 502
+#define plus 503
+#define minus 504
+#define mult 505
+#define split 506
 
 #endif // __FUNSYM_H__
