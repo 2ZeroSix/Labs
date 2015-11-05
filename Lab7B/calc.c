@@ -16,21 +16,21 @@ char fullcalc(short *excep, long long *args)
 			{
 			case plus:
 				args[stack[j - 2]] += args[stack[j - 1]];
-				j -= 2;
+				j--;
 				break;
 			case minus:
 				args[stack[j - 2]] -= args[stack[j - 1]];
-				j -= 2;
+				j--;
 				break;
 			case mult:
-				args[stack[j - 2]] *= args[stack[j -1]];
-				j -= 2;
+				args[stack[j - 2]] *= args[stack[j - 1]];
+				j--;
 				break;
 			case split:
 				if (args[stack[j - 1]] == 0)
 					return 1;
-				args[stack[j - 2]] /= args[stack[j -1]];
-				j -= 2;
+				args[stack[j - 2]] /= args[stack[j - 1]];
+				j--;
 				break;
 			}
 		}
@@ -44,11 +44,13 @@ char readexcep(short *excep, long long *args)
 	// counters
 	short i = 0, j = 0, st = 0, k = 0;
 	// buffer
-	char c;
+	char c, last = 0;
 	// stack
 	short stack[1000];
 	while (((c = getchar()) != EOF) && (c != '\n'))
 	{
+		if (((c == ')') && (last == '(')) || ((c == '+') || (c == '-') || (c == '*') || (c == '/')) && ((last == '+') || (last == '-') || (last == '*') || (last == '/')))
+			return 0;
 		if ((i > 999) || (k > 999))
 			return 0;
 		if ((c >= '0') && (c <= '9'))
@@ -72,15 +74,31 @@ char readexcep(short *excep, long long *args)
 			switch (c)
 			{
 			case '+':
+				if ((stack[k - 1] == split) || (stack[k - 1] == mult))
+				{
+					excep[i++] = stack[--k];
+				}
 				stack[k++] = plus;
 				break;
 			case '-':
+				if ((stack[k - 1] == split) || (stack[k - 1] == mult) || (stack[k - 1] == minus))
+				{
+					excep[i++] = stack[--k];
+				}
 				stack[k++] = minus;
 				break;
 			case '*':
+				if (stack[k - 1] == mult)
+				{
+					excep[i++] = stack[--k];
+				}
 				stack[k++] = mult;
 				break;
 			case '/':
+				if ((stack[k - 1] == split) || (stack[k - 1] == mult))
+				{
+					excep[i++] = stack[--k];
+				}
 				stack[k++] = split;
 				break;
 			case '(':
@@ -89,15 +107,13 @@ char readexcep(short *excep, long long *args)
 			default:
 				if (c == ')')
 				{
-					if (stack[k - 1] == obra)
-						return 0;
+					k--;
 					while (stack[k] != obra)
 					{
 						excep[i++] = stack[k--];
 						if (k < 0)
 							return 0;
 					}
-					k--;
 				}
 				else
 				{
@@ -105,7 +121,10 @@ char readexcep(short *excep, long long *args)
 				}
 			}
 		}
+		last = c;
 	}
+	if ((last == '+') || (last == '-') || (last == '*') || (last == '/') || (j == 0))
+		return 0;
 	k--;
 	while (k >= 0)
 	{
