@@ -4,8 +4,7 @@ sortandprint(FILE *in, FILE *out1, FILE *out2, FILE *out3)
 
 int open(FILE **in, FILE **out1, FILE **out2, FILE **out3)
 {
-	if(fopen_s(in, "in.txt", "r") == NULL)
-		return 0;
+ 		return 0;
 	if(fopen_s(out1, "out1.txt", "w") == NULL)
 		return 0;
 	if(fopen_s(out2, "out2.txt", "w") == NULL)
