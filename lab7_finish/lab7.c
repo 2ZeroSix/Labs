@@ -250,7 +250,7 @@ void output(char codecalc, long long result)
 	return;
 }
 
-void main()
+long long main()
 {
 	/*output code*/
 	char codecalc = 0;
@@ -267,5 +267,4 @@ void main()
 		codecalc = fullcalc(toc, arg, length, &result);
 	}
 	output(codecalc, result);
-	return;
 }
