@@ -119,65 +119,10 @@ char decoder(FILE *in, FILE *out, int im)
 
 char checkmode(int argc, char *argv[], FILE **in, FILE **out, int *check)
 {
-	/*counter*/
-	short i = 1;
-	/*checker*/
-	int checkall = 1;
 	
-	if (argc == 5)
-	{
-		if (strcmp(argv[i], ignore) == 0)
-			check[i - 1] = 1;
-		checkall *= check[(i++) - 1];
-	}
-	
-	if (argc > 1)
-		if (strcmp(argv[i], encode) == 0)
-			check[i - 1] = 'e';
-	if (argc > 1)
-		if (strcmp(argv[i++], decode) == 0)
-				check[i - 2] = 'd';
-	checkall *= check[i - 2];
-	if (argc > 2)
-		if ((*in = fopen(argv[i++], "r")) != NULL)
-			check[i - 2] = 1;
-	checkall *= check[i - 2];
-
-	if (argc > 3)
-		if ((*out = fopen(argv[i], "w")) != NULL)
-				check[i - 1] = 1;
-	checkall *= check[i - 1];
-	if (argc > 5)
-		checkall = 0;
-	return checkall;
 }
 
 void output(int *check, int argc, char *argv[])
 {
-	char *outcode[6] =
-	{
-	"Wrong ignore mode: ",
-	"Wrong decode/encode mode: ",
-	"Wrong input file: ",
-	"Wrong output file: ",
-	"COMPLETEED\nResult in output file",
-	"ERROR\nInterface: <ignore mode> <decode/encode mode> <input file> <output file>\nIgnore modes:\n- <-i> - ignore nonBase64 symbols while decoding\n- empty - not ignore nonBase64 symbols\nDecode/encode modes:\n- <-d> - decode\n- <-e> - encode\nInput file\nOutput file\n"
-	};
-	short i = 0, j = 0;
-	int checkall = 1;
-	for (j = i = (argc == 5) ? 0 : 1; i < 4 - j; i++)
-	{
-		if (check[i - j] == 0)
-			printf("%s %s\n", outcode[i], (argc > i) ? argv[i] : "<none>");
-		checkall *= check[i];
-	}
-	if (checkall)
-	{
-		printf("%s\n", outcode[i]);
-	}
-	else
-	{
-		printf("%s\n", outcode[i + 1]);
-	}
-	return;
+
 }
