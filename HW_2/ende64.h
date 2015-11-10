@@ -5,14 +5,26 @@
 #define encode "-e"
 #define decode "-d"
 #define ignore "-i"
+
 /*
 translate to b64
 Input
 -number of symb in b64 alphabet
 Output
--symb ib b64 alphabet
+-if completed
+--symb ib b64 alphabet
+-if error
+--'-'
 */
 char b64sym(char sym);
+
+/*translate to number of simb
+Input
+-symb in b64 alphabet
+Output
+-number of symb in b64 alphabet
+*/
+char b64num(char sym);
 
 /*
 Text to Base64
@@ -53,7 +65,7 @@ output
 -code <0> if arguments incorrect
 -code <any int > 0> if arguments correct
 */
-char checkmode(int argc, char *argv[], FILE **in, FILE **out, int *check)
+char checkmode(int argc, char *argv[], FILE **in, FILE **out, int *check);
 
 /*
 Print outcode
