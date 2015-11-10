@@ -1,5 +1,5 @@
 #include "ende64.h"
-
+#define _CRT_SECURE_NO_WARNINGS
 char b64sym(char sym)
 {
 	if (sym <= 25)
@@ -113,29 +113,7 @@ void encoder(FILE *in, FILE *out)
 
 char decoder(FILE *in, FILE *out, int im)
 {
-	short i;
-	char b64[4], c[3];
-	while ((b64[0] = getc(in)) != EOF)
-	{
-		for (i = 1; i < 4; i++)
-		if (((b64[i] = getc(in)) > 0x3f) || (b64[i] < 0))
-		{
-			if (im)
-			{
-				while (((b64[i] > 0x3f) || (b64[i] < 0)) && (b64[i] != EOF));
-			}
-			else
-			{
-				return 0;
-			}
-		}
-		c[0] = (b64[0] << 2) | (b64[1] >> 4);
-		c[1] = (b64[1] << 4) | (b64[1] >> 2);
-		c[2] = (b64[2] << 6) | (b64[3]);
-	}
-	fclose(in);
-	fclose(out);
-	return 1;
+
 }
 
 char checkmode(int argc, char *argv[], FILE **in, FILE **out, int *check)
@@ -157,10 +135,10 @@ char checkmode(int argc, char *argv[], FILE **in, FILE **out, int *check)
 		if (strcmp(argv[i++], decode) == 0)
 			check[i - 2] = 'd';
 		checkall *= check[i - 2];
-		if (fopen_s(in, argv[i++], "r") != EINVAL)
+		if ((*in = fopen(argv[i++], "r")) != NULL)
 			check[i - 2] = 1;
 		checkall *= check[i - 2];
-		if (fopen_s(out, argv[i], "w") != EINVAL)
+		if ((*out = fopen(argv[i], "w")) != NULL)
 			check[i - 1] = 1;
 		checkall *= check[i - 1];
 	}
