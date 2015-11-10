@@ -22,7 +22,10 @@ char b64sym(char sym);
 Input
 -symb in b64 alphabet
 Output
--number of symb in b64 alphabet
+-if completed
+--number of symb in b64 alphabet
+-if error
+--'-'
 */
 char b64num(char sym);
 
