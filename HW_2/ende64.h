@@ -1,5 +1,6 @@
 #ifndef _ENDE64_H_
 #define _ENDE64_H_
+#define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 #include <string.h>
 #define encode "-e"
@@ -18,7 +19,8 @@ Output
 */
 char b64sym(char sym);
 
-/*translate to number of simb
+/*
+translate to number of simb
 Input
 -symb in b64 alphabet
 Output
@@ -79,4 +81,4 @@ Input
 */
 void output(int *check, int argc, char *argv[]);
 
-#endif _ENDE64_H_
+#endif

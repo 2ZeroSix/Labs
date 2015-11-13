@@ -1,7 +1,8 @@
 #include "ende64.h"
-#define _CRT_SECURE_NO_WARNINGS
 char b64sym(char sym)
 {
+	printf("\n%d\n", sym);
+
 	if (sym <= 25)
 	{
 		sym += 'A';
@@ -38,6 +39,7 @@ char b64sym(char sym)
 			}
 		}
 	}
+	printf("%c", sym);
 	return sym;
 }
 
@@ -67,13 +69,13 @@ char b64num(char sym)
 				}
 				else
 				{
-					if (sym == '-')
+					if (sym == '/')
 					{
 						sym = 63;
 					}
 					else
 					{
-						return -1;
+						return '-';
 					}
 				}
 			}
@@ -85,27 +87,10 @@ char b64num(char sym)
 void encoder(FILE *in, FILE *out)
 {
 	char c[3];
-	printf("encode");
+	printf("encode\n");
 	while (c[0] = getc(in) != EOF)
 	{
-		putc(b64sym(c[0] >> 2), out);
-		if ((c[1] = getc(in)) == EOF)
-		{
-
-			putc(b64sym((c[0] << 4) & 0x3f), out);
-			putc('=', out);
-			putc('=', out);
-			return;
-		}
-		putc(b64sym(((c[0] << 4) | (c[1] >> 4)) & 0x3f), out);
-		if ((c[2] = getc(in)) == EOF)
-		{
-			putc(b64sym((c[1] << 2) & 0x3f), out);
-			putc('=', out);
-			return;
-		}
-		putc(b64sym(((c[1] << 2) | (c[2] >> 6)) & 0x3f), out);
-		putc(b64sym((c[2]) & 0x3f), out);
+		
 	}
 	fclose(in);
 	fclose(out);
