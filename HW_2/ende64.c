@@ -104,7 +104,11 @@ char decoder(FILE *in, FILE *out, int im)
 
 char checkmode(int argc, char *argv[], FILE **in, FILE **out, int *check)
 {
-	
+	int checkall = 1;
+	if(argc == 5)
+	{
+		check =
+	}	
 }
 
 void output(int *check, int argc, char *argv[])
