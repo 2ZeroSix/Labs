@@ -6,6 +6,7 @@
 #define encode "-e"
 #define decode "-d"
 #define ignore "-i"
+#define sizecheck 4
 
 /*
 translate to b64
@@ -70,7 +71,7 @@ output
 -code <0> if arguments incorrect
 -code <any int > 0> if arguments correct
 */
-char checkmode(int argc, char *argv[], FILE **in, FILE **out, int *check);
+int checkmode(int argc, char *argv[], FILE **in, FILE **out, int *check);
 
 /*
 Print outcode

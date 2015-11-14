@@ -2,7 +2,7 @@
 
 void main(int argc, char **argv)
 {
-	int check[4] = { 0 };
+	int check[sizecheck] = { 0 };
 	FILE *in, *out;
 	if (checkmode(argc, argv, &in, &out, check))
 	{
@@ -12,8 +12,10 @@ void main(int argc, char **argv)
 		}
 		else
 		{
-			decoder(in, out, check[1]);
+			decoder(in, out, check[0]);
 		}
+		fclose(in);
+		fclose(out);
 	}
 	output(check, argc, argv);
 	return;
