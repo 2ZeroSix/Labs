@@ -6,7 +6,7 @@ void main(int argc, char **argv)
 	FILE *in, *out;
 	if (checkmode(argc, argv, &in, &out, check))
 	{
-		if (check[2] == 'e')
+		if (check[1] == 'e')
 		{
 			encoder(in, out);
 		}
