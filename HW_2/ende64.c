@@ -9,13 +9,13 @@ char b64sym(char sym)
 	{
 		if (sym <= 51)
 		{
-			sym += 'a' - 25;
+			sym += 'a' - 26;
 		}
 		else
 		{
 			if (sym <= 61)
 			{
-				sym += '0' - 51;
+				sym += '0' - 52;
 			}
 			else
 			{
@@ -28,48 +28,6 @@ char b64sym(char sym)
 					if (sym == 63)
 					{
 						sym = '/';
-					}
-					else
-					{
-						return '-';
-					}
-				}
-			}
-		}
-	}
-	printf("%c\n", sym);
-	return sym;
-}
-
-char b64num(char sym)
-{
-	if ((sym >= 'A') && (sym <= 'Z'))
-	{
-		sym -= 'A';
-	}
-	else
-	{
-		if ((sym >= 'a') && (sym >= 'z'))
-		{
-			sym -= 'a' - 25;
-		}
-		else
-		{
-			if ((sym >= '0') &&  (sym <= '9'))
-			{
-				sym -= '0' - 51;
-			}
-			else
-			{
-				if (sym == '+')
-				{
-					sym = 62;
-				}
-				else
-				{
-					if (sym == '/')
-					{
-						sym = 63;
 					}
 					else
 					{
@@ -111,10 +69,50 @@ void encoder(FILE *in, FILE *out)
 		b64[3] = b64sym(c[2] & 0x3f);
 		putc(b64[2], out);
 		putc(b64[3], out);
-		printf("%d %d %d\n", c[0], c[1], c[2]);
-		printf("%d %d %d %d\n", b64[0], b64[1], b64[2], b64[3]);
+		printf("%c %c %c %c\n", b64[0], b64[1], b64[2], b64[3]);
 	}
 	return;
+}
+
+char b64num(char sym)
+{
+	if ((sym >= 'A') && (sym <= 'Z'))
+	{
+		sym -= 'A';
+	}
+	else
+	{
+		if ((sym >= 'a') && (sym <= 'z'))
+		{
+			sym = sym - 'a' + 26;
+		}
+		else
+		{
+			if ((sym >= '0') &&  (sym <= '9'))
+			{
+				sym = sym - '0' + 52;
+			}
+			else
+			{
+				if (sym == '+')
+				{
+					sym = 62;
+				}
+				else
+				{
+					if (sym == '/')
+					{
+						sym = 63;
+					}
+					else
+					{
+						return '-';
+					}
+				}
+			}
+		}
+	}
+	return sym;
 }
 
 char decoder(FILE *in, FILE *out, int im)
@@ -123,21 +121,23 @@ char decoder(FILE *in, FILE *out, int im)
 	char c[3], b64[4];
 	while ((b64[0] = getc(in)) != EOF)
 	{
+		count = 3;
 		for (i = 0; i < 4; i++)
 		{
-			count = 3;
 			if (i > 0)
 				b64[i] = getc(in);
 			if (b64[i] == EOF)
 				return 0;
 			if (b64[i] != '=')
 			{
+				if (count == 1)
+					return 0;
 				if (im == 1)
 				{
-					while(b64[i] == '-')
+					while(b64num(b64[i]) == '-')
 						b64[i] = getc(in);
 				}
-				if (b64[i] == '-')
+				if ((b64[i] = b64num(b64[i])) == '-')
 					return 0;
 			}
 			else
@@ -148,30 +148,21 @@ char decoder(FILE *in, FILE *out, int im)
 					count = 1;
 				if (i == 3)
 				{
-					if (count == 1)
-					{
-						count = 2;
-					}
-					else
-					{
-						return 0;
-					}
+					count = 2;
 				}
 				b64[i] = 0;
 			}
 		}
-		if ((b64[2] == '=') && (b64[2] != '='))
-			return 0;
-		c[0] = ((b64[0] << 2) & (b64[1] >> 4));
+		c[0] = (b64[0] << 2) | (b64[1] >> 4);
 		putc(c[0], out);
 		if (count >1)
 		{
-			c[1] = ((b64[1] << 4) & (b64[2] >> 2));
+			c[1] = (b64[1] << 4) | (b64[2] >> 2);
 			putc(c[1], out);
 		}
 		if (count > 2)
 		{
-			c[2] = ((b64[2] << 6) & (b64[2]));
+			c[2] = (b64[2] << 6) | (b64[3]);
 			putc(c[2], out);
 		}
 		printf("%c %c %c\n", c[0], c[1], c[2]);
@@ -207,7 +198,7 @@ int checkmode(int argc, char *argv[], FILE **in, FILE **out, int *check)
 	i++;
 	if (argc > i)
 	{
-		if ((*out = fopen(argv[i + j], "w")) != NULL)
+		if (((*out = fopen(argv[i + j], "w")) != NULL) && (strcmp(argv[i + j - 1], argv[i + j])))
 			check[i] = 1;
 	}
 	checkall *= check[i];
