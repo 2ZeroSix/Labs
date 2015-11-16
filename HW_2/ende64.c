@@ -44,11 +44,11 @@ void encoder(FILE *in, FILE *out)
 {
 	printf("encoder\n");
 	char c[3], b64[4];
-	while ((c[0] = getc(in)) != EOF)
+	while (fread(&c[0], 1, 1, in) == 1)
 	{
 		b64[0] = b64sym((c[0] >> 2) & 0x3f);
 		putc(b64[0], out);
-		if ((c[1] = getc(in)) == EOF)
+		if (fread(&c[1], 1, 1, in) == 1)
 		{
 			b64[1] = b64sym((c[0] << 4) & 0x3f);
 			putc(b64[1], out);
@@ -58,7 +58,7 @@ void encoder(FILE *in, FILE *out)
 		}
 		b64[1] = b64sym(((c[0] << 4) | (c[1] >> 4)) & 0x3f);
 		putc(b64[1], out);
-		if ((c[2] = getc(in)) == EOF)
+		if (fread(&c[2], 1, 1, in) == 1);
 		{
 			b64[2] = b64sym((c[1] << 2) & 0x3f);
 			putc(b64[2], out);
@@ -171,41 +171,57 @@ char decoder(FILE *in, FILE *out, int im)
 
 int checkmode(int argc, char *argv[], FILE **in, FILE **out, int *check)
 {
-	int checkall = 1, i = 0, j = 0;
-	if(argc == 5)
+	int checkall = 1, i = 1, j = 0;
+	if (argc > 1)
 	{
-		j = 1;
-		if (strcmp(argv[i + j], "-i") == 0)
-			check[i] = 1;
-		checkall *= check[i];
+		if ((strlen(argv[1]) == 2) && (*argv[1] == '-'))
+		{
+			switch(*(argv[1] + 1))
+			{
+				case 'i':
+					check[0] = '1';
+					if(((argc > 2) ? *(argv[2] + 1) : 0 )  == 'd')
+						check[1] = 'd';
+					i = 3;
+					break;
+				case 'e':
+					check[1] = 'e';
+					i = 2;
+					break;
+				case 'd':
+					check[1] = 'd';
+					i = 2;
+					break;
+				default:
+					checkall = 0;
+					break;
+			}
+			if ((i > 1) && (argc >= i))
+			{
+				switch(check[1])
+				{
+					case 'e':
+						if((*in = fopen(argv[i], "rb")) != NULL)
+							check[2] = 1;
+						if(argc > i)
+							if((*out = fopen(argv[i + 1], "w")) != NULL)
+								check[3] = 1;
+						break;
+					case 'd':
+						if((*in = fopen(argv[i], "r")) != NULL)
+							check[2] = 1;
+						if(argc > i)
+							if((*out = fopen(argv[i + 1], "wb")) != NULL)
+								check[3] = 1;
+						break;
+					default:
+						break;
+				}
+			}
+		}
 	}
-	i++;
-	if(argc > i)
-	{
-		if (strcmp(argv[i + j], "-e") == 0)
-			check[i] = 'e';
-		if (strcmp(argv[i + j], "-d") == 0)
-			check[i] = 'd';
-	}
-	checkall *= check[i];
-	i++;
-	if (argc > i)
-	{
-		if ((*in = fopen(argv[i + j], "r")) != NULL)
-			check[i] = 1;
-	}
-	checkall *= check[i];
-	i++;
-	if (argc > i)
-	{
-		if (((*out = fopen(argv[i + j], "w")) != NULL) && (strcmp(argv[i + j - 1], argv[i + j])))
-			check[i] = 1;
-	}
-	checkall *= check[i];
-	if ((argc != 4) && (argc != 5))
-	{
+	if ((argc != 5) && (argc != 4))
 		checkall = 0;
-	}
 	return checkall;
 }
 
