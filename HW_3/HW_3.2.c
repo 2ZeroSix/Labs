@@ -21,8 +21,9 @@ void pushlist(student *new, student **Head)
 student poplist(student **Head)
 {
 	student *temp = *Head;
+	if (*Head != NULL)
 	*Head = (*Head)->next;
-	return *temp;
+	return temp;
 }
 
 int sortname(const void* std1, const void* std2)
@@ -69,32 +70,35 @@ void sortandprint(FILE *out1, FILE *out2, FILE *out3, student* studmas, int coun
 	return;
 }
 
-char rstudlist(FILE *in, FILE *out1, FILE *out2, FILE *out3, student *studmas)
+char rstudlist(FILE *in, FILE *out1, FILE *out2, FILE *out3, student **studmas)
 {
-	int i, count = 0;
+	int i;
 	char c;
-	student *Head = NULL;
+	student *temp, *stm, *Head = NULL;
 	while((c = getc(in)) != EOF)
 	{
 		i = 0;
-		student *temp;
+		student *newst;
 		do
 		{
-			temp->name[i++] = c;
+			newst->name[i++] = c;
 		} while (((c =getc(in)) != ' ') && (i < mnl));
 		if (c != ' ')
 			return 0;
-		fscanf(in, "%f %d", temp->avrate, temp->age);
-		pushlist(temp, &Head);
+		fscanf(in, "%f %d", newst->avrate, newst->age);
+		pushlist(newst, &Head);
 		getc(in);
-		count++;
 	}
-	studmas = (student**) malloc (sizeof(student*)*count);
-	for (i = 0; i < count; i++)
+	stm = *studmas = (student*) malloc (sizeof(student)*i);
+	i = 0;
+	while ((temp = poplist(Head))!= NULL)
 	{
-		studmas[i] = poplist(&Head);
+		stm[i].name = (*temp).name;
+		stm[i].age = temp->age;
+		stm[i].avrate = temp->avrate;
+		i++;
 	}
-	return count;
+	return i;
 }
 
 int open(FILE **in, FILE **out1, FILE **out2, FILE **out3)
