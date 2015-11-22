@@ -1,4 +1,6 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #define mnl 20
 
 typedef struct _student
@@ -6,32 +8,33 @@ typedef struct _student
 	char name[mnl];
 	float avrate;
 	int age;
-	student *next;
-} student;
+	struct _student *next;
+}student;
 
-void pushlist(student *new, student *Head)
+void pushlist(student *new, student **Head)
 {
-	new->next = Head;
+	new->next = *Head;
+	*Head = new;
 	return;
 }
 
-student* poplist(student **Head)
+student poplist(student **Head)
 {
 	student *temp = *Head;
-	*Head = *(Head)->next;
-	return *Head;
+	*Head = (*Head)->next;
+	return *temp;
 }
 
-int sortname(student *std1, student *std2)
+int sortname(const void* std1, const void* std2)
 {
-	return strcmp(std1->name, std2->name);
+	return strcmp(((student*)(std1))->name, ((student*)(std2))->name);
 }
 
-int sortavrate(student *std1, student *std2)
+int sortavrate(const void* std1, const void* std2)
 {
-	if(std1->avrate == std2->avrate)
+	if(((student*)(std1))->avrate == ((student*)(std2))->avrate)
 		return 0;
-	if(std1->avrate > std2->avrate)
+	if(((student*)(std1))->avrate > ((student*)(std2))->avrate)
 	{
 		return 1;
 	}
@@ -41,19 +44,35 @@ int sortavrate(student *std1, student *std2)
 	}
 }
 
-int sortage(student *std1, student *std2)
+int sortage(const void* std1, const void* std2)
 {
-	return (std1->age - std2->age);
+	return (((student*)(std1))->age - ((student*)(std2))->age);
 }
 
-char sortandprint(FILE *in, FILE *out1, FILE *out2, FILE *out3);
+void printfsort(student* studmas, FILE *out, int count)
 {
-	qsort
+	int i;
+	for (i = 0; i < count; i++)
+	{
+		fprintf(out, "%s %f %d\n", studmas[i].name, studmas[i].avrate, studmas[i].age);
+	}
 }
 
-char rstudlist(FILE *in, FILE *out1, FILE *out2, FILE *out3, student ***studmas)
+void sortandprint(FILE *out1, FILE *out2, FILE *out3, student* studmas, int count)
+{
+	qsort(studmas, count, sizeof(student*), sortname);
+	printfsort(studmas, out1, count);
+	qsort(studmas, count, sizeof(student*), sortavrate);
+	printfsort(studmas, out2, count);
+	qsort(studmas, count, sizeof(student*), sortage);
+	printfsort(studmas, out3, count);
+	return;
+}
+
+char rstudlist(FILE *in, FILE *out1, FILE *out2, FILE *out3, student *studmas)
 {
 	int i, count = 0;
+	char c;
 	student *Head = NULL;
 	while((c = getc(in)) != EOF)
 	{
@@ -62,24 +81,23 @@ char rstudlist(FILE *in, FILE *out1, FILE *out2, FILE *out3, student ***studmas)
 		do
 		{
 			temp->name[i++] = c;
-		} while (((c =getc(in)) != ' ') && (i < mnl);
+		} while (((c =getc(in)) != ' ') && (i < mnl));
 		if (c != ' ')
 			return 0;
-		scanf_s("%f", temp->avrate, sizeof(float));
-		scanf_s("%d", temp->age, sizeof(int));
-		pushlist(temp, Head);
+		fscanf(in, "%f %d", temp->avrate, temp->age);
+		pushlist(temp, &Head);
 		getc(in);
 		count++;
 	}
-	*studmas = (student**) malloc (sizeof(student*)*count);
+	studmas = (student**) malloc (sizeof(student*)*count);
 	for (i = 0; i < count; i++)
 	{
-		*studmas[i] = poplist(&Head);
+		studmas[i] = poplist(&Head);
 	}
 	return count;
 }
 
-int openoutput(FILE **in, FILE **out1, FILE **out2, FILE **out3)
+int open(FILE **in, FILE **out1, FILE **out2, FILE **out3)
 {
 	if((*in = fopen("in.txt", "r")) == NULL)
  		return 0;
@@ -94,14 +112,14 @@ int openoutput(FILE **in, FILE **out1, FILE **out2, FILE **out3)
 
 void main()
 {
-	FILE* in, out1, out2, out3;
-	student **studmas;
+	FILE *in, *out1, *out2, *out3;
+	student *studmas;
 	int count;
 	if(open(&in, &out1, &out2, &out3))
 	{
 		count = rstudlist(in, out1, out2, out3, &studmas);
-		sortandprint(in, out1, out2, out3, studmas, count);
-		free(studmass);
+		sortandprint(out1, out2, out3, studmas, count);
+		free(studmas);
 	}
 	else
 	{
