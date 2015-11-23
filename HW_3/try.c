@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 typedef struct _student
@@ -48,7 +49,7 @@ void main()
 	int i;
 	for(i = 0; i < 5; i++);
 	{
-		scanf_s("%s", arr[i].name, 20);
+		scanf("%s", arr[i].name);
 		arr[i].avrate = i;
 		arr[i].age = i;
 	}
