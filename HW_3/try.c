@@ -1,3 +1,5 @@
+#define _CRT_SECURE_NO_WARNINGS
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -34,12 +36,12 @@ int sortage(const void* std1, const void* std2)
 	return (((student*)(std1))->age - ((student*)(std2))->age);
 }
 
-void printfsort(student* studmas, FILE *out, int count)
+void printfsort(student* studmas, int count)
 {
 	int i;
 	for (i = 0; i < count; i++)
 	{
-		fprintf(out, "%s %f %d\n", studmas[i].name, studmas[i].avrate, studmas[i].age);
+		printf("%s %f %d\n", studmas[i].name, studmas[i].avrate, studmas[i].age);
 	}
 }
 
@@ -47,16 +49,15 @@ void main()
 {
 	student arr[5];
 	int i;
-	for(i = 0; i < 5; i++);
+	for(i = 0; i < 5; i++)
 	{
-		scanf("%s", arr[i].name);
-		arr[i].avrate = i;
-		arr[i].age = i;
+	scanf("%s %f %d", arr[i].name, &(arr[i].avrate), &(arr[i].age));
+	printf("%s %f %d", arr[i].name, arr[i].avrate, arr[i].age);
 	}
 	qsort(arr, 5, sizeof(student), sortname);
-	printfsort(arr, stdout, 5);
+	printfsort(arr, 5);
 	qsort(arr, 5, sizeof(student), sortavrate);
-	printfsort(arr, stdout, 5);
+	printfsort(arr, 5);
 	qsort(arr, 5, sizeof(student), sortage);
-	printfsort(arr, stdout, 5);
+	printfsort(arr, 5);
 }
