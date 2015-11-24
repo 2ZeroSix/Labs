@@ -77,7 +77,7 @@ void sortandprint(FILE *out1, FILE *out2, FILE *out3, student* studmas, int coun
 
 char rstudlist(FILE *in, FILE *out1, FILE *out2, FILE *out3, student **studmas)
 {
-	int i;
+	int i, count = 0;
 	char c;
 	student *temp, *stm, *Head = NULL;
 	while((c = getc(in)) != EOF)
@@ -95,17 +95,19 @@ char rstudlist(FILE *in, FILE *out1, FILE *out2, FILE *out3, student **studmas)
 		fscanf(in, "%f %d", &(newst->avrate), &(newst->age));
 		pushlist(newst, &Head);
 		getc(in);
+		printf("%d: %s %f %d\n", count, newst->name, newst->avrate, newst->age);
+		count++;
 	}
-	stm = *studmas = (student*) malloc (sizeof(student)*i);
-	i = 0;
+	stm = *studmas = (student*) malloc (sizeof(student)*count);
+	i = 1;
 	while ((temp = poplist(&Head))!= NULL)
 	{
-		strcpy(stm[i].name, temp->name);
-		stm[i].age = temp->age;
-		stm[i].avrate = temp->avrate;
+		strcpy(stm[count - i].name, temp->name);
+		stm[count - i].age = temp->age;
+		stm[count - i].avrate = temp->avrate;
 		i++;
 	}
-	return i;
+	return count;
 }
 
 int open(FILE **in, FILE **out1, FILE **out2, FILE **out3)
@@ -144,4 +146,5 @@ void main()
 		fclose(out2);
 	if (check > 3)
 		fclose(out3);
+	getc(stdin);
 }
