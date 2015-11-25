@@ -122,9 +122,9 @@ void* readin(int* count, char* type)
 		while((c = getchar()) != '\n');
 		for (i = 0; i < *count; i++)
 		{
-			arr[i] = (char*)malloc(sizeof(char*)*(*count));
+			arr[i] = (char*)malloc(sizeof(char)*(maxline + 1));
 			j = 0;
-			while ((j < 99) && ((c = getchar()) != '\n') && (c != EOF))
+			while ((j < maxline) && ((c = getchar()) != '\n') && (c != EOF))
 			{
 				arr[i][j++] = c; 
 			}
