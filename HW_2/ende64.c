@@ -103,6 +103,7 @@ unsigned char b64num(unsigned char sym)
 char decoder(FILE *in, FILE *out, int im)
 {
 	unsigned char c[3], b64[4], i, count;
+	int j = 0;
 	while((b64[0] = getc(in)) != EOF)
 	{
 		count = 3;
@@ -112,9 +113,13 @@ char decoder(FILE *in, FILE *out, int im)
 				b64[i] = getc(in);
 			if((b64[i] != '=') && (count == 3))
 			{
-				while(((b64[i] = b64num(b64[i])) > 0x3f) && (im == 1))
-					b64[i] = getc(in);
-				if ((b64[i] == EOF) || (b64[i] > 0x3f))
+				while((b64num(b64[i]) > 0x3f) && (im == 1) && (b64[i] != EOF))
+					{
+						printf("%d\n", j++);
+						b64[i] = getc(in);
+					}
+				b64[i] = b64num(b64[i]);
+				 if ((b64[i] == EOF) || (b64[i] > 0x3f))
 					return 0;
 			}
 			else if ((i > 1) && (b64[i] == '='))
@@ -134,7 +139,7 @@ char decoder(FILE *in, FILE *out, int im)
 		c[1] = (b64[1] << 4) | (b64[2] >> 2);
 		c[2] = (b64[2] << 6) | (b64[3]);
 		fwrite(c, sizeof(char), count, out);
-	} 
+	}
 }
 
 int checkmode(int argc, char *argv[], FILE **in, FILE **out, int *check)
@@ -174,7 +179,7 @@ int checkmode(int argc, char *argv[], FILE **in, FILE **out, int *check)
 
 void output(int *check, int argc, char *argv[])
 {
-	char *outcode[7] = {"wrong ignore mode:", "wrong encode/decode mode:", "wrong input file:", "wrong output file:", "wrong count of args", "COMPLETEED\nResult in output file", "ERROR\nInterface: <ignore mode> <decode/encode mode> <input file> <output file>\nIgnore modes:\n- <-i> - ignore nonBase64 symbols while decoding\n- empty - not ignore nonBase64 symbols\nDecode/encode modes:\n- <-d> - decode\n- <-e> - encode\nInput file\nOutput file\n"};
+	char *outcode[8] = {"wrong ignore mode:", "wrong encode/decode mode:", "wrong input file:", "wrong output file:", "wrong symbols in input file", "wrong count of args", "COMPLETE\nResult in output file", "ERROR\nInterface: <ignore mode> <decode/encode mode> <input file> <output file>\nIgnore modes:\n- <-i> - ignore nonBase64 symbols while decoding\n- empty - not ignore nonBase64 symbols\nDecode/encode modes:\n- <-d> - decode\n- <-e> - encode\nInput file\nOutput file\n"};
 	int i = (argc == 5) ? 0 : 1, j = (argc == 5) ? 1 : 0, checkall = 1;
 	for (i; i < sizecheck; i++)
 	{

@@ -12,7 +12,7 @@ void main(int argc, char **argv)
 		}
 		else
 		{
-			decoder(in, out, check[0]);
+			check[decode] = decoder(in, out, check[ignore]);
 		}
 		fclose(in);
 		fclose(out);

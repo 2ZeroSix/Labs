@@ -3,9 +3,11 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 #include <string.h>
+#define ignore 0
 #define mode 1
 #define encode 1
-#define sizecheck 4
+#define sizecheck 5
+#define decode 4
  
 /*
 translate to b64
