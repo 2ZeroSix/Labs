@@ -28,16 +28,16 @@ student* poplist(student **Head)
 	return temp;
 }
 
-int sortname(const student* std1, const student* std2)
+int sortname(const student** std1, const student** std2)
 {
-	return strcmp(std1->name, std2->name);
+	return strcmp((*std1)->name, (*std2)->name);
 }
 
-int sortavrate(const student* std1, const student* std2)
+int sortavrate(const student** std1, const student** std2)
 {
-	if (std1->avrate == std2->avrate)
+	if ((*std1)->avrate == (*std2)->avrate)
 		return 0;
-	if (std1->avrate > std2->avrate)
+	if ((*std1)->avrate > (*std2)->avrate)
 	{
 		return 1;
 	}
@@ -47,42 +47,42 @@ int sortavrate(const student* std1, const student* std2)
 	}
 }
 
-int sortage(const student* std1, const student* std2)
+int sortage(const student** std1, const student** std2)
 {
-	return (std1->age - std2->age);
+	return ((*std1)->age - (*std2)->age);
 }
 
-void printfsort(student* studmas, FILE *out, int count)
+void printfsort(student** studmas, FILE *out, int count)
 {
 	int i;
-	printf("output\n");
+	printf("output\n", count);
 	for (i = 0; i < count; i++)
 	{
-		fprintf(out, "%s %.2f %d\n", studmas[i].name, studmas[i].avrate, studmas[i].age);
+		fprintf(out, "%s %.2f %d\n", studmas[i]->name, studmas[i]->avrate, studmas[i]->age);
 	}
 }
 
-void sortandprint(FILE *out1, FILE *out2, FILE *out3, student* studmas, int count)
+void sortandprint(FILE *out1, FILE *out2, FILE *out3, student** studmas, int count)
 {
 	printf("sort and print in files\n");
-	qsort(studmas, count, sizeof(student), (int(*) (const void *, const void *)) sortname);
+	qsort(studmas, count, sizeof(student*), (int(*) (const void *, const void *)) sortname);
 	printf("\tfirst sort -> ");
 	printfsort(studmas, out1, count);
-	qsort(studmas, count, sizeof(student), (int(*) (const void *, const void *)) sortavrate);
+	qsort(studmas, count, sizeof(student*), (int(*) (const void *, const void *)) sortavrate);
 	printf("\tsecond sort -> ");
 	printfsort(studmas, out2, count);
-	qsort(studmas, count, sizeof(student), (int(*) (const void *, const void *)) sortage);
+	qsort(studmas, count, sizeof(student*), (int(*) (const void *, const void *)) sortage);
 	printf("\tthird sort -> ");
 	printfsort(studmas, out3, count);
 	printf("Complete sort\n");
 	return;
 }
 
-char rstudlist(FILE *in, FILE *out1, FILE *out2, FILE *out3, student **studmas)
+char rstudlist(FILE *in, FILE *out1, FILE *out2, FILE *out3, student ***studmas)
 {
 	int i, count = 0;
 	char c;
-	student *temp, *stm, *Head = NULL;
+	student *temp, **stm, *Head = NULL;
 	printf("reading input file:\n");
 	while((c = getc(in)) != EOF)
 	{
@@ -102,15 +102,12 @@ char rstudlist(FILE *in, FILE *out1, FILE *out2, FILE *out3, student **studmas)
 		printf("\t%d: %s %.2f %d\n", count, newst->name, newst->avrate, newst->age);
 		count++;
 	}
-	stm = *studmas = (student*) malloc ((sizeof(student)+sizeof(char)*20)*count);
+	stm = *studmas = (student**) malloc (sizeof(student*)*count);
 	i = 1;
 	while ((temp = poplist(&Head))!= NULL)
 	{
-		strcpy(stm[count - i].name, temp->name);
-		stm[count - i].age = temp->age;
-		stm[count - i].avrate = temp->avrate;
+		stm[count - i] = temp;
 		i++;
-		free(temp);
 	}
 	printf("\tCount: %d\nComplete read\n", count);
 	return count;
@@ -138,13 +135,16 @@ int open(FILE **in, FILE **out1, FILE **out2, FILE **out3)
 void main()
 {
 	FILE *in, *out1, *out2, *out3;
-	student *studmas;
+	student **studmas;
 	int count, check;
 	printf("Protocol:\n");
 	if((check = open(&in, &out1, &out2, &out3)) == 4)
 	{
+		int i;
 		count = rstudlist(in, out1, out2, out3, &studmas);
 		sortandprint(out1, out2, out3, studmas, count);
+		for (i = 0; i < count; i++)
+			free(studmas[i]);
 		free(studmas);
 		printf("Complete all\n");
 	}
