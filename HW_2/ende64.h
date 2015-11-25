@@ -1,11 +1,14 @@
 #ifndef _ENDE64_H_
 #define _ENDE64_H_
+#define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 #include <string.h>
-#define encode "-e"
-#define decode "-d"
-#define ignore "-i"
-
+#define ignore 0
+#define mode 1
+#define encode 1
+#define sizecheck 5
+#define decode 4
+ 
 /*
 translate to b64
 Input
@@ -16,15 +19,19 @@ Output
 -if error
 --'-'
 */
-char b64sym(char sym);
+unsigned char b64sym(unsigned char sym);
 
-/*translate to number of simb
+/*
+translate to number of simb
 Input
 -symb in b64 alphabet
 Output
--number of symb in b64 alphabet
+-if completed
+--number of symb in b64 alphabet
+-if error
+--'-'
 */
-char b64num(char sym);
+unsigned char b64num(unsigned char sym);
 
 /*
 Text to Base64
@@ -65,7 +72,7 @@ output
 -code <0> if arguments incorrect
 -code <any int > 0> if arguments correct
 */
-char checkmode(int argc, char *argv[], FILE **in, FILE **out, int *check);
+int checkmode(int argc, char *argv[], FILE **in, FILE **out, int *check);
 
 /*
 Print outcode
@@ -76,4 +83,4 @@ Input
 */
 void output(int *check, int argc, char *argv[]);
 
-#endif _ENDE64_H_
+#endif

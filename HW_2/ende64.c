@@ -1,6 +1,5 @@
 #include "ende64.h"
-
-char b64sym(char sym)
+unsigned char b64sym(unsigned char sym)
 {
 	if (sym <= 25)
 	{
@@ -10,70 +9,29 @@ char b64sym(char sym)
 	{
 		if (sym <= 51)
 		{
-			sym += 'a';
+			sym += 'a' - 26;
 		}
 		else
 		{
 			if (sym <= 61)
 			{
-				sym += '0';
+				sym += '0' - 52;
 			}
 			else
 			{
-				if (sym = 62)
+				if (sym == 62)
 				{
 					sym = '+';
 				}
 				else
 				{
-					if (sym = 63)
+					if (sym == 63)
 					{
 						sym = '/';
 					}
 					else
 					{
-						return '-';
-					}
-				}
-			}
-		}
-	}
-	return sym;
-}
-
-char b64num(char sym)
-{
-	if ((sym >= 'A') && (sym <= 'Z'))
-	{
-		sym -= 'A';
-	}
-	else
-	{
-		if ((sym >= 'a') && (sym >= 'z'))
-		{
-			sym -= 'a' - 25;
-		}
-		else
-		{
-			if ((sym >= '0') &&  (sym <= '9'))
-			{
-				sym -= '0' - 51;
-			}
-			else
-			{
-				if (sym == '+')
-				{
-					sym = 62;
-				}
-				else
-				{
-					if (sym == '-')
-					{
-						sym = 63;
-					}
-					else
-					{
-						return -1;
+						sym = 64;
 					}
 				}
 			}
@@ -84,105 +42,154 @@ char b64num(char sym)
 
 void encoder(FILE *in, FILE *out)
 {
-	char c[3];
-	while (c[0] = getc(in) != EOF)
+	unsigned char c[3], b64[5] = { 0 }, count, i;
+	printf("encoder\n");
+	while (count = fread(c, sizeof(char), 3, in))
 	{
-		putc(b64sym(c[0] >> 2), out);
-		if ((c[1] = getc(in)) == EOF)
-		{
-
-			putc(b64sym((c[0] << 4) & 0x3f), out);
-			putc('=', out);
-			putc('=', out);
-			return;
-		}
-		putc(b64sym(((c[0] << 4) | (c[1] >> 4)) & 0x3f), out);
-		if ((c[2] = getc(in)) == EOF)
-		{
-			putc(b64sym((c[1] << 2) & 0x3f), out);
-			putc('=', out);
-			return;
-		}
-		putc(b64sym(((c[1] << 2) | (c[2] >> 6)) & 0x3f), out);
-		putc(b64sym((c[2]) & 0x3f), out);
+		for(i = count; i < 3; i++)
+			c[i] = 0;
+		b64[0] = b64sym((c[0] >> 2) & 0x3f);
+		b64[1] = b64sym(((c[0] << 4) | (c[1] >> 4)) & 0x3f);
+		b64[2] = b64sym(((c[1] << 2) | (c[2] >> 6)) & 0x3f);
+		b64[3] = b64sym(c[2] & 0x3f);
+		for (i = count + 1; i < 4; i++)
+			b64[i] = '=';
+		fprintf(out, "%s", b64);
 	}
-	fclose(in);
-	fclose(out);
 	return;
+}
+
+unsigned char b64num(unsigned char sym)
+{
+	if ((sym >= 'A') && (sym <= 'Z'))
+	{
+		sym -= 'A';
+	}
+	else
+	{
+		if ((sym >= 'a') && (sym <= 'z'))
+		{
+			sym = sym - 'a' + 26;
+		}
+		else
+		{
+			if ((sym >= '0') &&  (sym <= '9'))
+			{
+				sym = sym - '0' + 52;
+			}
+			else
+			{
+				if (sym == '+')
+				{
+					sym = 62;
+				}
+				else
+				{
+					if (sym == '/')
+					{
+						sym = 63;
+					}
+					else
+					{
+						sym = 64;
+					}
+				}
+			}
+		}
+	}
+	return sym;
 }
 
 char decoder(FILE *in, FILE *out, int im)
 {
-	short i;
-	char b64[4], c[3];
-	while ((b64[0] = getc(in)) != EOF)
+	unsigned char c[3], b64[4], i, count;
+	int j = 0;
+	while((b64[0] = getc(in)) != EOF)
 	{
-		for (i = 1; i < 4; i++)
-		if (((b64[i] = getc(in)) > 0x3f) || (b64[i] < 0))
+		count = 3;
+		for (i = 0; i < 4; i++)
 		{
-			if (im)
+			if (i > 0)
+				b64[i] = getc(in);
+			if((b64[i] != '=') && (count == 3))
 			{
-				while (((b64[i] > 0x3f) || (b64[i] < 0)) && (b64[i] != EOF));
+				while((b64num(b64[i]) > 0x3f) && (im == 1) && (b64[i] != EOF))
+					{
+						printf("%d\n", j++);
+						b64[i] = getc(in);
+					}
+				b64[i] = b64num(b64[i]);
+				 if ((b64[i] == EOF) || (b64[i] > 0x3f))
+					return 0;
+			}
+			else if ((i > 1) && (b64[i] == '='))
+			{
+				count = (count == 3) ? i - 1 : 1;
+				b64[i] = 0;
 			}
 			else
 			{
 				return 0;
 			}
 		}
+		if (count < 3)
+			if (getc(in) != EOF)
+				return 0;
 		c[0] = (b64[0] << 2) | (b64[1] >> 4);
-		c[1] = (b64[1] << 4) | (b64[1] >> 2);
+		c[1] = (b64[1] << 4) | (b64[2] >> 2);
 		c[2] = (b64[2] << 6) | (b64[3]);
+		fwrite(c, sizeof(char), count, out);
 	}
-	fclose(in);
-	fclose(out);
-	return 1;
 }
 
-char checkmode(int argc, char *argv[], FILE **in, FILE **out, int *check)
+int checkmode(int argc, char *argv[], FILE **in, FILE **out, int *check)
 {
-	/*counter*/
-	short i = 1;
-	/*checker*/
-	int checkall = 1;
-	if ((argc == 4) || (argc == 5))
-	{
-		if (argc == 5)
+	int checkall = ((argc != 5) && (argc != 4)) ? 0 : 1, i = 1;
+	if (argc == 5)
 		{
-			if (strcmp(argv[i], ignore) == 0)
-				check[i - 1] = 1;
-			checkall *= check[(i++) - 1];
+		if (strcmp(argv[i], "-i") == 0)
+			check[0] = 1;
+		checkall *= check[0];
+		i++;
 		}
-		if (strcmp(argv[i], encode) == 0)
-			check[i - 1] = 'e';
-		if (strcmp(argv[i++], decode) == 0)
-			check[i - 2] = 'd';
-		checkall *= check[i - 2];
-		if (fopen_s(in, argv[i++], "r") != EINVAL)
-			check[i - 2] = 1;
-		checkall *= check[i - 2];
-		if (fopen_s(out, argv[i], "w") != EINVAL)
-			check[i - 1] = 1;
-		checkall *= check[i - 1];
-	}
-	else
+	if (argc > i)
 	{
-		return 0;
+		if (strcmp(argv[i], "-e") == 0)
+			check[1] = 1;
+		if (strcmp(argv[i], "-d") == 0)
+			check[1] = 2;
+		i++;
 	}
-
+	checkall *= check[1];
+	if (argc > i)
+	{
+		if (*in = fopen(argv[i], (check[1] == 1) ? "rb" : "r"))
+			check[2] = 1;
+		i++;
+	}
+	checkall *= check[2];
+	if (argc > i)
+	{
+		if (*out = fopen(argv[i], (check[1] == 1) ? "w" : "wb"))
+			check[3] = 1;
+	}
+	checkall *= check[3];
 	return checkall;
 }
 
 void output(int *check, int argc, char *argv[])
 {
-	char *outcode[6] = { "Wrong ignore mode: ", "Wrong decode/encode mode: ", "Wrong input file: ", "Wrong output file: ", "COMPLETEED\nResult in output file", "ERROR\nInterface: <ignore mode> <decode/encode mode> <input file> <output file>\nIgnore modes:\n- <-i> - ignore nonBase64 symbols while decoding\n- empty - not ignore nonBase64 symbols\nDecode/encode modes:\n- <-d> - decode\n- <-e> - encode\nInput file\nOutput file\n" };
-	short i = 0, j = 0;
-	int checkall = 1;
-	for (j = i = (argc == 5) ? 0 : 1; i < 5; i++)
+	char *outcode[8] = {"wrong ignore mode:", "wrong encode/decode mode:", "wrong input file:", "wrong output file:", "wrong symbols in input file", "wrong count of args", "COMPLETE\nResult in output file", "ERROR\nInterface: <ignore mode> <decode/encode mode> <input file> <output file>\nIgnore modes:\n- <-i> - ignore nonBase64 symbols while decoding\n- empty - not ignore nonBase64 symbols\nDecode/encode modes:\n- <-d> - decode\n- <-e> - encode\nInput file\nOutput file\n"};
+	int i = (argc == 5) ? 0 : 1, j = (argc == 5) ? 1 : 0, checkall = 1;
+	for (i; i < sizecheck; i++)
 	{
 		if (check[i] == 0)
-			printf("%s %s\n", outcode[i], (argc > i) ? argv[i + 1 - j] : "<none>");
+			printf("%s %s\n", outcode[i], (argc > (i + j)) ? argv[i + j] : "<none>");
 		checkall *= check[i];
 	}
+	if ((argc != 4) && (argc != 5))
+		printf("%s %d\n", outcode[i], argc);
+	i++;
 	if (checkall)
 	{
 		printf("%s\n", outcode[i]);
