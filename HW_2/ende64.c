@@ -1,6 +1,8 @@
 #include "ende64.h"
 char b64sym(char sym)
 {
+	if (sym >= 64)
+		printf("wrong\n");
 	if (sym <= 25)
 	{
 		sym += 'A';
@@ -31,7 +33,7 @@ char b64sym(char sym)
 					}
 					else
 					{
-						return '-';
+						sym = 64;
 					}
 				}
 			}
@@ -43,33 +45,18 @@ char b64sym(char sym)
 void encoder(FILE *in, FILE *out)
 {
 	printf("encoder\n");
-	char c[3], b64[4];
-	while (fread(&c[0], 1, 1, in) == 1)
+	char c[3], b64[5] = { 0 }, count, i;
+	while ((count = fread(c, sizeof(char), 3, in)) > 0)
 	{
+		for(i = count; i < 3; i++)
+			c[i] = 0;
 		b64[0] = b64sym((c[0] >> 2) & 0x3f);
-		putc(b64[0], out);
-		if (fread(&c[1], 1, 1, in) == 1)
-		{
-			b64[1] = b64sym((c[0] << 4) & 0x3f);
-			putc(b64[1], out);
-			putc('=', out);
-			putc('=', out);
-			return;
-		}
 		b64[1] = b64sym(((c[0] << 4) | (c[1] >> 4)) & 0x3f);
-		putc(b64[1], out);
-		if (fread(&c[2], 1, 1, in) == 1);
-		{
-			b64[2] = b64sym((c[1] << 2) & 0x3f);
-			putc(b64[2], out);
-			putc('=', out);
-			return;
-		}
 		b64[2] = b64sym(((c[1] << 2) | (c[2] >> 6)) & 0x3f);
 		b64[3] = b64sym(c[2] & 0x3f);
-		putc(b64[2], out);
-		putc(b64[3], out);
-		printf("%c %c %c %c\n", b64[0], b64[1], b64[2], b64[3]);
+		for (i = count + 1; i < 4; i++)
+			b64[i] = '=';
+		fprintf(out, "%s", b64);
 	}
 	return;
 }
@@ -106,122 +93,86 @@ char b64num(char sym)
 					}
 					else
 					{
-						return '-';
+						sym = 64;
 					}
 				}
 			}
 		}
 	}
+	if (sym >= 64)
+		printf("wrong\n");
 	return sym;
 }
 
 char decoder(FILE *in, FILE *out, int im)
 {
-	int i, count;
-	char c[3], b64[4];
-	while ((b64[0] = getc(in)) != EOF)
+	char c[3], b64[4], i, count;
+	while((b64[0] = getc(in)) != EOF)
 	{
 		count = 3;
 		for (i = 0; i < 4; i++)
 		{
 			if (i > 0)
 				b64[i] = getc(in);
-			if (b64[i] == EOF)
-				return 0;
-			if (b64[i] != '=')
+			if((b64[i] != '=') && (count == 3))
 			{
-				if (count == 1)
+				while(((b64[i] = b64num(b64[i])) > 0x3f) && (im == 1))
+					b64[i] = getc(in);
+				if ((b64[i] == EOF) || (b64[i] > 0x3f))
 					return 0;
-				if (im == 1)
-				{
-					while(b64num(b64[i]) == '-')
-						b64[i] = getc(in);
-				}
-				if ((b64[i] = b64num(b64[i])) == '-')
-					return 0;
+			}
+			else if ((i > 1) && (b64[i] == '='))
+			{
+				count = (count == 3) ? i - 1 : 1;
+				b64[i] = 0;
 			}
 			else
 			{
-				if (i < 2)
-					return 0;
-				if (i == 2)
-					count = 1;
-				if (i == 3)
-				{
-					count = 2;
-				}
-				b64[i] = 0;
+				return 0;
 			}
 		}
+		if (count < 3)
+			if (getc(in) != EOF) //check if it works
+				return 0;
 		c[0] = (b64[0] << 2) | (b64[1] >> 4);
-		putc(c[0], out);
-		if (count >1)
-		{
-			c[1] = (b64[1] << 4) | (b64[2] >> 2);
-			putc(c[1], out);
-		}
-		if (count > 2)
-		{
-			c[2] = (b64[2] << 6) | (b64[3]);
-			putc(c[2], out);
-		}
-		printf("%c %c %c\n", c[0], c[1], c[2]);
-	}
+		c[1] = (b64[1] << 4) | (b64[2] >> 2);
+		c[2] = (b64[2] << 6) | (b64[3]);
+		fwrite(c, sizeof(char), count, out);
+	} 
 }
 
 int checkmode(int argc, char *argv[], FILE **in, FILE **out, int *check)
 {
-	int checkall = 1, i = 1, j = 0;
-	if (argc > 1)
-	{
-		if ((strlen(argv[1]) == 2) && (*argv[1] == '-'))
+	int checkall = ((argc != 5) && (argc != 4)) ? 0 : 1, i = 1;
+	if (argc == 5)
 		{
-			switch(*(argv[1] + 1))
-			{
-				case 'i':
-					check[0] = '1';
-					if(((argc > 2) ? *(argv[2] + 1) : 0 )  == 'd')
-						check[1] = 'd';
-					i = 3;
-					break;
-				case 'e':
-					check[1] = 'e';
-					i = 2;
-					break;
-				case 'd':
-					check[1] = 'd';
-					i = 2;
-					break;
-				default:
-					checkall = 0;
-					break;
-			}
-			if ((i > 1) && (argc >= i))
-			{
-				switch(check[1])
-				{
-					case 'e':
-						if((*in = fopen(argv[i], "rb")) != NULL)
-							check[2] = 1;
-						if(argc > i)
-							if((*out = fopen(argv[i + 1], "w")) != NULL)
-								check[3] = 1;
-						break;
-					case 'd':
-						if((*in = fopen(argv[i], "r")) != NULL)
-							check[2] = 1;
-						if(argc > i)
-							if((*out = fopen(argv[i + 1], "wb")) != NULL)
-								check[3] = 1;
-						break;
-					default:
-						break;
-				}
-			}
+		if (strcmp(argv[i], "-i") == 0)
+			check[0] = 1;
+		checkall *= check[0];
+		i++;
 		}
+	if (argc > i)
+	{
+		if (strcmp(argv[i], "-e") == 0)
+			check[1] = 1;
+		if (strcmp(argv[i], "-d") == 0)
+			check[1] = 2;
+		i++;
 	}
-	if ((argc != 5) && (argc != 4))
-		checkall = 0;
+	checkall *= check[1];
+	if (argc > i)
+	{
+		if (*in = fopen(argv[i], (check[1] == 1) ? "rb" : "r"))
+			check[2] = 1;
+		i++;
+	}
+	checkall *= check[2];
+	if (argc > i)
+	{
+		if (*out = fopen(argv[i], (check[1] == 1) ? "w" : "wb"))
+			check[3] = 1;
+	}
+	checkall *= check[3];
 	return checkall;
 }
 
@@ -233,7 +184,7 @@ void output(int *check, int argc, char *argv[])
 	{
 		if (check[i] == 0)
 			printf("%s %s\n", outcode[i], (argc > (i + j)) ? argv[i + j] : "<none>");
-		checkall = check[i];
+		checkall *= check[i];
 	}
 	if ((argc != 4) && (argc != 5))
 		printf("%s %d\n", outcode[i], argc);
