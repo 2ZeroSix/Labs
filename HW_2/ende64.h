@@ -6,7 +6,7 @@
 #define mode 1
 #define encode 1
 #define sizecheck 4
-
+ 
 /*
 translate to b64
 Input
@@ -17,7 +17,7 @@ Output
 -if error
 --'-'
 */
-char b64sym(char sym);
+unsigned char b64sym(unsigned char sym);
 
 /*
 translate to number of simb
@@ -29,7 +29,7 @@ Output
 -if error
 --'-'
 */
-char b64num(char sym);
+unsigned char b64num(unsigned char sym);
 
 /*
 Text to Base64

@@ -1,8 +1,6 @@
 #include "ende64.h"
-char b64sym(char sym)
+unsigned char b64sym(unsigned char sym)
 {
-	if (sym >= 64)
-		printf("wrong\n");
 	if (sym <= 25)
 	{
 		sym += 'A';
@@ -44,9 +42,9 @@ char b64sym(char sym)
 
 void encoder(FILE *in, FILE *out)
 {
+	unsigned char c[3], b64[5] = { 0 }, count, i;
 	printf("encoder\n");
-	char c[3], b64[5] = { 0 }, count, i;
-	while ((count = fread(c, sizeof(char), 3, in)) > 0)
+	while (count = fread(c, sizeof(char), 3, in))
 	{
 		for(i = count; i < 3; i++)
 			c[i] = 0;
@@ -61,7 +59,7 @@ void encoder(FILE *in, FILE *out)
 	return;
 }
 
-char b64num(char sym)
+unsigned char b64num(unsigned char sym)
 {
 	if ((sym >= 'A') && (sym <= 'Z'))
 	{
@@ -99,14 +97,12 @@ char b64num(char sym)
 			}
 		}
 	}
-	if (sym >= 64)
-		printf("wrong\n");
 	return sym;
 }
 
 char decoder(FILE *in, FILE *out, int im)
 {
-	char c[3], b64[4], i, count;
+	unsigned char c[3], b64[4], i, count;
 	while((b64[0] = getc(in)) != EOF)
 	{
 		count = 3;
@@ -132,7 +128,7 @@ char decoder(FILE *in, FILE *out, int im)
 			}
 		}
 		if (count < 3)
-			if (getc(in) != EOF) //check if it works
+			if (getc(in) != EOF)
 				return 0;
 		c[0] = (b64[0] << 2) | (b64[1] >> 4);
 		c[1] = (b64[1] << 4) | (b64[2] >> 2);
