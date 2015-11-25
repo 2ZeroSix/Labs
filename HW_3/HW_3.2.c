@@ -52,6 +52,13 @@ int sortage(const student** std1, const student** std2)
 	return ((*std1)->age - (*std2)->age);
 }
 
+/*
+Print in file array of pointers to student
+Input
+-array of pointers to student
+-output file
+-count of elements
+*/
 void printfsort(student** studmas, FILE *out, int count)
 {
 	int i;
@@ -62,6 +69,12 @@ void printfsort(student** studmas, FILE *out, int count)
 	}
 }
 
+/*
+sort array of pointers to student by three ways and print every result of sort
+Input
+-3 output files
+-array of pointers to student
+-count of elements*/
 void sortandprint(FILE *out1, FILE *out2, FILE *out3, student** studmas, int count)
 {
 	printf("sort and print in files\n");
@@ -78,7 +91,17 @@ void sortandprint(FILE *out1, FILE *out2, FILE *out3, student** studmas, int cou
 	return;
 }
 
-char rstudlist(FILE *in, FILE *out1, FILE *out2, FILE *out3, student ***studmas)
+/*
+read input file into list of student and save pointers to the elements in the array
+Input
+-input file
+-pointer to the array of pointers of student
+Output
+-if completed
+--count of elements
+-if FAILED
+--<0>*/
+char rstudlist(FILE *in, student ***studmas)
 {
 	int i, count = 0;
 	char c;
@@ -113,6 +136,13 @@ char rstudlist(FILE *in, FILE *out1, FILE *out2, FILE *out3, student ***studmas)
 	return count;
 }
 
+
+/*
+open files with check
+Input
+-input file
+-3 output files
+*/
 int open(FILE **in, FILE **out1, FILE **out2, FILE **out3)
 {
 	printf("Open files\n");
@@ -141,7 +171,7 @@ void main()
 	if((check = open(&in, &out1, &out2, &out3)) == 4)
 	{
 		int i;
-		count = rstudlist(in, out1, out2, out3, &studmas);
+		count = rstudlist(in, &studmas);
 		sortandprint(out1, out2, out3, studmas, count);
 		for (i = 0; i < count; i++)
 			free(studmas[i]);
@@ -150,7 +180,7 @@ void main()
 	}
 	else
 	{
-		printf("ERROR:");
+		printf("ERROR!");
 	}
 	if (check > 0)
 		fclose(in);

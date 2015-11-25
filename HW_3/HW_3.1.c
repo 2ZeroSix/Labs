@@ -1,88 +1,157 @@
+#define _CRT_SECURE_NO_WARNINGS
+#define maxline 100
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
-void sortandprint(int *arr, FILE *out1, FILE *out2, FILE *out3, char *type)
+//sorts for qsort
+int sortinti(const int* num1, const int* num2)
 {
-	printf("sortandprint\n");
-	if (strcmp(type, "int"))
-	{
+	return *num1 - *num2;
+}
 
+int sortstri(const char** str1, const char** str2)
+{
+	return strcmp(*str1, *str2);
+}
+
+int sortintd(const int* num1, const int* num2)
+{
+	return *num2 - *num1;
+}
+
+int sortstrd(const char** str1, const char** str2)
+{
+	return strcmp(*str2, *str1);
+}
+
+/*
+printout array
+Input
+-array
+-type of array('i' for integer, other for string
+-count of elements
+*/
+void printout(void* arr, char type, int count)
+{
+	int i;
+	printf("Printout:\n");
+	if (type == 'i')
+	{
+		for (i = 0; i < count; i++)
+		{
+			printf("%d: %d\n", i, ((int*)arr)[i]);
+		}
 	}
-	else //if str
+	else
 	{
-
+		for(i = 0; i < count; i++)
+		{
+			printf("%d: %s\n", i, ((char**)arr)[i]);
+		}
 	}
 	return;
 }
+
 /*
-open files with check
-INPUT
-- pointer on files
--- in
--- out1
--- out2
-OUTPUT
--if completed
---<1>
--else
---<0>
+sort array
+Input
+-array
+-type of array
+-count of elements
 */
-int open(FILE **in, FILE **out1, FILE **out2)
+void sort(void* arr, char* type, int count)
 {
-	printf("open\n");
-	if(fopen_s(in, "in.txt", "r") == NULL)
-		return 0;
-	if(fopen_s(out1, "out1.txt", "w") == NULL)
-		return 0;
-	if(fopen_s(out2, "out2.txt", "w") == NULL)
-		return 0;
-	return 1;
+	printf("Sort:\ntype of arr: %s\nType of sort: %s\nCount of elements: %d\n", (type[0] == 'i') ? "integer" : "string", (type[1] == 'i') ? "increase" : "decrease", count, (type[0] == 'i') ? "integer" : "strings");
+	if(type[0] == 'i')
+	{
+		qsort(arr, count, sizeof(int), (int(*) (const void*, const void*)) ((type[1] == 'i') ? sortinti : sortintd));
+	}
+	else
+	{
+		qsort(arr, count, sizeof(char*), (int(*) (const void*, const void*)) ((type[1] == 'i') ? sortstri : sortstrd));
+	}
+	return;
 }
 
-int readin(FILE *in, void *arr[], char *type)
+/*
+Read input information
+Input
+-pointer to variable for count of elements
+-pointer to first element of array for type of array and type of sort
+Output
+-pointer to the first element of array (void*)
+*/
+void* readin(int* count, char* type)
 {
-	int sizearr;
+	//counter
 	int i;
+	//temp
+	char c;
 	printf("readin\n");
-	fscanf(in, "%s", type, 3)
-	fscanf(in, "%d", sizearr, sizeof(int));
-	if (strcmp(type,"int") == 0)
+	printf("print count of elements: ");
+	while(((c = getchar()) != '\n') && (c != EOF))
+		*count = (*count) * 10 + c - '0';
+	printf("\nIncrease or decrease? ('i'... for increase, other for decrease: ");
+	type[1] = getchar();
+	while(((c = getchar()) != '\n') && (c != EOF));
+	printf("\nWhich type of array ('i'... for integer, other for string)): ");
+	if((type[0] = getchar()) == 'i')
 	{
-		*arr = (int*) malloc (sizearr*sizeof(int));
-		for (i = 0; i < sizearr; i++)
+		int* arr = (int*)malloc((*count)*sizeof(int));
+		while((c = getchar()) != '\n');
+		printf("\nprint elements\n");
+		for (i = 0; i < *count; i++)
 		{
-			fscanf(in, "%d", *arr[i])
+			while(((c = getchar()) < '0') || (c > '9'));
+			arr[i] = 0;
+			while((c >= '0') && (c <= '9'))
+			{
+				arr[i] = arr[i]*10 + c -'0';
+				c = getchar();
+			}
 		}
+		return (void*)arr;
 	}
 	else
 	{
-	if (strcmp(type,"str") == 0)
-	{
-		int maxstrsize;
-		arr = (char**) malloc (sizearr * sizeof(char*));
-		fscanf(in, "%d", maxstrsize);
-		for (i = 0; i < sizearr, i++)
+		//counter
+		int j;
+		char** arr = (char**)malloc(sizeof(char*)*(*count));
+		printf("\nprint elements\n");
+		while((c = getchar()) != '\n');
+		for (i = 0; i < *count; i++)
 		{
-			arr[i] = (char*) malloc (maxstrsize*sizeof(char));
-			fscanfs(in, "%s", arr[i]);
+			arr[i] = (char*)malloc(sizeof(char*)*(*count));
+			j = 0;
+			while ((j < 99) && ((c = getchar()) != '\n') && (c != EOF))
+			{
+				arr[i][j++] = c; 
+			}
+			arr[i][j] = '\0';
 		}
+		return (void*)arr;
 	}
-	else
-	{
-		return 0;
-	}
-	}
-	return sizearr;
 }
+
 void main()
 {
-	void **arr;
-	char type[4];
-	FILE* in, out1, out2;
-	if(open(&in, &out1, &out2))
-	{	
-		if((sizearr = readin(in, arr, type)) == 0)
-			return;
-		sortandprint(arr, out1, out2, type);
+	//count of elements
+	int count = 0;
+	//type of array and type of sort
+	char type[2];
+	//array
+	void* arr = readin(&count, type);
+	sort(arr, type, count);
+	printout(arr, type[0], count);
+	if (type[0] != 'i')
+	{
+		int i;
+		for (i = 0; i < count; i++)
+			free(((char**)arr)[i]);
 	}
-	return
+	free(arr);
+	printf("Press enter\n");
+	getchar();
+	return;
 }
