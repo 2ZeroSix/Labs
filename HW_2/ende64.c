@@ -102,25 +102,27 @@ unsigned char b64num(unsigned char sym)
 
 char decoder(FILE *in, FILE *out, int im)
 {
-	unsigned char c[3], b64[4], i, count;
+	unsigned char c[3], b64[4], i, count = 3;
 	int j = 0;
-	while((b64[0] = getc(in)) != EOF)
+	while(((signed char)(b64[0] = getc(in))) != EOF)
 	{
-		count = 3;
 		for (i = 0; i < 4; i++)
 		{
 			if (i > 0)
 				b64[i] = getc(in);
 			if((b64[i] != '=') && (count == 3))
 			{
-				while((b64num(b64[i]) > 0x3f) && (im == 1) && (b64[i] != EOF))
+				while((b64num(b64[i]) > 0x3f) && (im == 1) && ((signed char)b64[i] != EOF))
 					{
-						printf("%d\n", j++);
+						// printf("%d\n", b64[i]);
 						b64[i] = getc(in);
 					}
-				b64[i] = b64num(b64[i]);
-				 if ((b64[i] == EOF) || (b64[i] > 0x3f))
+				if (b64num(b64[i]) > 0x3f)
+				{
+					printf("%s, %d, %d\n", ((signed char)b64[i] == EOF) ? "EOF" : "0x3f", (signed char)b64[i], i + j);
 					return 0;
+				}
+				b64[i] = b64num(b64[i]);
 			}
 			else if ((i > 1) && (b64[i] == '='))
 			{
@@ -129,17 +131,24 @@ char decoder(FILE *in, FILE *out, int im)
 			}
 			else
 			{
+				printf("wrong2\n");
 				return 0;
 			}
 		}
 		if (count < 3)
 			if (getc(in) != EOF)
+			{
+				printf("wrong3\n");
 				return 0;
+			}
 		c[0] = (b64[0] << 2) | (b64[1] >> 4);
 		c[1] = (b64[1] << 4) | (b64[2] >> 2);
 		c[2] = (b64[2] << 6) | (b64[3]);
 		fwrite(c, sizeof(char), count, out);
+		j+=4;
 	}
+	printf("decoded\n");
+	return 1;
 }
 
 int checkmode(int argc, char *argv[], FILE **in, FILE **out, int *check)
@@ -155,7 +164,7 @@ int checkmode(int argc, char *argv[], FILE **in, FILE **out, int *check)
 	if (argc > i)
 	{
 		if (strcmp(argv[i], "-e") == 0)
-			check[1] = 1;
+			check[4] = check[1] = 1;
 		if (strcmp(argv[i], "-d") == 0)
 			check[1] = 2;
 		i++;
