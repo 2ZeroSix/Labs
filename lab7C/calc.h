@@ -1,5 +1,11 @@
 #ifndef _CALC_H_
 #define _CALC_H_
+
+
+#include "stack.h"
+#include "math.h"
+
+
 //operators codes
 //numeric operator
 #define numeric 0
@@ -7,32 +13,35 @@
 #define obr 1
 //close bracket
 #define cbr 2
+//4 priority
 //plus
 #define pls 3
 //minus
 #define mns 4
+//3 priority
 //multiplication
 #define mlt 5
 //division
 #define dvs 6
-//logarithm 10
-#define lgrt 7
-//logarithm e
-#define lgre 8
-//tangent
-#define tng 9
-//cotangent
-#define ctng 10
-//sinus
-#define sns 11
-//cosine
-#define csn 12
+//2 priority
 //grade
-#define grd 13
+#define grd 7
+//1 priority
+//logarithm 10
+#define lgrt 8
+//logarithm e
+#define lgre 9
+//tangent
+#define tng 10
+//cotangent
+#define ctng 11
+//sinus
+#define sns 12
+//cosine
+#define csn 13
 //error operator
 #define errorop 14
 
-#include "stack.h"
 
 /*
 put exp element in expression (read from stdin if it need) or stack with check

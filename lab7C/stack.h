@@ -4,7 +4,7 @@
 #define typeexp double
 
 //stack for expression
-struct _exp
+typedef struct _exp
 {
 	char op;
 	typeexp num;
@@ -16,6 +16,8 @@ exp* popexp(exp** head);
 
 void pushexp(exp** head, exp* push);
 
-void freeexp(exp **head);
+void freeexp(exp** head);
+
+void revertexp(exp** head);
 
 #endif
