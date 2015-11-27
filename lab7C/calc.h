@@ -55,7 +55,7 @@ Output
 -if FAILED
 --poiter to struct _exp with code of bad operator of expression
 */
-exp* putexp(char* c, exp** head, exp** stack)
+expr* putexp(char* c, expr** head, expr** stack);
 
 /*
 read expression in infix notation and transfer to postfix notation
@@ -67,7 +67,7 @@ Output
 -if FAILED
 --<0>
 */
-char readexp(exp** head);
+char readexp(expr** head);
 
 /*
 calculate expression in postfix notation
@@ -79,7 +79,7 @@ Output
 -if division by zero
 --NULL pointer
 */
-typeexp* calcexp(exp* head)
+typeexp* calcexp(expr* head);
 
 
 #endif

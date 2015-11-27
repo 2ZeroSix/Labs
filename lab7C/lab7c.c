@@ -5,7 +5,7 @@
 
 void main()
 {
-	exp* head;
+	expr* head;
 	typeexp* result;
 	if (readexp(&head))
 	{

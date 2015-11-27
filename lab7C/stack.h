@@ -2,22 +2,23 @@
 #define _STACK_H_
 //type of exp
 #define typeexp double
+#include <stdio.h>
+#include <stdlib.h>
 
 //stack for expression
-typedef struct _exp
-{
+typedef struct _expr{
 	char op;
-	typeexp num;
-	struct _exp* next;
-}exp;
+	double num;
+	struct _expr* next;
+}expr;
 
 
-exp* popexp(exp** head);
+expr* popexp(expr** head);
 
-void pushexp(exp** head, exp* push);
+void pushexp(expr** head, expr* push);
 
-void freeexp(exp** head);
+void freeexp(expr** head);
 
-void revertexp(exp** head);
+void revertexp(expr** head);
 
 #endif

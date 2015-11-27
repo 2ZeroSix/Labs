@@ -1,9 +1,9 @@
 #include "stack.h"
 
 
-exp* popexp(exp** head)
+expr* popexp(expr** head)
 {
-	exp* temp = NULL;
+	expr* temp = NULL;
 	if (head)
 	{
 		temp = *head;
@@ -13,30 +13,30 @@ exp* popexp(exp** head)
 	return temp;
 }
 
-void pushexp(exp** head, exp* push)
+void pushexp(expr** head, expr* push)
 {
 	if (push && head)
 	{
 		push->next = *head;
-		(*head) = push 
+		(*head) = push; 
 	}
 	return;
 }
 
-void freeexp(exp** head)
+void freeexp(expr** head)
 {
-	exp* temp;
-	while(head)
+	expr* temp;
+	while(head && (*head))
 	{
 		temp = (*head);
-		(*head) = (head->next)
+		(*head) = (*head)->next;
 		free(temp);
 	}
 }
 
-void revertexp(exp** head)
+void revertexp(expr** head)
 {
-	exp *cur = NULL, *prev1 = NULL, *prev2 = NULL;
+	expr *cur = NULL, *prev1 = NULL, *prev2 = NULL;
 	if(*head)
 		cur = *head;
 	while(cur)

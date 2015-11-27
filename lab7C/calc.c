@@ -1,17 +1,17 @@
 #include "calc.h"
 
-exp* putexp(char* c, exp** head, exp** stack)
+expr* putexp(char* c, expr** head, expr** stack)
 {
 	static char lastop = errorop;
 	if ((*c >= '0') && (*c <= 9))
 	{
-		exp* temp = (exp*)malloc(sizeof(exp));
-		typetemp num = 0;
+		expr* temp = (expr*)malloc(sizeof(expr));
+		typeexp num = 0;
 		do
 		{
 			num = num * 10 + (*c) - '0';
-		} while (((c = getchar()) >= 0) && (c <= 9)); 
-		if ((c == '.') || (c == ','))
+		} while (((*c = getchar()) >= 0) && (*c <= 9)); 
+		if ((*c == '.') || (*c == ','))
 		{
 			*c = getchar();
 			do
@@ -27,12 +27,13 @@ exp* putexp(char* c, exp** head, exp** stack)
 	}
 	else
 	{
-		exp* temp = (exp*)malloc(sizeof(exp));
+		char tc;
+		expr* temp = (expr*)malloc(sizeof(expr));
 		switch(*c)
 		{
 			case '(':
 				temp->op = obr;
-				if((lastop == cbr) || (lastop == numeric)))
+				if((lastop == cbr) || (lastop == numeric))
 					return temp;
 				break;
 			case ')':
@@ -55,14 +56,14 @@ exp* putexp(char* c, exp** head, exp** stack)
 				temp->op = pls;
 				if((lastop == errorop) || (lastop == obr) || (lastop >= pls))
 					return temp;
-				while((*stack != NULL) && ((*stack)->op => pls))
+				while((*stack != NULL) && (((*stack)->op) => pls))
 					pushexp(head, popexp(stack));
 				break;
 			case '-':
 				temp->op = mns;
 				if((lastop == errorop) || (lastop == obr) || (lastop >= pls))
 					return temp;
-				while((*stack != NULL) && ((*stack)->op => pls))
+				while((*stack != NULL) && (((*stack)->op) => pls))
 					pushexp(head, popexp(stack));
 				break;
 			case '*':
@@ -80,7 +81,7 @@ exp* putexp(char* c, exp** head, exp** stack)
 					pushexp(head, popexp(stack));
 				break;
 			case 'l':
-				temp->errorop;
+				temp->op = errorop;
 				if(((tc = getchar()) == 'o') && ((tc = getchar()) == 'g'))
 				{
 					temp->op = lgrt;
@@ -136,9 +137,9 @@ exp* putexp(char* c, exp** head, exp** stack)
 	return NULL;
 }
 
-char readexp(exp** head)
+char readexp(expr** head)
 {
-	exp *stack = NULL, *temp = NULL;
+	expr *stack = NULL, *temp = NULL;
 	char c = getchar();
 	*head = NULL; 
 	while (((c != EOF) && (c != '\n'))
@@ -159,9 +160,9 @@ char readexp(exp** head)
 	return 1;
 }
 
-char calcexp(exp* head)
+char calcexp(expr* head)
 {
-	exp *stack = NULL, *temp[2], *cur;
+	expr *stack = NULL, *temp[2], *cur;
 	while(head)
 	{
 		cur = popexp(&head);
