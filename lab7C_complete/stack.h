@@ -1,8 +1,9 @@
 #ifndef _STACK_H_
 #define _STACK_H_
-//type of exp
-#define typeexp int			//change only both
-#define typeexpname "int"
+//type of exp (legal types: long long, double)
+//change only both
+#define typeexp double
+#define typeexpnum  0//long long = 1; double = 0;
 
 #include <stdio.h>
 #include <stdlib.h>

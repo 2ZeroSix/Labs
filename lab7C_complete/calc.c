@@ -7,6 +7,9 @@ expr* putexp(char* c, expr** head, expr** stack)
 	if ((*c >= '0') && (*c <= '9'))
 	{
 		expr* temp = (expr*)malloc(sizeof(expr));
+		temp->op = numeric;
+		if (lastop == cbr)
+			return temp;
 		typeexp num = 0;
 		do
 		{
@@ -14,17 +17,17 @@ expr* putexp(char* c, expr** head, expr** stack)
 		} while (((*c = getchar()) >= '0') && (*c <= '9')); 
 		if ((*c == '.') || (*c == ','))
 		{
-			if(strcmp(typeexpname, "double") && strcmp(typeexpname, "double"))
-				return temp; // для целых
+			typeexp ten = 10;
+			if(typeexpnum)	// if dot illegal
+				return temp; 
 			*c = getchar();
 			do
 			{
-				int ten = 10;
 				num += ((*c) - '0') / ten;
 				ten *= 10;
 			} while (((*c = getchar()) >= '0') && (*c <= '9'));
 		}
-		lastop = temp->op = numeric;
+		lastop = numeric;
 		temp->num = num;
 		pushexp(head, temp);
 	}
@@ -174,7 +177,7 @@ typeexp* calcexp(expr** head)
 	expr *stack = NULL, **temp = (expr**)malloc(sizeof(expr*)*2), *cur;
 	while(*head)
 	{
-		cur = popexp(head); // добавитьосвобождение структур со знаками операции
+		cur = popexp(head); // добавить освобождение структур со знаками операции
 		switch (cur->op)
 		{
 			case numeric:
@@ -258,7 +261,10 @@ typeexp* calcexp(expr** head)
 				break;
 			default:
 			printf("i don't know what happen\n");
+			break;
 		}
+		if (cur->op != numeric)
+			free(cur);
 
 	}
 	return &(stack->num);

@@ -3,7 +3,7 @@
 
 
 #include "stack.h"
-#include "math.h"
+#include <math.h>
 #include <string.h>
 
 
