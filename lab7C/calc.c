@@ -1,25 +1,28 @@
 #include "calc.h"
 
+static char lastop = errorop;
+
 expr* putexp(char* c, expr** head, expr** stack)
 {
-	static char lastop = errorop;
-	if ((*c >= '0') && (*c <= 9))
+	if ((*c >= '0') && (*c <= '9'))
 	{
 		expr* temp = (expr*)malloc(sizeof(expr));
 		typeexp num = 0;
 		do
 		{
 			num = num * 10 + (*c) - '0';
-		} while (((*c = getchar()) >= 0) && (*c <= 9)); 
+		} while (((*c = getchar()) >= '0') && (*c <= '9')); 
 		if ((*c == '.') || (*c == ','))
 		{
+			if(strcmp(typeexpname, "double") && strcmp(typeexpname, "double"))
+				return temp; // для целых
 			*c = getchar();
 			do
 			{
 				int ten = 10;
 				num += ((*c) - '0') / ten;
 				ten *= 10;
-			} while (((*c = getchar()) >= 0) && (*c <= 9));
+			} while (((*c = getchar()) >= '0') && (*c <= '9'));
 		}
 		lastop = temp->op = numeric;
 		temp->num = num;
@@ -37,9 +40,9 @@ expr* putexp(char* c, expr** head, expr** stack)
 					return temp;
 				break;
 			case ')':
+				temp->op = cbr;
 				if((lastop == errorop) || (lastop == obr) || (lastop >= pls))
 					{
-						temp->op = errorop
 						return temp;
 					}
 				while((*stack)->op != obr)
@@ -47,7 +50,7 @@ expr* putexp(char* c, expr** head, expr** stack)
 					pushexp(head, popexp(stack));
 					if (*stack == NULL)
 					{
-						return 0;
+						return temp;
 					}
 				}
 				free(popexp(stack));
@@ -56,14 +59,14 @@ expr* putexp(char* c, expr** head, expr** stack)
 				temp->op = pls;
 				if((lastop == errorop) || (lastop == obr) || (lastop >= pls))
 					return temp;
-				while((*stack != NULL) && (((*stack)->op) => pls))
+				while((*stack != NULL) && (((*stack)->op) >= pls))
 					pushexp(head, popexp(stack));
 				break;
 			case '-':
 				temp->op = mns;
 				if((lastop == errorop) || (lastop == obr) || (lastop >= pls))
 					return temp;
-				while((*stack != NULL) && (((*stack)->op) => pls))
+				while((*stack != NULL) && (((*stack)->op) >= pls))
 					pushexp(head, popexp(stack));
 				break;
 			case '*':
@@ -120,7 +123,7 @@ expr* putexp(char* c, expr** head, expr** stack)
 				break;
 			case '^':
 				temp->op = grd;
-				if((lastop == errorop) || (lastop == obr) || (lastop >= plus))
+				if((lastop == errorop) || (lastop == obr) || (lastop >= pls))
 					return temp;
 				while((*stack != NULL) && ((*stack)->op > grd))
 					pushexp(head, popexp(stack));
@@ -131,7 +134,8 @@ expr* putexp(char* c, expr** head, expr** stack)
 				break;
 		}
 		lastop = temp->op;
-		pushexp(stack, temp);
+		if (lastop != cbr)
+			pushexp(stack, temp);
 		*c = getchar();
 	}
 	return NULL;
@@ -142,30 +146,35 @@ char readexp(expr** head)
 	expr *stack = NULL, *temp = NULL;
 	char c = getchar();
 	*head = NULL; 
-	while (((c != EOF) && (c != '\n'))
+	while (((c != EOF) && (c != '\n')))
 	{
-		if((temp = putexp(c, head, &stack, lastop)) != NULL)
+		if(temp = putexp(&c, head, &stack))
 			{
 				free(temp);
 				return 0;
 			}
 	}
+	if (lastop >= pls)
+		return 0;
 	while(stack != NULL)
 	{
 		if (stack->op == obr)
+		{
+			freeexp(&stack);
 			return 0;
+		}
 		pushexp(head, popexp(&stack));
 	}
 	revertexp(head);
 	return 1;
 }
 
-char calcexp(expr* head)
+typeexp* calcexp(expr** head)
 {
-	expr *stack = NULL, *temp[2], *cur;
-	while(head)
+	expr *stack = NULL, **temp = (expr**)malloc(sizeof(expr*)*2), *cur;
+	while(*head)
 	{
-		cur = popexp(&head);
+		cur = popexp(head); // добавитьосвобождение структур со знаками операции
 		switch (cur->op)
 		{
 			case numeric:
@@ -212,7 +221,7 @@ char calcexp(expr* head)
 					freeexp(&stack);
 					return NULL;
 				}
-				temp[0]->num = log10(temp[0]->num)
+				temp[0]->num = log10(temp[0]->num);
 				pushexp(&stack, temp[0]);
 				break;
 			case lgre:
@@ -235,22 +244,22 @@ char calcexp(expr* head)
 				temp[0]->num = cos(temp[0]->num);
 				pushexp(&stack, temp[0]);
 				break;
-			case tng;
+			case tng:
 				temp[0] = popexp(&stack);
 				temp[0]->num = tan(temp[0]->num);
 				pushexp(&stack, temp[0]);
 				break;
-			case grd;
+			case grd:
 				temp[0] = popexp(&stack);
 				temp[1] = popexp(&stack);
 				temp[0]->num = pow(temp[1]->num, temp[0]->num);
 				free(temp[1]);
-				pushexp(&stack, temp);
+				pushexp(&stack, temp[0]);
 				break;
 			default:
 			printf("i don't know what happen\n");
 		}
 
 	}
-	return &(stack->num)
+	return &(stack->num);
 }

@@ -4,6 +4,7 @@
 
 #include "stack.h"
 #include "math.h"
+#include <string.h>
 
 
 //operators codes
@@ -79,7 +80,7 @@ Output
 -if division by zero
 --NULL pointer
 */
-typeexp* calcexp(expr* head);
+typeexp* calcexp(expr** head);
 
 
 #endif

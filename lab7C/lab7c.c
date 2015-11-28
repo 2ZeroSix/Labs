@@ -9,7 +9,7 @@ void main()
 	typeexp* result;
 	if (readexp(&head))
 	{
-		(result = calcexp(head)) ? printf("%f", result) : printf("division by zero");//or something else
+		(result = calcexp(&head)) ? printf("%d", *result) : printf("division by zero");//or something else
 		freeexp(&head);
 	}
 	else
