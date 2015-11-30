@@ -66,8 +66,15 @@ expr* putexp(char* c, expr** head, expr** stack)
 					pushexp(head, popexp(stack));
 				break;
 			case '-':
-				temp->op = mns;
-				if((lastop == errorop) || (lastop == obr) || (lastop >= pls))
+				if((lastop == errorop) || (lastop == obr))
+				{
+					temp->op = mnsu;
+ 				}
+ 				else
+ 				{
+					temp->op = mns;
+ 				}
+				if((lastop >= pls) && (lastop != errorop))
 					return temp;
 				while((*stack != NULL) && (((*stack)->op) >= pls))
 					pushexp(head, popexp(stack));
@@ -88,7 +95,7 @@ expr* putexp(char* c, expr** head, expr** stack)
 				break;
 			case 'l':
 				temp->op = errorop;
-				if(((tc = getchar()) == 'o') && ((tc = getchar()) == 'g'))
+				if(((tc = getchar()) == 'g') || ((tc == 'o') && ((tc = getchar()) == 'g')))
 				{
 					temp->op = lgrt;
 				}
@@ -153,6 +160,7 @@ char readexp(expr** head)
 	{
 		if(temp = putexp(&c, head, &stack))
 			{
+				// printf("opcode:%d\nnum%d\n", temp->op, temp->num);
 				free(temp);
 				return 0;
 			}
@@ -195,6 +203,11 @@ typeexp* calcexp(expr** head)
 				temp[1] = popexp(&stack);
 				temp[0]->num = temp[1]->num - temp[0]->num;
 				free(temp[1]);
+				pushexp(&stack, temp[0]);
+				break;
+			case mnsu:
+				temp[0] = popexp(&stack);
+				temp[0]->num = -temp[0]->num;
 				pushexp(&stack, temp[0]);
 				break;
 			case mlt:
@@ -260,6 +273,7 @@ typeexp* calcexp(expr** head)
 				pushexp(&stack, temp[0]);
 				break;
 			default:
+			printf("opcode: %d\nnum%d\n",cur->op, cur->num);
 			printf("i don't know what happen\n");
 			break;
 		}

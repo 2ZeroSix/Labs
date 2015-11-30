@@ -19,29 +19,31 @@
 #define pls 3
 //minus
 #define mns 4
+//minus for 1 num
+#define mnsu 5
 //3 priority
 //multiplication
-#define mlt 5
+#define mlt 6
 //division
-#define dvs 6
+#define dvs 7
 //2 priority
 //grade
-#define grd 7
+#define grd 8
 //1 priority
 //logarithm 10
-#define lgrt 8
+#define lgrt 9
 //logarithm e
-#define lgre 9
+#define lgre 10
 //tangent
-#define tng 10
+#define tng 11
 //cotangent
-#define ctng 11
+#define ctng 12
 //sinus
-#define sns 12
+#define sns 13
 //cosine
-#define csn 13
+#define csn 14
 //error operator
-#define errorop 14
+#define errorop 15
 
 
 /*
