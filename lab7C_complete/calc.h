@@ -49,21 +49,24 @@
 /*
 put exp element in expression (read from stdin if it need) or stack with check
 Input
--readed char
+-last input symbol
 -head of expression
 -head of stack
+Changes
+-read new symbols from stdin and save unused symbol(last input symbol) in var c
+-save last operator code in variable lastop
 Output
 -if complete
 --NULL
 -if FAILED
---poiter to struct _exp with code of bad operator of expression
+--pointer to structure _expr with code of bad operator of expression
 */
 expr* putexp(char* c, expr** head, expr** stack);
 
 /*
-read expression in infix notation and transfer to postfix notation
+read expression in infix notation from stdin and transfer to postfix notation
 input
--pointer to pointer to structure _exp
+-pointer to pointer to structure _expr
 Output
 -if complete
 --<1>
@@ -75,7 +78,7 @@ char readexp(expr** head);
 /*
 calculate expression in postfix notation
 Input
--pointer to structure _exp
+-pointer to structure _expr
 Output
 -if complete
 --pointer to result

@@ -3,7 +3,7 @@
 
 
 
-void main()
+int main()
 {
 	expr* head;
 	typeexp* result;
@@ -23,4 +23,5 @@ void main()
 	{
 		printf("syntax error");
 	}
+	return 0;
 }

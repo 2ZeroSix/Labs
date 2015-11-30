@@ -1,6 +1,9 @@
 #include "calc.h"
 
+// last input operator code
 static char lastop = errorop;
+
+
 
 expr* putexp(char* c, expr** head, expr** stack)
 {
@@ -160,7 +163,6 @@ char readexp(expr** head)
 	{
 		if(temp = putexp(&c, head, &stack))
 			{
-				// printf("opcode:%d\nnum%d\n", temp->op, temp->num);
 				free(temp);
 				return 0;
 			}
