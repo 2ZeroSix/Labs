@@ -99,7 +99,7 @@ expr* putexp(char* c, expr** head, expr** stack)
 				break;
 			case 'l':
 				temp->op = errorop;
-				if(((tc = getchar()) == 'g') || ((tc == 'o') && ((tc = getchar()) == 'g')))
+				if(((tc = tolower(getchar())) == 'g') || ((tc == 'o') && ((tc = tolower(getchar())) == 'g')))
 				{
 					temp->op = lgrt;
 				}
@@ -116,21 +116,21 @@ expr* putexp(char* c, expr** head, expr** stack)
 				break;
 			case 's':
 				temp->op = sns;
-				if(!((getchar() == 'i') && (getchar() == 'n')))
+				if(!((tolower(getchar()) == 'i') && (tolower(getchar()) == 'n')))
 					return temp;
 				if((lastop == cbr) || (lastop == numeric))
 					return temp;
 				break;
 			case 'c':
 				temp->op = csn;
-				if(!((getchar() == 'o') && (getchar() == 's')))
+				if(!((tolower(getchar()) == 'o') && (tolower(getchar()) == 's')))
 					return temp;
 				if((lastop == cbr) || (lastop == numeric))
 					return temp;
 				break;
 			case 't':
 				temp->op = tng;
-				if((!((tc  = getchar()) == 'g')) && (!((tc == 'a') && ((tc = getchar()) == 'n'))))
+				if((!((tc  = tolower(getchar())) == 'g')) && (!((tc == 'a') && ((tc = tolower(getchar())) == 'n'))))
 					return temp;
 				if((lastop == cbr) || (lastop == numeric))
 					return temp;
@@ -151,7 +151,7 @@ expr* putexp(char* c, expr** head, expr** stack)
 			case 'p':
 				temp->op = numeric;
 				temp->num = 3.1415926535897932384626433832795;
-				if ((getchar() != 'i') || (lastop == cbr) || (lastop == numeric))
+				if ((tolower(getchar()) != 'i') || (lastop == cbr) || (lastop == numeric))
 					return temp;
 				break;
 			default:
