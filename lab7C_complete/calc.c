@@ -11,7 +11,7 @@ expr* putexp(char* c, expr** head, expr** stack)
 	{
 		expr* temp = (expr*)malloc(sizeof(expr));
 		temp->op = numeric;
-		if (lastop == cbr)
+		if ((lastop == cbr) || (lastop == numeric))
 			return temp;
 		typeexp num = 0;
 		do
@@ -38,6 +38,7 @@ expr* putexp(char* c, expr** head, expr** stack)
 	{
 		char tc;
 		expr* temp = (expr*)malloc(sizeof(expr));
+		*c = tolower(*c);
 		switch(*c)
 		{
 			case '(':
@@ -141,14 +142,28 @@ expr* putexp(char* c, expr** head, expr** stack)
 				while((*stack != NULL) && ((*stack)->op > grd))
 					pushexp(head, popexp(stack));
 				break;
+			case 'e':
+				temp->op = numeric;
+				temp->num = 2.7182818284590452353602874713527;
+				if ((lastop == cbr) || (lastop == numeric))
+					return temp;
+				break;
+			case 'p':
+				temp->op = numeric;
+				temp->num = 3.1415926535897932384626433832795;
+				if ((getchar() != 'i') || (lastop == cbr) || (lastop == numeric))
+					return temp;
+				break;
 			default:
 				temp->op = errorop;
 				return temp;
 				break;
 		}
 		lastop = temp->op;
-		if (lastop != cbr)
+		if ((lastop != cbr) && (lastop != numeric))
 			pushexp(stack, temp);
+		if (lastop == numeric)
+			pushexp(head, temp);
 		*c = getchar();
 	}
 	return NULL;
@@ -179,6 +194,7 @@ char readexp(expr** head)
 		pushexp(head, popexp(&stack));
 	}
 	revertexp(head);
+	lastop = errorop;
 	return 1;
 }
 
