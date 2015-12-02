@@ -5,6 +5,7 @@
 #include "stack.h"
 #include <math.h>
 #include <string.h>
+#include <ctype.h>
 
 
 //operators codes
@@ -19,7 +20,7 @@
 #define pls 3
 //minus
 #define mns 4
-//minus for 1 num
+//unary minus
 #define mnsu 5
 //3 priority
 //multiplication
