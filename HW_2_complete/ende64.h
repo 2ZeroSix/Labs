@@ -9,29 +9,6 @@
 #define sizecheck 5
 #define decode 4
  
-/*
-translate to b64
-Input
--number of symb in b64 alphabet
-Output
--if completed
---symb ib b64 alphabet
--if error
---'-'
-*/
-unsigned char b64sym(unsigned char sym);
-
-/*
-translate to number of simb
-Input
--symb in b64 alphabet
-Output
--if completed
---number of symb in b64 alphabet
--if error
---'-'
-*/
-unsigned char b64num(unsigned char sym);
 
 /*
 Text to Base64
