@@ -1,16 +1,13 @@
-﻿# Labs
-Projects for cprog class
+## Projects for cprog class
 
-# Names
-- "type""number of work""status"
+#### Names
 
-Types
+##### `<type>``<number of work>``<status>`
 
-- "HW_" - homework
-- "lab" - laboratory work
+**Types**|**Statuses**
+---------|------------
+  __*"HW_"*__ - homework|__*"_complete"*__ - completed but сheck status unknown
+  __*"lab"*__ - laboratory work|__*"_finish"*__ - completed and checked
+  |__*any other*__ - uncompleted
 
-Statuses
-
-- "_complete" - completed but сheck status unknown
-- "_finish" - completed and checked
-- any other - uncompleted
+######Lukin Bogdan
