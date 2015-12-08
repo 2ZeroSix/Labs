@@ -92,7 +92,7 @@ expr* putexp(char* c, expr** head, expr** stack)
 				break;
 			case '/':
 				temp->op = dvs;
-				if((lastop == errorop) || (lastop == obr) || (lastop >= mlt))
+				if((lastop == errorop) || (lastop == obr) || (lastop >= pls))
 					return temp;
 				while((*stack != NULL) && ((*stack)->op >= mlt))
 					pushexp(head, popexp(stack));
