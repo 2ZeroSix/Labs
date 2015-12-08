@@ -47,7 +47,7 @@ int  readfloat(int *number, int b1, int b2, int *end)
 	getchar();
 	char simbol = getchar();
 	int i;
-	for (i = 0; (simbol != 'EOF') && (simbol != '\n'); i++)
+	for (i = 0; (simbol != EOF) && (simbol != '\n'); i++)
 	{
 		if ((number[i] = chartoint(simbol, &dot, i)) == -2 || number[i] >= b1) /*заполнение с проверкой ошибки*/
 		{
