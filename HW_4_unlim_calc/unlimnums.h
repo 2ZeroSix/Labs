@@ -16,11 +16,11 @@ const char* errorln();
 
 
 /*
-read long number from stdin
+read long number from FILE
 output
 	-string with long number
 */
-const char* rlnum();
+const char* rlnum(FILE* in);
 
 
 /*

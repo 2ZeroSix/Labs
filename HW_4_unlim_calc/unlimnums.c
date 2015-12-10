@@ -1,12 +1,13 @@
 #include "unlimnums.h"
 
-static char* errstrln[4] = {"nothing", "syntax error", "division by zero", "pointer to zero"};
-static int errnumln = 0;
+static char* errlnm[4] = {"nothing", "syntax error", "division by zero", "pointer to zero"};
+static int errln = 0;
+static char znfor[2];
 static char forwardln = 0;
 
 const char* errorln()
 {
-	return errstrln[errnumln];
+	return errstrln[errln];
 }
 
 
@@ -63,15 +64,20 @@ const char* errorln()
 // 	if (arg1 && arg2)
 // 	{
 // 		static int l1 = strlen(arg1), l2 = strlen(arg2), lmax, lmin, i;
-// 		char zn = '+' ;
+// 		char zn = '+';
 // 		if (l1 > l2)
 // 		{
 // 			lmax = l1;
-			
 // 		}
 // 		else if (l1 < l2)
 // 		{
-// 			/* code */
+// 			lmax = l2;
+// 		}
+// 		else
+//		{
+// 			i = 0;
+// 			while((arg1[i] == arg2[i]) && (i <= l1)) i++;
+// 			lmax = (arg1[i] > arg2[i]) ? l1 : l2;
 // 		}
 // 	}
 // 	else
@@ -90,23 +96,23 @@ const char* ba_add(const char* arg1, const char* arg2)
 		char zn = '+';
 		l1 = strlen(arg1);
 		l2 = strlen(arg2);
-		if ((arg1[l1 - 1] == '-') && (arg2[l2 - 1] == '-'))
+		if (!forwardln)
 		{
-			zn = '-';
-		}
-		else
-		{
-			// if (arg1[l1 - 1] == '-')
-			// {
-			// 	res = (char*)malloc(sizeof(char)*(l1));
-			// 	return ba_sub(arg2, arg1);
-			// }
-			// if (arg2[l2 - 1] == '-')
-			// {
-			// 	res = (char*)malloc(sizeof(char)*(l1));
-			// 	strcmp
-			// 	return ba_sub(arg1, arg2);
-			// }
+			if ((arg1[l1 - 1] == '-') && (arg2[l2 - 1] == '-'))
+			{
+				zn = '-';
+			}
+			else
+			{
+				// if (arg1[l1 - 1] == '-')
+				// {
+				// 	return ba_sub(arg2, arg1);
+				// }
+				// if (arg2[l2 - 1] == '-')
+				// {
+				// 	return ba_sub(arg1, arg2);
+				// }
+			}
 		}
 		if (l1 > l2)
 		{
