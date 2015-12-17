@@ -160,10 +160,12 @@ expr* putexp(char* c, expr** head, expr** stack)
 				break;
 		}
 		lastop = temp->op;
-		if ((lastop != cbr) && (lastop != numeric))
-			pushexp(stack, temp);
-		if (lastop == numeric)
+		if (lastop == cbr)
+			free(temp);
+		else if (lastop == numeric)
 			pushexp(head, temp);
+		else
+			pushexp(stack, temp);
 		*c = getchar();
 	}
 	return NULL;
@@ -238,7 +240,7 @@ typeexp* calcexp(expr** head)
 			case dvs:
 				temp[0] = popexp(&stack);
 				temp[1] = popexp(&stack);
-				if(temp[0]->num == 0)
+				if((temp[0]->num >= -0.0000000000000001) && (temp[0]->num <= 0.0000000000000001))
 				{
 					free(temp[1]);
 					freeexp(&stack);
