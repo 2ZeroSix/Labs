@@ -11,81 +11,24 @@ const char* errorln()
 }
 
 
-
-// typedef struct _lngn{
-// 	char val;
-// 	struct _lngn *next;
-// }lngn;
-
-// /*
-// change head of structure to new */
-// char addlngn(lngn** head, char in)
-// {
-// 	lngn *nhead = (lngn)malloc(sizeof(lngn));
-// 	nhead->val = in;
-// 	if (head)
-// 	{
-// 		nhead->next = *head;
-// 		*head = nhead;
-// 	}
-// 	else
-// 	{
-// 		return 0;
-// 	}
-// 	return 1;
-// }
-
-// /*
-// input
-// 	-pointer to head of stack with long number
-// output
-// 	-string with long number
-// */
-// const char* takelngn(lngn** head)
-// {
-
-// }
-
-// const char* rlnum()
-// {
-// 	char c;
-// 	lngn *head = NULL;
-// 	while((c != EOF) || (c != '\n'))
-// 	{
-// 		addlngn(&head, c);
-// 	}
-// 	return takelngn(&head);
-// }
-
-
-// const char* ba_sub(const char* arg1, const char* arg2)
-// {
-// 	char* res = NULL
-// 	if (arg1 && arg2)
-// 	{
-// 		static int l1 = strlen(arg1), l2 = strlen(arg2), lmax, lmin, i;
-// 		char zn = '+';
-// 		if (l1 > l2)
-// 		{
-// 			lmax = l1;
-// 		}
-// 		else if (l1 < l2)
-// 		{
-// 			lmax = l2;
-// 		}
-// 		else
-//		{
-// 			i = 0;
-// 			while((arg1[i] == arg2[i]) && (i <= l1)) i++;
-// 			lmax = (arg1[i] > arg2[i]) ? l1 : l2;
-// 		}
-// 	}
-// 	else
-// 	{
-// 		errnumln = 3;
-// 	}
-// 	return res;
-// }
+const char* ba_sub(const char* arg1, const char* arg2)
+{
+	char* res = NULL;
+	if(arg1 && arg2
+	{
+		static int l1 = strlen(arg1), l2 = strlen(arg2), lmax, lmin;
+		if(!forwardln)
+		{
+			
+		}
+		
+	}
+	else
+	{
+		errnumln = 3;
+	}
+	return res;
+}
 
 const char* ba_add(const char* arg1, const char* arg2)
 {

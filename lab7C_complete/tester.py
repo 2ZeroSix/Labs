@@ -16,12 +16,10 @@ try:
         testout = []
         file_with_tests = open("test/tests.txt", "r")
         test_line = file_with_tests.readline()
-        i=0
         while (test_line):
                 testin.append(test_line[:test_line.find('|')])
                 testout.append(test_line[test_line.find('|') + 1: -1])
                 test_line = file_with_tests.readline()
-                i+=1
         file_with_tests.close()
         testfilename = input("введите имя файла: ")
         if not os.path.isfile(testfilename): raise Can_not_find_file
