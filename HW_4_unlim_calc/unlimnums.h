@@ -8,8 +8,9 @@
 
 
 /*
+ERROR
 output
--last error
+-string with last error
 */
 const char* errorln();
 
