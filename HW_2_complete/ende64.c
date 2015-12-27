@@ -15,7 +15,7 @@ static unsigned char b64symb[64] = {
 '3','4','5','6','7',
 '8','9','+','/'};
 
-static unsigned char b64numb[255];
+static unsigned char b64numb[256];
 
 //fill array b64numb
 void b64num()
