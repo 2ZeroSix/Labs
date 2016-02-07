@@ -17,12 +17,12 @@ expr* putexp(char* c, expr** head, expr** stack)
 		do
 		{
 			num = num * 10 + (*c) - '0';
-		} while (((*c = getchar()) >= '0') && (*c <= '9')); 
+		} while (((*c = getchar()) >= '0') && (*c <= '9'));
 		if ((*c == '.') || (*c == ','))
 		{
 			typeexp ten = 10;
 			if(typeexpnum)	// if dot illegal
-				return temp; 
+				return temp;
 			*c = getchar();
 			do
 			{
@@ -175,7 +175,7 @@ char readexp(expr** head)
 {
 	expr *stack = NULL, *temp = NULL;
 	char c = getchar();
-	*head = NULL; 
+	*head = NULL;
 	while (((c != EOF) && (c != '\n')))
 	{
 		if(temp = putexp(&c, head, &stack))
@@ -205,7 +205,7 @@ typeexp* calcexp(expr** head)
 	expr *stack = NULL, **temp = (expr**)malloc(sizeof(expr*)*2), *cur;
 	while(*head)
 	{
-		cur = popexp(head); // добавить освобождение структур со знаками операции
+		cur = popexp(head); // РґРѕР±Р°РІРёС‚СЊ РѕСЃРІРѕР±РѕР¶РґРµРЅРёРµ СЃС‚СЂСѓРєС‚СѓСЂ СЃРѕ Р·РЅР°РєР°РјРё РѕРїРµСЂР°С†РёРё
 		switch (cur->op)
 		{
 			case numeric:
