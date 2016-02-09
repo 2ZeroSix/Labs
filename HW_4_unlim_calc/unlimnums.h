@@ -44,7 +44,10 @@ read long number from FILE(read word from stream, check it with ba_isnormalform,
 input
 	- pointer to the stream
 output
-	- const string with long number in the correct form
+	- if in the normal form
+		- const string with long number in the correct form
+	- else
+		- NULL
 */
 const char* ba_read(FILE* in);
 
