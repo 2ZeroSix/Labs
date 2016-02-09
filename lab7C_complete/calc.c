@@ -17,12 +17,12 @@ expr* putexp(char* c, expr** head, expr** stack)
 		do
 		{
 			num = num * 10 + (*c) - '0';
-		} while (((*c = getchar()) >= '0') && (*c <= '9')); 
+		} while (((*c = getchar()) >= '0') && (*c <= '9'));
 		if ((*c == '.') || (*c == ','))
 		{
 			typeexp ten = 10;
 			if(typeexpnum)	// if dot illegal
-				return temp; 
+				return temp;
 			*c = getchar();
 			do
 			{
@@ -160,10 +160,12 @@ expr* putexp(char* c, expr** head, expr** stack)
 				break;
 		}
 		lastop = temp->op;
-		if ((lastop != cbr) && (lastop != numeric))
-			pushexp(stack, temp);
-		if (lastop == numeric)
+		if (lastop == cbr)
+			free(temp);
+		else if (lastop == numeric)
 			pushexp(head, temp);
+		else
+			pushexp(stack, temp);
 		*c = getchar();
 	}
 	return NULL;
@@ -173,7 +175,7 @@ char readexp(expr** head)
 {
 	expr *stack = NULL, *temp = NULL;
 	char c = getchar();
-	*head = NULL; 
+	*head = NULL;
 	while (((c != EOF) && (c != '\n')))
 	{
 		if(temp = putexp(&c, head, &stack))
@@ -203,7 +205,7 @@ typeexp* calcexp(expr** head)
 	expr *stack = NULL, **temp = (expr**)malloc(sizeof(expr*)*2), *cur;
 	while(*head)
 	{
-		cur = popexp(head); // äîáàâèòü îñâîáîæäåíèå ñòğóêòóğ ñî çíàêàìè îïåğàöèè
+		cur = popexp(head); // Ğ´Ğ¾Ğ±Ğ°Ğ²Ğ¸Ñ‚ÑŒ Ğ¾ÑĞ²Ğ¾Ğ±Ğ¾Ğ¶Ğ´ĞµĞ½Ğ¸Ğµ ÑÑ‚Ñ€ÑƒĞºÑ‚ÑƒÑ€ ÑĞ¾ Ğ·Ğ½Ğ°ĞºĞ°Ğ¼Ğ¸ Ğ¾Ğ¿ĞµÑ€Ğ°Ñ†Ğ¸Ğ¸
 		switch (cur->op)
 		{
 			case numeric:
@@ -238,7 +240,7 @@ typeexp* calcexp(expr** head)
 			case dvs:
 				temp[0] = popexp(&stack);
 				temp[1] = popexp(&stack);
-				if(temp[0]->num == 0)
+				if((temp[0]->num >= -0.0000000000000001) && (temp[0]->num <= 0.0000000000000001))
 				{
 					free(temp[1]);
 					freeexp(&stack);
