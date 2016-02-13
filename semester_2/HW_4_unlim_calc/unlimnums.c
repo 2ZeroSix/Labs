@@ -36,7 +36,7 @@ char ba_isnormalform(const char* arg) {
 }
 
 char ba_isbigger(const char* arg1, const char* arg2) {
-	if
+
 }
 
 const char* ba_sub(const char* arg1, const char* arg2) {
@@ -91,7 +91,7 @@ const char* ba_sub(const char* arg1, const char* arg2) {
 				if(j == -1) {
 					return "0+";
 				}
-				else if arg1[j] > arg2[j] {
+				else if (arg1[j] > arg2[j]) {
 					if((arg1[l1-1] == '+') && (arg2[l2-1] == '+')) {
 						res = (char*)malloc(sizeof(char)*l2);
 						zn = '-';
@@ -143,7 +143,7 @@ const char* ba_sub(const char* arg1, const char* arg2) {
 				if(j == -1) {
 					return "0+";
 				}
-				else if arg1[j] > arg2[j] {
+				else if (arg1[j] > arg2[j]) {
 					if((znfor[0] == '+') && (znfor[1] == '+')) {
 						res = (char*)calloc(l2, sizeof(char));
 						zn = '-';
@@ -195,16 +195,16 @@ const char* ba_add(const char* arg1, const char* arg2) {
 			if (arg1[l1 - 1] == arg2[l2 - 1]) {
 			 	zn = arg1[l1 - 1];
 			}
-			// else {
-			// 	forwardln = 1;
-			// 	znfor = '+';
-			// 	if (arg1[l1 - 1] == '-') {
-			// 		return ba_sub(arg2, arg1);
-			// 	}
-			// 	if (arg2[l2 - 1] == '-') {
-			// 		return ba_sub(arg1, arg2);
-			// 	}
-			// }
+			else {
+				forwardln = 1;
+				znfor = '+';
+				if (arg1[l1 - 1] == '-') {
+					return ba_sub(arg2, arg1);
+				}
+				else {
+					return ba_sub(arg1, arg2);
+				}
+			}
 		}
 		//если вызвана из другой операции
 		else {
