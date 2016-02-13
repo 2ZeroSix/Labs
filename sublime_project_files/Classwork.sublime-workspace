@@ -1,0 +1,370 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"def",
+				"defstack	c_struct_stack"
+			],
+			[
+				"for",
+				"forv	Vector For Loop"
+			]
+		]
+	},
+	"buffers":
+	[
+	],
+	"build_system": "",
+	"build_system_choices":
+	[
+		[
+			[
+				[
+					"Packages/C++/C++ Single File.sublime-build",
+					""
+				],
+				[
+					"Packages/C++/C++ Single File.sublime-build",
+					"Run"
+				]
+			],
+			[
+				"Packages/C++/C++ Single File.sublime-build",
+				""
+			]
+		]
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 375.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"git p",
+				"Git: Push"
+			],
+			[
+				"git q",
+				"Git: Quick Commit"
+			],
+			[
+				"gitgutter",
+				"GitGutter: Compare Against HEAD"
+			],
+			[
+				"pack ins",
+				"Package Control: Install Package"
+			],
+			[
+				"pack rem",
+				"Package Control: Remove Package"
+			],
+			[
+				"github",
+				"Github: History"
+			],
+			[
+				"pack ins ",
+				"Package Control: Install Package"
+			],
+			[
+				"lint mark",
+				"SublimeLinter: Choose Mark Style"
+			],
+			[
+				"lint ne",
+				"SublimeLinter: Next Error"
+			],
+			[
+				"linting",
+				"SublimeLinter: Enable Linting"
+			],
+			[
+				"lint mar",
+				"SublimeLinter: Choose Mark Style"
+			],
+			[
+				"mark",
+				"SublimeLinter: Choose Mark Style"
+			],
+			[
+				"package re",
+				"Package Control: Remove Package"
+			],
+			[
+				"disa",
+				"Package Control: Disable Package"
+			],
+			[
+				"pack dis",
+				"Package Control: Disable Package"
+			],
+			[
+				"linter lint",
+				"SublimeLinter: Lint This View"
+			],
+			[
+				"ins",
+				"Package Control: Install Package"
+			],
+			[
+				"tabs",
+				"View: Toggle Tabs"
+			],
+			[
+				"m",
+				"View: Toggle Menu"
+			],
+			[
+				"me",
+				"View: Toggle Menu"
+			],
+			[
+				"status",
+				"View: Toggle Status Bar"
+			],
+			[
+				"install",
+				"Package Control: Install Package"
+			],
+			[
+				"pack di",
+				"Package Control: Disable Package"
+			],
+			[
+				"Package Control: in",
+				"Package Control: Install Package"
+			],
+			[
+				"Package Control: ins",
+				"Package Control: Install Package"
+			],
+			[
+				"Package Control: dis",
+				"Package Control: Disable Package"
+			],
+			[
+				"Package Control: ena",
+				"Package Control: Enable Package"
+			],
+			[
+				"Package Control: di",
+				"Package Control: Disable Package"
+			],
+			[
+				"Package Control: dele",
+				"Package Control: Disable Package"
+			]
+		],
+		"width": 450.0
+	},
+	"console":
+	{
+		"height": 126.0,
+		"history":
+		[
+			"n",
+			"del(n)",
+			"free(n)",
+			"n",
+			"n+=10",
+			"n=1",
+			"restart"
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"expanded_folders":
+	[
+		"/C/Projects/Labs/semester_2/Classwork"
+	],
+	"file_history":
+	[
+		"/C/Projects/Labs/semester_2/Classwork/CW_1_tree_complete/tree.c",
+		"/C/Projects/Labs/semester_2/Classwork/заметки.txt",
+		"/C/Projects/Labs/semester_2/AVL/avl_func.c",
+		"/C/Users/1/AppData/Roaming/Sublime Text 3/Packages/User/my_snippets/C/c_struct_stack.sublime-snippet",
+		"/C/Users/1/AppData/Roaming/Sublime Text 3/Packages/User/c_stuct_tree.sublime-snippet",
+		"/C/Users/1/AppData/Roaming/Sublime Text 3/Packages/User/my_snippet.sublime-snippet",
+		"/C/Users/1/AppData/Roaming/Sublime Text 3/Packages/User/Preferences.sublime-settings",
+		"/C/Users/1/AppData/Roaming/Sublime Text 3/Packages/User/Default (Windows).sublime-keymap",
+		"/C/Users/1/AppData/Roaming/Sublime Text 3/Packages/Default/Preferences.sublime-settings",
+		"/C/Users/1/AppData/Roaming/Sublime Text 3/Packages/Default/Default (Windows).sublime-keymap",
+		"/C/Projects/Labs/semester_1/HW_2_finish/ende64.c",
+		"/C/Projects/Labs/semester_2/HW_4_unlim_calc/unlimnums.h",
+		"/C/Projects/Labs/semester_2/HW_4_unlim_calc/unlimnums.c",
+		"/C/Projects/Labs/semester_2/HW_4_unlim_calc/testcalc.c",
+		"/C/Projects/Labs/semester_1/lab7C_finish/stack.h",
+		"/C/Projects/Labs/semester_1/lab7C_finish/stack.c",
+		"/C/Projects/Labs/semester_1/lab7C_finish/lab7c.c",
+		"/C/Projects/Labs/semester_1/lab7C_finish/calc.h",
+		"/C/Projects/Labs/semester_1/lab7C_finish/calc.c",
+		"/C/Users/1/AppData/Roaming/Sublime Text 3/Packages/User/SublimeLinter.sublime-settings",
+		"/C/Users/1/AppData/Roaming/Sublime Text 3/Packages/SublimeLinter/SublimeLinter.sublime-settings",
+		"/C/Users/1/AppData/Roaming/Sublime Text 3/Packages/User/Github Tools.sublime-settings",
+		"/C/Projects/Labs/semester_1/lab7C_finish/tester.py",
+		"/C/Users/1/AppData/Roaming/Sublime Text 3/Packages/SublimeLinter/Default (Windows).sublime-keymap",
+		"/C/Users/1/AppData/Roaming/Sublime Text 3/Packages/DocBlockr/Base File.sublime-settings",
+		"/C/Users/1/AppData/Roaming/Sublime Text 3/Packages/User/Base File.sublime-settings",
+		"/C/Program Files/mingw-w64/x86_64-5.2.0-posix-seh-rt_v4-rev1/mingw-w64.bat",
+		"/C/Projects/Labs/lab7C_complete/tester.py",
+		"/C/Projects/Labs/lab7C_complete/stack.h",
+		"/C/Projects/Labs/lab7C_complete/stack.c",
+		"/C/Projects/Labs/lab7C_complete/readme.md",
+		"/C/Projects/Labs/lab7C_complete/calc.h",
+		"/C/Projects/Labs/lab7C_complete/calc.c",
+		"/C/Projects/Labs/lab7C_complete/lab7c.c"
+	],
+	"find":
+	{
+		"height": 23.0
+	},
+	"find_in_files":
+	{
+		"height": 92.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"else",
+			"char",
+			"\n    ",
+			"{\n",
+			"command"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"sheets":
+			[
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 23.0
+	},
+	"input":
+	{
+		"height": 33.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.exec":
+	{
+		"height": 100.0
+	},
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"output.git":
+	{
+		"height": 102.0
+	},
+	"pinned_build_system": "",
+	"project": "Classwork.sublime-project",
+	"replace":
+	{
+		"height": 42.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 500.0,
+		"last_filter": "avl",
+		"selected_items":
+		[
+			[
+				"avl",
+				"C:\\Projects\\Labs\\sublime_project_files\\lab2_AVL_tree.sublime-project"
+			],
+			[
+				"",
+				"C:\\Projects\\snippets.sublime-workspace"
+			]
+		],
+		"width": 380.0
+	},
+	"select_symbol":
+	{
+		"height": 392.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 392.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 211.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}
