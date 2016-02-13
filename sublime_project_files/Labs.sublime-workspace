@@ -4,22 +4,58 @@
 		"selected_items":
 		[
 			[
-				"def",
-				"defstack	c_struct_stack"
+				"el",
+				"element"
+			],
+			[
+				"root",
+				"root"
+			],
+			[
+				"push_a",
+				"push_avl_stack"
+			],
+			[
+				"push",
+				"push_in_avl"
+			],
+			[
+				"avl",
+				"avl_rotation"
+			],
+			[
+				"r",
+				"avl_rotation"
 			],
 			[
 				"for",
-				"forv	Vector For Loop"
+				"for	For Loop"
+			],
+			[
+				"b",
+				"big_left"
+			],
+			[
+				"bi",
+				"big-right"
+			],
+			[
+				"type",
+				"type_tree"
+			],
+			[
+				"def",
+				"defstack	c_struct_stack"
 			]
 		]
 	},
 	"buffers":
 	[
 		{
-			"file": "/C/Projects/Labs/semester_2/Classwork/CW_1_tree_complete/tree.c",
+			"file": "/C/Projects/Labs/semester_2/lab2_AVL/avl_func.c",
 			"settings":
 			{
-				"buffer_size": 2585,
+				"buffer_size": 3731,
 				"line_ending": "Windows"
 			}
 		}
@@ -200,17 +236,23 @@
 	"expanded_folders":
 	[
 		"/C/Projects/Labs",
+		"/C/Projects/Labs/semester_1",
+		"/C/Projects/Labs/semester_1/lab7C_finish/test",
 		"/C/Projects/Labs/semester_2",
 		"/C/Projects/Labs/semester_2/Classwork",
 		"/C/Projects/Labs/semester_2/Classwork/CW_1_tree_complete",
+		"/C/Projects/Labs/semester_2/HW_4_unlim_calc",
 		"/C/Projects/Labs/semester_2/lab2_AVL"
 	],
 	"file_history":
 	[
-		"/C/Users/1/AppData/Roaming/Sublime Text 3/Packages/Sublimall/Sublimall.sublime-settings",
-		"/C/Users/1/AppData/Roaming/Sublime Text 3/Packages/User/Sublimall.sublime-settings",
+		"/C/Projects/Labs/semester_2/Classwork/заметка AVL.txt",
+		"/C/Projects/Labs/semester_2/lab2_AVL/avl_func.c",
+		"/C/Projects/Labs/semester_1/lab7C_finish/stack.c",
 		"/C/Projects/Labs/semester_2/Classwork/заметки.txt",
 		"/C/Projects/Labs/semester_2/Classwork/CW_1_tree_complete/tree.c",
+		"/C/Users/1/AppData/Roaming/Sublime Text 3/Packages/Sublimall/Sublimall.sublime-settings",
+		"/C/Users/1/AppData/Roaming/Sublime Text 3/Packages/User/Sublimall.sublime-settings",
 		"/C/Projects/Labs/sublime_project_files/Labs.sublime-project",
 		"/C/Projects/Labs/sublime_project_files/lab2_AVL_tree.sublime-project",
 		"/C/Projects/Labs/semester_2/AVL/avl_func.c",
@@ -226,7 +268,6 @@
 		"/C/Projects/Labs/semester_2/HW_4_unlim_calc/unlimnums.c",
 		"/C/Projects/Labs/semester_2/HW_4_unlim_calc/testcalc.c",
 		"/C/Projects/Labs/semester_1/lab7C_finish/stack.h",
-		"/C/Projects/Labs/semester_1/lab7C_finish/stack.c",
 		"/C/Projects/Labs/semester_1/lab7C_finish/lab7c.c",
 		"/C/Projects/Labs/semester_1/lab7C_finish/calc.h",
 		"/C/Projects/Labs/semester_1/lab7C_finish/calc.c",
@@ -262,6 +303,33 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"maxavl",
+			"balance_avl",
+			"maxint",
+			"queue",
+			"temp_queue",
+			"queue",
+			"value",
+			"queue*",
+			"stack",
+			"tree",
+			"r",
+			"value",
+			"depth_free",
+			"head",
+			"push_in_tree",
+			"push_in_avl_rotation",
+			"push_in_avl_tree",
+			"head",
+			"tree",
+			"			{",
+			"big-",
+			"left",
+			"head",
+			"tree",
+			"= ",
+			"	root->height = ((root->left) ? root->left->height : 0) + ((root->right) ? root->right->height : 0);\n",
+			"tree",
 			"else",
 			"char",
 			"\n    ",
@@ -274,11 +342,33 @@
 		"regex": false,
 		"replace_history":
 		[
+			"maxint",
+			"height_avl",
+			"maxavl",
+			"temp_stack",
+			"queue",
+			"stack",
+			"stack*",
+			"queue",
+			"avl_tree",
+			"root",
+			"val",
+			"depth_free_avl",
+			"root",
+			"push_in_avl",
+			"push_in_avl_with_rotation",
+			"push_in_avl_rotation",
+			"root",
+			"avl_tree",
+			"big_",
+			"right",
+			"root",
+			"avl_tree"
 		],
 		"reverse": false,
 		"show_context": true,
 		"use_buffer2": true,
-		"whole_word": false,
+		"whole_word": true,
 		"wrap": true
 	},
 	"groups":
@@ -289,19 +379,19 @@
 			[
 				{
 					"buffer": 0,
-					"file": "/C/Projects/Labs/semester_2/Classwork/CW_1_tree_complete/tree.c",
+					"file": "/C/Projects/Labs/semester_2/lab2_AVL/avl_func.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 2585,
+						"buffer_size": 3731,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								0,
-								0
+								3143,
+								3143
 							]
 						],
 						"settings":
@@ -309,31 +399,6 @@
 							"BracketHighlighterBusy": false,
 							"bh_regions":
 							[
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_double_quote_content",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content",
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_c_define_content",
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_curly_content",
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close",
-								"bh_single_quote_content",
 								"bh_default",
 								"bh_default_center",
 								"bh_default_open",
@@ -344,33 +409,59 @@
 								"bh_square_open",
 								"bh_square_close",
 								"bh_square_content",
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_angle_content",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_round_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
 								"bh_regex",
 								"bh_regex_center",
 								"bh_regex_open",
 								"bh_regex_close",
 								"bh_regex_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
 								"bh_unmatched",
 								"bh_unmatched_center",
 								"bh_unmatched_open",
 								"bh_unmatched_close",
-								"bh_unmatched_content"
+								"bh_unmatched_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content"
 							],
+							"spell_check": true,
 							"syntax": "Packages/C++/C.sublime-syntax",
 							"tab_size": 2,
-							"translate_tabs_to_spaces": true
+							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 902.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
@@ -426,7 +517,7 @@
 	"project": "Labs.sublime-project",
 	"replace":
 	{
-		"height": 42.0
+		"height": 64.0
 	},
 	"save_all_on_build": true,
 	"select_file":
@@ -446,7 +537,7 @@
 		[
 			[
 				"",
-				"C:\\Projects\\Labs\\sublime_project_files\\Labs.sublime-project"
+				"C:\\Projects\\Labs\\sublime_project_files\\lab2_AVL_tree.sublime-project"
 			],
 			[
 				"avl",
