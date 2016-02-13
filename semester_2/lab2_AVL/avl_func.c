@@ -117,9 +117,6 @@ avl_tree* avl_rotation (avl_tree* root) {
  * @return         дерево после вставки
  */
 avl_tree* push_in_avl (avl_tree* root, type_tree element) {
-	avl_tree* new = (avl_tree*)calloc(1, sizeof(avl_tree));
-	new->val = element;
-	new->height = 1;
 	if (root) {
 		if (root->val > element) {
 			root->left = push_in_avl(root->left, element);
@@ -129,6 +126,9 @@ avl_tree* push_in_avl (avl_tree* root, type_tree element) {
 		}
 	}
 	else {
+		avl_tree* new = (avl_tree*)calloc(1, sizeof(avl_tree));
+		new->val = element;
+		new->height = 1;
 		root = new;
 	}
 	return avl_rotation(root);
