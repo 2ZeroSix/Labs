@@ -12,7 +12,7 @@ typedef struct _avl_tree{
 }avl_tree;
 
 /**
- * максимальный int
+ * максимальный из данных элементов
  * @param  a
  * @param  b
  * @return max
@@ -24,7 +24,7 @@ int maxint(int a, int b) {
 /**
  * определение высоты дерева по высотам его поддеревьев
  * @param  root ненулевой указатель на дерево
- * @return      высота дерева
+ * @return      высота дерева (верна только если высоты поддеревьев верны)
  */
 int height_avl(avl_tree* root) {
 	return maxint(((root->left) ? root->left->height : 0), ((root->right) ? root->right->height : 0)) + 1;
@@ -104,7 +104,7 @@ avl_tree* avl_rotation (avl_tree* root) {
 			}
 			break;
 		default:
-			root->height = maxint(((root->left) ? root->left->height : 0), ((root->right) ? root->right->height : 0)) + 1;	
+			root->height = height_avl(root);	
 			break;
 	}
 	return root;
