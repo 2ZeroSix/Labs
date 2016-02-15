@@ -5,19 +5,19 @@
 
 #define type_tree int // тип значений элементов дерева
 typedef struct _avl_tree{
+	unsigned char height;
 	type_tree val;
-	int height;
 	struct _avl_tree* left;
 	struct _avl_tree* right;
 }avl_tree;
 
 /**
- * максимальный из данных элементов
+ * наибольший из данных элементов unsigned char
  * @param  a
  * @param  b
- * @return max
+ * @return наибольший
  * */
-int maxint(int a, int b) {
+unsigned char maxuchar(unsigned char a, unsigned char b) {
 	return (a > b) ? a : b;
 }
 
@@ -26,8 +26,8 @@ int maxint(int a, int b) {
  * @param  root ненулевой указатель на дерево
  * @return      высота дерева (верна только если высоты поддеревьев верны)
  */
-int height_avl(avl_tree* root) {
-	return maxint(((root->left) ? root->left->height : 0), ((root->right) ? root->right->height : 0)) + 1;
+unsigned char height_avl(avl_tree* root) {
+	return maxuchar(((root->left) ? root->left->height : 0), ((root->right) ? root->right->height : 0)) + 1;
 }
 
 /**
