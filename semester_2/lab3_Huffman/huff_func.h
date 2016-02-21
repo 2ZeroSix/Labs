@@ -1,6 +1,9 @@
 #ifndef _HUFF_FUNC_H
 #define _HUFF_FUNC_H
 
+#include <stdio.h>
+#include <stdlib.h>
+
 #define table_type_hf int // тип таблицы
 #define table_width_hf 256 // кол-во элементов в таблице
 #define table_counter_hf unsigned char // тип необходимый для хранения индекса таблицы

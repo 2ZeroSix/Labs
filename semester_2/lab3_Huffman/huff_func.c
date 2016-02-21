@@ -48,15 +48,21 @@ tree_hf* take_tree_ord_hf(queue_hf** queue) {
 	return tkd;
 }
 
-queue_hf* queue_from_table_hf(table_hf* table) {
+queue_hf* queue_from_table_hf(table_hf* table, table_counter_hf* count) {
 	table_counter_hf i;
 	queue_hf* queue = (queue_hf*)calloc(1, sizeof(queue_hf));
+	if (count) {
+		(count*)++;
+	}
 	for (i = 0; i < table_width_hf; i++) {
 		if(table[i]) {
 			tree_hf* new = (tree_hf*)calloc(1, sizeof(tree_hf));
 			new->code = i;
 			new->count = table[i];
 			queue = push_ord_hf(queue, new);
+			if (count) {
+				(count*)++;
+			}
 		}
 	}
 	return queue;
@@ -64,6 +70,9 @@ queue_hf* queue_from_table_hf(table_hf* table) {
 
 tree_hf* merge_tree_hf(tree_hf* root1, tree_hf* root2) {
 	tree_hf* new = (tree_hf*)calloc(1, sizeof(tree_hf));
+	new->left = root1;
+	new->right = root2;
+	return new;
 }
 
 tree_hf* tree_from_queue_hf(queue_hf* queue) {
@@ -76,8 +85,9 @@ tree_hf* tree_from_queue_hf(queue_hf* queue) {
 	return take_tree_ord_hf(&queue);
 }
 
-long long* table_from_tree_hf() {
+long long* table_from_tree_hf(tree_hf* root) {
 	long long* table = (long long*)calloc()
+
 }
 
 void write_tree_hf(FILE* out, tree_hf* root) {
@@ -88,3 +98,6 @@ void compress_file_hf(FILE* in, FILE* out, ) {
 
 }
 
+void complete_compress_hf(FILE*in, FILE* out){
+
+}
