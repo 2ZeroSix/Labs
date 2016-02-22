@@ -52,7 +52,7 @@ queue_hf* queue_from_table_hf(table_hf* table, table_counter_hf* count) {
 	table_counter_hf i;
 	queue_hf* queue = (queue_hf*)calloc(1, sizeof(queue_hf));
 	if (count) {
-		(count*)++;
+		(count*) = 0;
 	}
 	for (i = 0; i < table_width_hf; i++) {
 		if(table[i]) {
