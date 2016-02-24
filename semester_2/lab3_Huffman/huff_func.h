@@ -3,14 +3,14 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-
+// таблица частот
 #define table_type_hf int // тип таблицы
 #define table_width_hf 256 // кол-во элементов в таблице
 #define table_counter_hf unsigned char // тип необходимый для хранения индекса таблицы
 
 typedef struct _tree_hf{
-  char code;
-  table_type_hf count; //необходимо обнулять, т.к. ненулевое значение является сигналом о наличии символа
+  char code; //код символа
+  table_type_hf count;
   struct _tree_hf* left;
   struct _tree_hf* right;
 }tree_hf;
@@ -20,10 +20,11 @@ typedef struct _queue_hf {
   struct _queue_hf* next;
 }queue_hf;
 
-#define sym_code_MAXbts_hf 63
-#define sym_code_code_hf unsigned long long
-#define sym_code_bts_hf unsigned char
+#define sym_code_MAXbts_hf 64 // максимальное кол-во значимых бит
+#define sym_code_code_hf unsigned long long // тип для кода символа
+#define sym_code_bts_hf unsigned char // тип для хранения кол-ва значимых бит
 
+//элемент таблицы кодов символов
 typedef struct _sym_code {
   unsigned long long code; // код после сжатия
   unsigned char bts; // кол-во значимых бит
@@ -36,7 +37,7 @@ typedef struct _sym_code {
  * @param  count кол-во встреч этого символа
  * @return       очередь с приоритетом (по возрастанию) с добавленным элементом
  */
-queue_hf* push_ord_hf(queue_hf* queue, table_type_hf code, table_counter_hf count);
+queue_hf* push_ord_hf(queue_hf* queue, tree_hf* new);
 
 /**
  * достает хранящееся в голове очереди дерево
@@ -59,7 +60,7 @@ table_type_hf* file_table_hf(FILE* in);
  * @param  table корректная таблица частот
  * @return       очередь с приоритетом (по возрастанию) (состоит из деревьев единичной высоты)
  */
-queue_hf* queue_from_table_hf(table_hf* table);
+queue_hf* queue_from_table_hf(table_type_hf* table);
 
 /**
  * слияние деревьев
@@ -82,7 +83,7 @@ tree_hf* tree_from_queue_hf(queue_hf* queue);
  * @param table указатель на таблицу из 256 элементов(либо на нулевую)
  * @param cur   текущее состояние(для начала работы должно быть {0, 0})
  */
-void depth_table_hf(tree* root, sym_code* table, sym_code cur);
+void depth_table_hf(tree_hf* root, sym_code* table, sym_code cur);
 
 /**
  * полное построение таблицы из дерева
@@ -97,5 +98,7 @@ sym_code* table_from_tree_hf(tree_hf* root);
  * @param cur новый символ
  */
 void write_code_hf(FILE* out, sym_code cur);
+
+void complete_compress_hf(FILE*in, FILE* out);
 
 #endif
