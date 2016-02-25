@@ -99,6 +99,11 @@ sym_code* table_from_tree_hf(tree_hf* root);
  */
 void write_code_hf(FILE* out, sym_code cur);
 
+/**
+ * полное сжатие файла
+ * @param in  ненулевой указатель на входной файл
+ * @param out ненулевой указатель на выходной файл
+ */
 void complete_compress_hf(FILE*in, FILE* out);
 
 #endif
