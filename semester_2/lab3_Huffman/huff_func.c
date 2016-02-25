@@ -232,19 +232,19 @@ char read_byte_hf(FILE* in) {
 	char i;
 	unsigned char c = 0;
 	for (i = 0; i < 8; i++) {
-		c = (c << 1) | read_bit_hf();
+		c = (c << 1) | read_bit_hf(in);
 	}
 	return (char)c;
 }
 
 tree_hf* tree_from_file_hf(FILE* in) {
 	tree_hf* root = (tree_hf*)calloc(1, sizeof(tree_hf));
-	if(read_bit_hf()) {
-		root->code = read_byte_hf();
+	if(read_bit_hf(in)) {
+		root->code = read_byte_hf(in);
 	}
 	else {
-		root->left = tree_from_file_dhf(in);
-		root->right = tree_from_file_dhf(in);
+		root->left = tree_from_file_hf(in);
+		root->right = tree_from_file_hf(in);
 	}
 	return root;
 }
@@ -253,7 +253,7 @@ void decompress_file_hf(FILE* in, FILE* out, tree_hf* root, unsigned long long c
 	unsigned long long i;
 	tree_hf* cur = root;
 	for (i = 0; i < count; i++) {
-		if(read_bit_hf()) {
+		if(read_bit_hf(in)) {
 			if(cur->right)	{
 				cur = cur->right;
 			}

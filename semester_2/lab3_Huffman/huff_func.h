@@ -159,7 +159,7 @@ char read_bit_hf(FILE* in);
  * @param  in ненулевой указатель на входной поток
  * @return    один байт типом char
  */
-char read_byte_hf(FILE* in)
+char read_byte_hf(FILE* in);
 
 /**
  * восстановление дерева

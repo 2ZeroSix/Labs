@@ -8,7 +8,7 @@ int main() {
 	fclose(in);
 	fclose(out);
 	in = fopen("out", "rb");
-	out = fopen("test", "w");
+	out = fopen("test.txt", "w");
 	complete_decompres_hf(in, out);
 	fclose(in);
 	fclose(out);
