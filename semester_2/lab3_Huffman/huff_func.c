@@ -74,22 +74,16 @@ tree_hf* take_tree_ord_hf(queue_hf** queue) {
 	}
 }
 
-queue_hf* queue_from_table_hf(table_type_hf* table) {//, table_counter_hf* count) {
+queue_hf* queue_from_table_hf(table_type_hf* table) {
 	if(table) {
 		int i;
 		queue_hf* queue = NULL;
-		// if (count) {
-		// 	(count*) = 0;
-		// }
 		for (i = 0; i < table_width_hf; i++) {
 			if(table[i]) {
 				tree_hf* new = (tree_hf*)calloc(1, sizeof(tree_hf));
 				new->code = i;
 				new->count = table[i];
 				queue = push_ord_hf(queue, new);
-				// if (count) {
-				// 	(count*)++;
-				// }
 			}
 		}
 		return queue;
@@ -224,4 +218,24 @@ void complete_compress_hf(FILE*in, FILE* out){
 	compress_file_hf(in, out, tmp_table_out);
 	free(tmp_table_out);
 	return;
+}
+
+
+tree_hf* tree_from_file_dhf(FILE* in, root) {
+	char go = 1;
+	if(!root) {
+		root = (tree_hf*)calloc(1, sizeof(tree_hf));
+	}
+	while (go) {
+		if(read_bit_dhf()) {
+
+		}
+		else {
+
+		}
+	}
+}
+
+void complete_decompres_dhf(FILE* in, FILE* out) {
+
 }
