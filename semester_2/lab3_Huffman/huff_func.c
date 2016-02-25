@@ -3,10 +3,10 @@
 
 char isleaf_hf(tree_hf* root) {
 	if(root && root->left && root->right) {
-		return 1;
+		return 0;
 	}
 	else {
-		return 0;
+		return 1;
 	}
 } 
 
@@ -54,9 +54,6 @@ queue_hf* push_ord_hf(queue_hf* queue, tree_hf* new) {
 		else {
 			queue = tmp;
 		}
-	}
-	else {
-		return NULL;
 	}
 	return queue;
 }
@@ -113,7 +110,7 @@ void depth_table_hf(tree_hf* root, sym_code* table, sym_code cur) {
   if (!root || !table) {
     return;
   }
-  if(!isleaf_hf(root)) {
+  if(isleaf_hf(root)) {
   	table[root->code] = cur;
   }
   cur.code = cur.code << 1;
@@ -127,7 +124,7 @@ sym_code* table_from_tree_hf(tree_hf* root) {
 	if (root) {
 		sym_code* table = (sym_code*)calloc(256, sizeof(sym_code));
 		sym_code cur = {0, 0};
-		if (isleaf_hf(root)) {
+		if (!isleaf_hf(root)) {
 			depth_table_hf(root, table, cur);
 		}
 		else {
@@ -175,12 +172,12 @@ void write_count_hf(FILE* out, table_type_hf* table_in, sym_code* table_out) {
 	for (i = 0; i < table_width_hf; i++) {
 		count+=table_in[i] * (table_out[i]).bts;
 	}
-	printf("%llu", count);
+	printf("Кол-во бит: %llu", count);
 	fwrite(&count, 1, sizeof(unsigned long long), out);
 }
 
 void write_tree_hf(FILE* out, tree_hf* root) {
-	if(isleaf_hf(root)){
+	if(!isleaf_hf(root)){
 		static sym_code tmp = {0,1};
 		write_code_hf(out, tmp);
 		write_tree_hf(out, root->left);
@@ -221,21 +218,53 @@ void complete_compress_hf(FILE*in, FILE* out){
 }
 
 
-tree_hf* tree_from_file_dhf(FILE* in, root) {
-	char go = 1;
-	if(!root) {
-		root = (tree_hf*)calloc(1, sizeof(tree_hf));
-	}
-	while (go) {
-		if(read_bit_dhf()) {
+char read_bit_hf(FILE* in) {
+	static unsigned char buf = 0, pos = 0;
 
+}
+
+tree_hf* tree_from_file_hf(FILE* in) {
+	tree_hf* root = (tree_hf*)calloc(1, sizeof(tree_hf));
+	if(read_bit_hf()) {
+		root->code = read_byte_hf();
+	}
+	else {
+		root->left = tree_from_file_dhf(in);
+		root->right = tree_from_file_dhf(in);
+	}
+	return root;
+}
+
+void decompress_file_hf(FILE* in, FILE* out, tree_hf* root, unsigned long long count) {
+	unsigned long long i;
+	tree_hf* cur = root;
+	for (i = 0; i < count; i++) {
+		if(read_bit_hf()) {
+			if(cur->right)	{
+				cur = cur->right;
+			}
+			else {
+				fprintf(out, "%d", cur->code);
+				cur = (root->right) ? root->right : root;
+			}
 		}
 		else {
-
+			if (cur->left) {
+				cur = cur->right;
+			}
+			else {
+				fprintf(out, "%d", cur->code);
+				cur = (root->left) ? root->left : root;
+			}
 		}
 	}
 }
 
-void complete_decompres_dhf(FILE* in, FILE* out) {
+
+void complete_decompres_hf(FILE* in, FILE* out) {
+	tree_hf* root;
+	unsigned long long count;
+	fread(&count, sizeof(unsigned long long), 1, in);
+	root = tree_from_file_dhf(in);
 
 }

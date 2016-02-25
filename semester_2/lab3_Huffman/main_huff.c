@@ -7,5 +7,10 @@ int main() {
 	complete_compress_hf(in , out);
 	fclose(in);
 	fclose(out);
+	in = fopen("out", "rb");
+	out = fopen("test", "w");
+	complete_decompres_hf(in, out);
+	fclose(in);
+	fclose(out);
 	return 0;
 }
