@@ -219,8 +219,22 @@ void complete_compress_hf(FILE*in, FILE* out){
 
 
 char read_bit_hf(FILE* in) {
-	static unsigned char buf = 0, pos = 0;
+	static unsigned long long buf_dec_hf = 0;
+	static unsigned char pos_dec_hf = 64;
+	if (pos_dec_hf == 64) {
+		fread(&buf_dec_hf, sizeof(unsigned long long), 1, in);
+		pos_dec_hf = 0;
+	}
+	return (char)((buf_dec_hf >> pos_dec_hf++) % 2);
+}
 
+char read_byte_hf(FILE* in) {
+	char i;
+	unsigned char c = 0;
+	for (i = 0; i < 8; i++) {
+		c = (c << 1) | read_bit_hf();
+	}
+	return (char)c;
 }
 
 tree_hf* tree_from_file_hf(FILE* in) {
@@ -265,6 +279,6 @@ void complete_decompres_hf(FILE* in, FILE* out) {
 	tree_hf* root;
 	unsigned long long count;
 	fread(&count, sizeof(unsigned long long), 1, in);
-	root = tree_from_file_dhf(in);
-
+	root = tree_from_file_hf(in);
+	decompress_file_hf(in, out, root, count);
 }
