@@ -11,10 +11,10 @@ char isleaf_hf(tree_hf* root) {
 } 
 
 table_type_hf* file_table_hf(FILE* in) {
-	int c;
+	unsigned char c = 0;
 	table_type_hf* table = (table_type_hf*)calloc(table_width_hf, sizeof(table_type_hf));
-	while((c = getc(in)) != EOF) {
-		table[(unsigned char)c]++;
+	while(fread(&c, sizeof(unsigned char), 1, in)) {
+		table[c]++;
 	}
 	return table;
 }
@@ -111,6 +111,7 @@ void depth_table_hf(tree_hf* root, sym_code* table, sym_code cur) {
     return;
   }
   if(isleaf_hf(root)) {
+	printf("%c %d: code: %llu, %u\n", root->code, root->code, cur.code, cur.bts);
   	table[root->code] = cur;
   }
   cur.code = cur.code << 1;
@@ -172,7 +173,7 @@ void write_count_hf(FILE* out, table_type_hf* table_in, sym_code* table_out) {
 	for (i = 0; i < table_width_hf; i++) {
 		count+=table_in[i] * (table_out[i]).bts;
 	}
-	printf("Кол-во бит: %llu", count);
+	printf("Count: %llu", count);
 	fwrite(&count, 1, sizeof(unsigned long long), out);
 }
 
@@ -218,17 +219,17 @@ void complete_compress_hf(FILE*in, FILE* out){
 }
 
 
-char read_bit_hf(FILE* in) {
+unsigned char read_bit_hf(FILE* in) {
 	static unsigned long long buf_dec_hf = 0;
 	static unsigned char pos_dec_hf = 64;
 	if (pos_dec_hf == 64) {
 		fread(&buf_dec_hf, sizeof(unsigned long long), 1, in);
 		pos_dec_hf = 0;
 	}
-	return (char)((buf_dec_hf >> pos_dec_hf++) % 2);
+	return ((buf_dec_hf >> (63 - pos_dec_hf++)) % 2);
 }
 
-char read_byte_hf(FILE* in) {
+unsigned char read_byte_hf(FILE* in) {
 	char i;
 	unsigned char c = 0;
 	for (i = 0; i < 8; i++) {
@@ -258,22 +259,23 @@ void decompress_file_hf(FILE* in, FILE* out, tree_hf* root, unsigned long long c
 				cur = cur->right;
 			}
 			else {
-				fprintf(out, "%d", cur->code);
+//				printf("%c", cur->code);
+				fwrite(&(cur->code), sizeof(sym_code), 1, out);
 				cur = (root->right) ? root->right : root;
 			}
 		}
 		else {
 			if (cur->left) {
-				cur = cur->right;
+				cur = cur->left;
 			}
 			else {
-				fprintf(out, "%d", cur->code);
+//				printf("%c", cur->code);
+				fwrite(&(cur->code), sizeof(sym_code), 1, in);
 				cur = (root->left) ? root->left : root;
 			}
 		}
 	}
 }
-
 
 void complete_decompres_hf(FILE* in, FILE* out) {
 	tree_hf* root;
@@ -281,4 +283,5 @@ void complete_decompres_hf(FILE* in, FILE* out) {
 	fread(&count, sizeof(unsigned long long), 1, in);
 	root = tree_from_file_hf(in);
 	decompress_file_hf(in, out, root, count);
+	// depth_tree_free_hf(tmp_tree); //сделать
 }

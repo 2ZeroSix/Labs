@@ -8,13 +8,15 @@
 #define table_width_hf 256 // кол-во элементов в таблице
 #define table_counter_hf unsigned char // тип необходимый для хранения индекса таблицы
 
+// дерево для сжатия и восстановления
 typedef struct _tree_hf{
-  char code; //код символа
-  table_type_hf count;
+  unsigned char code; //код символа
+  table_type_hf count; // кол-во встреч этого символа
   struct _tree_hf* left;
   struct _tree_hf* right;
 }tree_hf;
 
+//очередь деревьев
 typedef struct _queue_hf {
   tree_hf* root;
   struct _queue_hf* next;
@@ -26,8 +28,8 @@ typedef struct _queue_hf {
 
 //элемент таблицы кодов символов
 typedef struct _sym_code {
-  unsigned long long code; // код после сжатия
-  unsigned char bts; // кол-во значимых бит
+  sym_code_code_hf code; // код после сжатия
+  sym_code_bts_hf bts; // кол-во значимых бит
 }sym_code;
 
 /**
@@ -152,14 +154,14 @@ void complete_compress_hf(FILE*in, FILE* out);
  * @param  in ненулевой указатель на входной поток
  * @return    1 и 0 соответственно
  */
-char read_bit_hf(FILE* in);
+unsigned char read_bit_hf(FILE* in);
 
 /**
  * чтение одного байта с помощью буфера(для правильного считывания при использовании функции read_bit_hf)
  * @param  in ненулевой указатель на входной поток
  * @return    один байт типом char
  */
-char read_byte_hf(FILE* in);
+unsigned char read_byte_hf(FILE* in);
 
 /**
  * восстановление дерева
