@@ -111,7 +111,7 @@ void depth_table_hf(tree_hf* root, sym_code* table, sym_code cur) {
     return;
   }
   if(isleaf_hf(root)) {
-	printf("%c %d: code: %llu, %u\n", root->code, root->code, cur.code, cur.bts);
+	printf("%c %u: code: %llu, %u\n", root->code, root->code, cur.code, cur.bts);
   	table[root->code] = cur;
   }
   cur.code = cur.code << 1;
@@ -178,6 +178,7 @@ void write_count_hf(FILE* out, table_type_hf* table_in, sym_code* table_out) {
 }
 
 void write_tree_hf(FILE* out, tree_hf* root) {
+	printf("write_tree_hf\n");
 	if(!isleaf_hf(root)){
 		static sym_code tmp = {0,1};
 		write_code_hf(out, tmp);
@@ -189,14 +190,15 @@ void write_tree_hf(FILE* out, tree_hf* root) {
 		write_code_hf(out, tmp);
 		tmp.code = root->code;
 		tmp.bts = 8;
+		printf("%u: %c\n", tmp.code, tmp.code);
 		write_code_hf(out, tmp);
 	}
 }
 
 void compress_file_hf(FILE* in, FILE* out, sym_code* table) {
-	int c;
+	unsigned char c;
 	sym_code end = {0,0};
-	while ((c = getc(in)) != EOF) {
+	while (fread(&c, sizeof(unsigned char), 1, in)) {
 		write_code_hf(out, table[(unsigned char)c]);
 	}
 	write_code_hf(out, end);
@@ -235,7 +237,7 @@ unsigned char read_byte_hf(FILE* in) {
 	for (i = 0; i < 8; i++) {
 		c = (c << 1) | read_bit_hf(in);
 	}
-	return (char)c;
+	return c;
 }
 
 tree_hf* tree_from_file_hf(FILE* in) {
