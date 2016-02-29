@@ -161,7 +161,7 @@ void write_code_hf(FILE* out, sym_code cur) {
 	static sym_code_bts_hf pos = 0;
 	if (cur.bts) {
 		if (pos + cur.bts >= sym_code_MAXbts_hf) {
-			static long int weight = sizeof(sym_code_code_hf) / sizeof(unsigned char);
+			static size_t weight = sizeof(sym_code_code_hf) / sizeof(unsigned char);
 			tmp = ((tmp << (sym_code_MAXbts_hf - pos)) + (cur.code >> (cur.bts - sym_code_MAXbts_hf + pos)));
 			fwrite(&tmp, sizeof(unsigned char), weight, out);
 			cur.bts -= sym_code_MAXbts_hf - pos;
@@ -174,8 +174,8 @@ void write_code_hf(FILE* out, sym_code cur) {
 	}
 	else {
 		if (pos) {
-			tmp = tmp << ((sym_code_MAXbts_hf - pos) % sizeof(sym_code_code_hf));                                      //обрезание незначащих байт
-			fwrite(&tmp, sizeof(unsigned char), (pos - 1 + sizeof(sym_code_code_hf)) / sizeof(sym_code_code_hf), out); //и запись значащих в файл
+			tmp = tmp << ((sym_code_MAXbts_hf - pos) % (sym_code_code_hf)sizeof(sym_code_code_hf));                                      //обрезание незначащих байт
+			fwrite(&tmp, sizeof(unsigned char), (pos - 1 + (sym_code_code_hf)sizeof(sym_code_code_hf)) / (sym_code_code_hf)sizeof(sym_code_code_hf), out); //и запись значащих в файл
 		}
 	}
 }
@@ -206,10 +206,12 @@ void write_tree_hf(FILE* out, tree_hf* root) {
 }
 
 void compress_file_hf(FILE* in, FILE* out, sym_code* table) {
-	sym_code_bts_hf c;
+	sym_code_bts_hf c[1024];
 	sym_code end = {0,0};
-	while (fread(&c, sizeof(sym_code_bts_hf), 1, in)) {
-		write_code_hf(out, table[c]);
+	int count, i;
+	while (count = fread(&c, sizeof(sym_code_bts_hf), 1024, in)) {
+		for (i = 0; i < count; i++)
+			write_code_hf(out, table[c[i]]);
 	}
 	write_code_hf(out, end);
 }

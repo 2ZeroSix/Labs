@@ -184,7 +184,7 @@ sym_code_bts_hf read_byte_hf(FILE* in);
  */
 tree_hf* tree_from_file_hf(FILE* in);
 
-#define counter_dhf unsigned int
+#define counter_dhf unsigned int //тип переменной для хранения кол-ва бит в файле
 /**
  * восстановление сжатого файла
  * @param in    ненулевой указатель на входной поток
