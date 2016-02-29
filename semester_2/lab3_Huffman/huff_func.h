@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 // таблица частот
-#define table_type_hf int // тип таблицы
+#define table_type_hf unsigned long long // тип таблицы
 #define table_width_hf 256 // кол-во элементов в таблице
 #define table_counter_hf unsigned char // тип необходимый для хранения индекса таблицы
 
@@ -75,6 +75,12 @@ tree_hf* take_tree_ord_hf(queue_hf** queue);
 queue_hf* queue_from_table_hf(table_type_hf* table);
 
 /**
+ * очистка памяти из под очереди(удаляются также и деревья, хранящиеся в ней)
+ * @param queue указатель на очередь
+ */
+void queue_free_hf(queue_hf* queue);
+
+/**
  * слияние деревьев
  * @param  root1 ненулевой указатель на дерево
  * @param  root2 ненулевой указатель на дерево
@@ -84,11 +90,17 @@ tree_hf* merge_tree_hf(tree_hf* root1, tree_hf* root2);
 
 /**
  * построение дерева из очереди с приоритетом
- * @param  queue очередь с приоритетом (по возрастанию)
+ * @param  queue очередь с приоритетом (по возрастанию) (во время работы функции память из под очереди очищается)
  * @return       Если queue ненулевой, то готовое дерево (построенное для алгоритма сжатия хаффмана)
  *               Иначе NULL
  */
 tree_hf* tree_from_queue_hf(queue_hf* queue);
+
+/**
+ * очистка памяти из под дерева
+ * @param root указатель на дерево
+ */
+void depth_tree_free_hf(tree_hf* root);
 
 /**
  * построение таблицы из дерева проходом в глубину
@@ -150,6 +162,7 @@ void compress_file_hf(FILE* in, FILE* out, sym_code* table);
  */
 void complete_compress_hf(FILE*in, FILE* out, long int shift);
 
+
 /**
  * чтение одного бита с помощью буфера
  * @param  in ненулевой указатель на входной поток
@@ -171,7 +184,6 @@ sym_code_bts_hf read_byte_hf(FILE* in);
  */
 tree_hf* tree_from_file_hf(FILE* in);
 
-
 #define counter_dhf unsigned int
 /**
  * восстановление сжатого файла
@@ -186,6 +198,7 @@ void decompress_file_hf(FILE* in, FILE* out, tree_hf* root, counter_dhf count);
  * полное восстановление сжатого файла
  * @param in  ненулевой указатель на входной поток
  * @param out ненулевой указатель на выходной поток
+ * @param shift кол-во байт в начале файла, которые нужно пропустить
  */
 void complete_decompres_hf(FILE* in, FILE* out, long int shift);
 

@@ -58,17 +58,6 @@ queue_hf* push_ord_hf(queue_hf* queue, tree_hf* new) {
 	return queue;
 }
 
-tree_hf* take_tree_ord_hf(queue_hf** queue) {
-	if(queue && (*queue)) {
-		tree_hf* tkd = (*queue)->root;
-		queue_hf* tmp = *queue;
-		(*queue) = (*queue)->next;
-		free(tmp);
-		return tkd;
-	}
-	return NULL;
-}
-
 queue_hf* queue_from_table_hf(table_type_hf* table) {
 	if(table) {
 		int i;
@@ -88,10 +77,30 @@ queue_hf* queue_from_table_hf(table_type_hf* table) {
 	}
 }
 
+void queue_free_hf(queue_hf* queue) {
+	if(queue) {
+		queue_hf* cur =  queue->next;
+		depth_tree_free_hf(queue->root);
+		free(queue);
+		queue_free_hf(cur);
+	}
+}
+
 tree_hf* merge_tree_hf(tree_hf* root1, tree_hf* root2) {
 	tree_hf* new = (tree_hf*)calloc(1, sizeof(tree_hf));
 	new->count = (new->left = root1)->count + (new->right = root2)->count;
 	return new;
+}
+
+tree_hf* take_tree_ord_hf(queue_hf** queue) {
+	if(queue && (*queue)) {
+		tree_hf* tkd = (*queue)->root;
+		queue_hf* tmp = *queue;
+		(*queue) = (*queue)->next;
+		free(tmp);
+		return tkd;
+	}
+	return NULL;
 }
 
 tree_hf* tree_from_queue_hf(queue_hf* queue) {
@@ -104,12 +113,21 @@ tree_hf* tree_from_queue_hf(queue_hf* queue) {
 	return take_tree_ord_hf(&queue);
 }
 
+void depth_tree_free_hf(tree_hf* root) {
+	if (root) {
+		tree_hf* left = root->left;
+		tree_hf* right = root->right;
+		free(root);
+		depth_tree_free_hf(left);
+		depth_tree_free_hf(right);
+	}
+}
+
 void depth_table_hf(tree_hf* root, sym_code* table, sym_code cur) {
   if (!root || !table) {
     return;
   }
   if(isleaf_hf(root)) {
-	// printf("%c %u: code: %llu, %u\n", root->code, root->code, cur.code, cur.bts);
   	table[root->code] = cur;
   }
   cur.code = cur.code << 1;
@@ -141,33 +159,23 @@ sym_code* table_from_tree_hf(tree_hf* root) {
 void write_code_hf(FILE* out, sym_code cur) {
 	static sym_code_code_hf tmp = 0;
 	static sym_code_bts_hf pos = 0;
-	// printf("w_c: %llu, %u, %c. 	\n", cur.code, cur.bts, cur.code);
 	if (cur.bts) {
 		if (pos + cur.bts >= sym_code_MAXbts_hf) {
+			static long int weight = sizeof(sym_code_code_hf) / sizeof(unsigned char);
 			tmp = ((tmp << (sym_code_MAXbts_hf - pos)) + (cur.code >> (cur.bts - sym_code_MAXbts_hf + pos)));
-			fwrite(&tmp, sizeof(sym_code_code_hf), 1, out);
-			// printf("1: tmp: %llu; pos: %u; cur.code: %llu; cur.bts: %u\t", tmp, pos, cur.code, cur.bts);
+			fwrite(&tmp, sizeof(unsigned char), weight, out);
 			cur.bts -= sym_code_MAXbts_hf - pos;
-			// printf("2: tmp: %llu; pos: %u; cur.code: %llu; cur.bts: %u\t", tmp, pos, cur.code, cur.bts);
 			cur.code = (cur.code << (sym_code_MAXbts_hf - cur.bts)) >> (sym_code_MAXbts_hf - cur.bts);
-			// printf("3: tmp: %llu; pos: %u; cur.code: %llu; cur.bts: %u\n", tmp, pos, cur.code, cur.bts);
 			pos = 0;
 			tmp = 0;
 		}
 		tmp = (tmp << cur.bts) | cur.code;
 		pos += cur.bts;
-		// printf("4: tmp: %llu; pos: %u; cur.code: %llu; cur.bts: %u\n", tmp, pos, cur.code, cur.bts);
 	}
 	else {
 		if (pos) {
-			// printf("5: tmp: %llu; pos: %u; cur.code: %llu; cur.bts: %u\n", tmp, pos, cur.code, cur.bts);
-			tmp = (tmp << (sym_code_MAXbts_hf - pos));
-			// printf("5: tmp: %llu; pos: %u; cur.code: %llu; cur.bts: %u\n", tmp, pos, cur.code, cur.bts);
-			// while(tmp){
-			// 	fwrite(&tmp, sizeof(unsigned char), 1, out);
-			// 	tmp = tmp >> sizeof(unsigned char);
-			// }
-			fwrite(&tmp, sizeof(sym_code_code_hf), 1, out);
+			tmp = tmp << ((sym_code_MAXbts_hf - pos) % sizeof(sym_code_code_hf));                                      //обрезание незначащих байт
+			fwrite(&tmp, sizeof(unsigned char), (pos - 1 + sizeof(sym_code_code_hf)) / sizeof(sym_code_code_hf), out); //и запись значащих в файл
 		}
 	}
 }
@@ -178,7 +186,6 @@ void write_count_hf(FILE* out, table_type_hf* table_in, sym_code* table_out) {
 	for (i = 0; i < table_width_hf; i++) {
 		count+=table_in[i] * (table_out[i]).bts;
 	}
-	// printf("Count: %llu\n", count);
 	fwrite(&count, sizeof(counter_dhf), 1, out);
 }
 
@@ -194,7 +201,6 @@ void write_tree_hf(FILE* out, tree_hf* root) {
 		write_code_hf(out, tmp);
 		tmp.code = root->code;
 		tmp.bts = 8;
-		// printf("w_t_h: %u: %c\n", tmp.code, tmp.code);
 		write_code_hf(out, tmp);
 	}
 }
@@ -211,24 +217,22 @@ void compress_file_hf(FILE* in, FILE* out, sym_code* table) {
 void complete_compress_hf(FILE*in, FILE* out, long int shift){
 	table_type_hf* tmp_table_in;
 	queue_hf* tmp_queue = NULL;
-	_fseeki64(in, shift, SEEK_SET);
+	fseek(in, shift, SEEK_SET);
 	tmp_table_in = file_table_hf(in);
 	if((tmp_queue = queue_from_table_hf(tmp_table_in))){
 		tree_hf* tmp_tree;
 		sym_code* tmp_table_out;
 		tmp_tree = tree_from_queue_hf(tmp_queue);
 		tmp_table_out = table_from_tree_hf(tmp_tree);
-		// free_queue_hf(tmp_queue); // сделать
 		write_count_hf(out, tmp_table_in, tmp_table_out);
 		free(tmp_table_in);
 		write_tree_hf(out, tmp_tree);
-		// depth_tree_free_hf(tmp_tree); //сделать
-		_fseeki64(in, shift, SEEK_SET);
+		depth_tree_free_hf(tmp_tree);
+		fseek(in, shift, SEEK_SET);
 		compress_file_hf(in, out, tmp_table_out);
 		free(tmp_table_out);
 	}
 	else {
-		// free_queue_hf(tmp_queue); // сделать
 		free(tmp_table_in);		
 	}
 }
@@ -238,10 +242,14 @@ sym_code_bts_hf read_bit_hf(FILE* in) {
 	static sym_code_code_hf buf_dec_hf = 0;
 	static sym_code_bts_hf pos_dec_hf = sym_code_MAXbts_hf;
 	if (pos_dec_hf == sym_code_MAXbts_hf) {
-		fread(&buf_dec_hf, sizeof(sym_code_code_hf), 1, in);
+		unsigned char count;
+		long int weight = sizeof(sym_code_code_hf) / sizeof(unsigned char);
+		buf_dec_hf = 0;
+		if ((count = fread(&buf_dec_hf, sizeof(unsigned char), weight, in)) < (weight)) {
+			buf_dec_hf = buf_dec_hf << ((sizeof(sym_code_code_hf) - count)*8); // расшифровка хитрости, которую использовал при записи(write_code_hf под первым else) для обрезания незначащих байт
+		}
 		pos_dec_hf = 0;
 	}
-	// printf("r_bit: %u\n", ((buf_dec_hf >> (63 - pos_dec_hf)) % 2));
 	return ((buf_dec_hf >> (sym_code_MAXbts_hf - 1 - pos_dec_hf++)) % 2);
 }
 
@@ -251,7 +259,6 @@ sym_code_bts_hf read_byte_hf(FILE* in) {
 	for (i = 0; i < 8; i++) {
 		c = (c << 1) | read_bit_hf(in);
 	}
-	// printf("r_byte: %u, %c.\n", c, c);
 	return c;
 }
 
@@ -296,9 +303,9 @@ void decompress_file_hf(FILE* in, FILE* out, tree_hf* root, counter_dhf count) {
 void complete_decompres_hf(FILE* in, FILE* out, long int shift) {
 	tree_hf* root;
 	counter_dhf count;
-	_fseeki64(in, shift, SEEK_SET);
+	fseek(in, shift, SEEK_SET);
 	if(!fread(&count, sizeof(counter_dhf), 1, in)) return;
 	root = tree_from_file_hf(in);
 	decompress_file_hf(in, out, root, count);
-	// depth_tree_free_hf(tmp_tree); //сделать
+	depth_tree_free_hf(root);
 }
