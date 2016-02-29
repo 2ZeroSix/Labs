@@ -161,9 +161,8 @@ void write_code_hf(FILE* out, sym_code cur) {
 	static sym_code_bts_hf pos = 0;
 	if (cur.bts) {
 		if (pos + cur.bts >= sym_code_MAXbts_hf) {
-			static size_t weight = sizeof(sym_code_code_hf) / sizeof(unsigned char);
 			tmp = ((tmp << (sym_code_MAXbts_hf - pos)) + (cur.code >> (cur.bts - sym_code_MAXbts_hf + pos)));
-			fwrite(&tmp, sizeof(unsigned char), weight, out);
+			fwrite(&tmp, sizeof(sym_code_code_hf), 1, out);
 			cur.bts -= sym_code_MAXbts_hf - pos;
 			cur.code = (cur.code << (sym_code_MAXbts_hf - cur.bts)) >> (sym_code_MAXbts_hf - cur.bts);
 			pos = 0;
@@ -174,8 +173,8 @@ void write_code_hf(FILE* out, sym_code cur) {
 	}
 	else {
 		if (pos) {
-			tmp = tmp << ((sym_code_MAXbts_hf - pos) % (sym_code_code_hf)sizeof(sym_code_code_hf));                                      //обрезание незначащих байт
-			fwrite(&tmp, sizeof(unsigned char), (pos - 1 + (sym_code_code_hf)sizeof(sym_code_code_hf)) / (sym_code_code_hf)sizeof(sym_code_code_hf), out); //и запись значащих в файл
+			tmp = tmp << ((sym_code_MAXbts_hf - pos) % sizeof(sym_code_code_hf)); //обрезание незначащих байт
+			fwrite(&tmp, sizeof(unsigned char), (pos - 1 + sizeof(sym_code_code_hf)) / sizeof(sym_code_code_hf), out); //запись значащих в файл
 		}
 	}
 }
@@ -248,7 +247,7 @@ sym_code_bts_hf read_bit_hf(FILE* in) {
 		long int weight = sizeof(sym_code_code_hf) / sizeof(unsigned char);
 		buf_dec_hf = 0;
 		if ((count = fread(&buf_dec_hf, sizeof(unsigned char), weight, in)) < (weight)) {
-			buf_dec_hf = buf_dec_hf << ((sizeof(sym_code_code_hf) - count)*8); // расшифровка хитрости, которую использовал при записи(write_code_hf под первым else) для обрезания незначащих байт
+			buf_dec_hf = buf_dec_hf << ((sizeof(sym_code_code_hf) - count)*8); // расшифровка хитрости, которую использовал при записи(write_code_hf под первым else) для обрезания незначащих байт в конце вывода
 		}
 		pos_dec_hf = 0;
 	}
