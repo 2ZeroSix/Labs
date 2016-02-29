@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 // таблица частот
-#define table_type_hf int // тип таблицы
+#define table_type_hf long long // тип таблицы
 #define table_width_hf 256 // кол-во элементов в таблице
 #define table_counter_hf unsigned char // тип необходимый для хранения индекса таблицы
 
@@ -144,10 +144,11 @@ void compress_file_hf(FILE* in, FILE* out, sym_code* table);
 
 /**
  * полное сжатие файла
- * @param in  ненулевой указатель на входной файл (при переносе указателя на начало файла считается, что первые 3 символа в входном файле используются для выбора направления работы)
- * @param out ненулевой указатель на выходной файл
+ * @param in    ненулевой указатель на входной файл (при переносе указателя на начало файла считается, что первые 3 символа в входном файле используются для выбора направления работы)
+ * @param out   ненулевой указатель на выходной файл
+ * @param shift кол-во байт в начале файла, которые нужно пропустить
  */
-void complete_compress_hf(FILE*in, FILE* out);
+void complete_compress_hf(FILE*in, FILE* out, long int shift);
 
 /**
  * чтение одного бита с помощью буфера

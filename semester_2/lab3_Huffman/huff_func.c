@@ -58,7 +58,8 @@ queue_hf* push_ord_hf(queue_hf* queue, tree_hf* new) {
 	return queue;
 }
 
-tree_hf* take_tree_ord_hf(queue_hf** queue) {
+tree_hf* take_tree_ord_hf(queue_hf** queue)
+{
 	if(queue && (*queue)) {
 		tree_hf* tkd = (*queue)->root;
 		queue_hf* tmp = *queue;
@@ -66,9 +67,7 @@ tree_hf* take_tree_ord_hf(queue_hf** queue) {
 		free(tmp);
 		return tkd;
 	}
-	else {
-		return NULL;
-	}
+	return NULL;
 }
 
 queue_hf* queue_from_table_hf(table_type_hf* table) {
@@ -206,13 +205,14 @@ void compress_file_hf(FILE* in, FILE* out, sym_code* table) {
 	write_code_hf(out, end);
 }
 
-void complete_compress_hf(FILE*in, FILE* out){
-	table_type_hf* tmp_table_in = NULL;
+void complete_compress_hf(FILE*in, FILE* out, long int shift){
+	table_type_hf* tmp_table_in;
 	queue_hf* tmp_queue = NULL;
+	_fseeki64(in, shift, SEEK_SET);
 	tmp_table_in = file_table_hf(in);
-	if(tmp_queue = queue_from_table_hf(tmp_table_in)){
-		tree_hf* tmp_tree = NULL;
-		sym_code* tmp_table_out = NULL;
+	if((tmp_queue = queue_from_table_hf(tmp_table_in))){
+		tree_hf* tmp_tree;
+		sym_code* tmp_table_out;
 		tmp_tree = tree_from_queue_hf(tmp_queue);
 		tmp_table_out = table_from_tree_hf(tmp_tree);
 		// free_queue_hf(tmp_queue); // сделать
@@ -220,7 +220,7 @@ void complete_compress_hf(FILE*in, FILE* out){
 		free(tmp_table_in);
 		write_tree_hf(out, tmp_tree);
 		// depth_tree_free_hf(tmp_tree); //сделать
-		_fseeki64(in, 3, SEEK_SET);
+		_fseeki64(in, shift, SEEK_SET);
 		compress_file_hf(in, out, tmp_table_out);
 		free(tmp_table_out);
 	}
@@ -228,7 +228,6 @@ void complete_compress_hf(FILE*in, FILE* out){
 		// free_queue_hf(tmp_queue); // сделать
 		free(tmp_table_in);		
 	}
-	return;
 }
 
 
@@ -254,7 +253,7 @@ unsigned char read_byte_hf(FILE* in) {
 }
 
 tree_hf* tree_from_file_hf(FILE* in) {
-	tree_hf* root = NULL;
+	tree_hf* root;
 	if(read_bit_hf(in)) {
 		root = (tree_hf*)calloc(1, sizeof(tree_hf));
 		root->code = read_byte_hf(in);
@@ -291,9 +290,10 @@ void decompress_file_hf(FILE* in, FILE* out, tree_hf* root, unsigned long long c
 	}
 }
 
-void complete_decompres_hf(FILE* in, FILE* out) {
+void complete_decompres_hf(FILE* in, FILE* out, long int shift) {
 	tree_hf* root;
 	unsigned long long count;
+	_fseeki64(in, shift, SEEK_SET);
 	if(!fread(&count, sizeof(unsigned long long), 1, in)) return;
 	root = tree_from_file_hf(in);
 	decompress_file_hf(in, out, root, count);
