@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 // таблица частот
-#define table_type_hf long long // тип таблицы
+#define table_type_hf int // тип таблицы
 #define table_width_hf 256 // кол-во элементов в таблице
 #define table_counter_hf unsigned char // тип необходимый для хранения индекса таблицы
 
@@ -155,14 +155,14 @@ void complete_compress_hf(FILE*in, FILE* out, long int shift);
  * @param  in ненулевой указатель на входной поток
  * @return    1 и 0 соответственно
  */
-unsigned char read_bit_hf(FILE* in);
+sym_code_bts_hf read_bit_hf(FILE* in);
 
 /**
  * чтение одного байта с помощью буфера(для правильного считывания при использовании функции read_bit_hf)
  * @param  in ненулевой указатель на входной поток
  * @return    один байт типом char
  */
-unsigned char read_byte_hf(FILE* in);
+sym_code_bts_hf read_byte_hf(FILE* in);
 
 /**
  * восстановление дерева
@@ -171,6 +171,8 @@ unsigned char read_byte_hf(FILE* in);
  */
 tree_hf* tree_from_file_hf(FILE* in);
 
+
+#define counter_dhf unsigned int
 /**
  * восстановление сжатого файла
  * @param in    ненулевой указатель на входной поток
@@ -178,13 +180,13 @@ tree_hf* tree_from_file_hf(FILE* in);
  * @param root  восстановленное дерево
  * @param count кол-во бит сжатой информации(не учитывая дополнительной информации записанной в файле)
  */
-void decompress_file_hf(FILE* in, FILE* out, tree_hf* root, unsigned long long count);
+void decompress_file_hf(FILE* in, FILE* out, tree_hf* root, counter_dhf count);
 
 /**
  * полное восстановление сжатого файла
  * @param in  ненулевой указатель на входной поток
  * @param out ненулевой указатель на выходной поток
  */
-void complete_decompres_hf(FILE* in, FILE* out);
+void complete_decompres_hf(FILE* in, FILE* out, long int shift);
 
 #endif

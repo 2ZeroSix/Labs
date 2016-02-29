@@ -11,7 +11,7 @@ char isleaf_hf(tree_hf* root) {
 } 
 
 table_type_hf* file_table_hf(FILE* in) {
-	unsigned char c = 0;
+	sym_code_bts_hf c = 0;
 	table_type_hf* table = (table_type_hf*)calloc(table_width_hf, sizeof(table_type_hf));
 	while(fread(&c, sizeof(unsigned char), 1, in)) {
 		table[c]++;
@@ -58,8 +58,7 @@ queue_hf* push_ord_hf(queue_hf* queue, tree_hf* new) {
 	return queue;
 }
 
-tree_hf* take_tree_ord_hf(queue_hf** queue)
-{
+tree_hf* take_tree_ord_hf(queue_hf** queue) {
 	if(queue && (*queue)) {
 		tree_hf* tkd = (*queue)->root;
 		queue_hf* tmp = *queue;
@@ -164,19 +163,23 @@ void write_code_hf(FILE* out, sym_code cur) {
 			// printf("5: tmp: %llu; pos: %u; cur.code: %llu; cur.bts: %u\n", tmp, pos, cur.code, cur.bts);
 			tmp = (tmp << (sym_code_MAXbts_hf - pos));
 			// printf("5: tmp: %llu; pos: %u; cur.code: %llu; cur.bts: %u\n", tmp, pos, cur.code, cur.bts);
+			// while(tmp){
+			// 	fwrite(&tmp, sizeof(unsigned char), 1, out);
+			// 	tmp = tmp >> sizeof(unsigned char);
+			// }
 			fwrite(&tmp, sizeof(sym_code_code_hf), 1, out);
 		}
 	}
 }
 
 void write_count_hf(FILE* out, table_type_hf* table_in, sym_code* table_out) {
-	unsigned long long count = 0;
+	counter_dhf count = 0;
 	int i;
 	for (i = 0; i < table_width_hf; i++) {
 		count+=table_in[i] * (table_out[i]).bts;
 	}
 	// printf("Count: %llu\n", count);
-	fwrite(&count, sizeof(unsigned long long), 1, out);
+	fwrite(&count, sizeof(counter_dhf), 1, out);
 }
 
 void write_tree_hf(FILE* out, tree_hf* root) {
@@ -197,9 +200,9 @@ void write_tree_hf(FILE* out, tree_hf* root) {
 }
 
 void compress_file_hf(FILE* in, FILE* out, sym_code* table) {
-	unsigned char c;
+	sym_code_bts_hf c;
 	sym_code end = {0,0};
-	while (fread(&c, sizeof(unsigned char), 1, in)) {
+	while (fread(&c, sizeof(sym_code_bts_hf), 1, in)) {
 		write_code_hf(out, table[c]);
 	}
 	write_code_hf(out, end);
@@ -231,20 +234,20 @@ void complete_compress_hf(FILE*in, FILE* out, long int shift){
 }
 
 
-unsigned char read_bit_hf(FILE* in) {
-	static unsigned long long buf_dec_hf = 0;
-	static unsigned char pos_dec_hf = 64;
-	if (pos_dec_hf == 64) {
-		fread(&buf_dec_hf, sizeof(unsigned long long), 1, in);
+sym_code_bts_hf read_bit_hf(FILE* in) {
+	static sym_code_code_hf buf_dec_hf = 0;
+	static sym_code_bts_hf pos_dec_hf = sym_code_MAXbts_hf;
+	if (pos_dec_hf == sym_code_MAXbts_hf) {
+		fread(&buf_dec_hf, sizeof(sym_code_code_hf), 1, in);
 		pos_dec_hf = 0;
 	}
 	// printf("r_bit: %u\n", ((buf_dec_hf >> (63 - pos_dec_hf)) % 2));
-	return ((buf_dec_hf >> (63 - pos_dec_hf++)) % 2);
+	return ((buf_dec_hf >> (sym_code_MAXbts_hf - 1 - pos_dec_hf++)) % 2);
 }
 
-unsigned char read_byte_hf(FILE* in) {
+sym_code_bts_hf read_byte_hf(FILE* in) {
 	char i;
-	unsigned char c = 0;
+	sym_code_bts_hf c = 0;
 	for (i = 0; i < 8; i++) {
 		c = (c << 1) | read_bit_hf(in);
 	}
@@ -266,12 +269,12 @@ tree_hf* tree_from_file_hf(FILE* in) {
 	return root;
 }
 
-void decompress_file_hf(FILE* in, FILE* out, tree_hf* root, unsigned long long count) {
-	unsigned long long i;
+void decompress_file_hf(FILE* in, FILE* out, tree_hf* root, counter_dhf count) {
+	counter_dhf i;
 	tree_hf* cur = root;
 	for (i = 0; i < count; i++) {
 		if (isleaf_hf(cur)) {
-			fwrite(&(cur->code), sizeof(unsigned char), 1, out);
+			fwrite(&(cur->code), sizeof(sym_code_bts_hf), 1, out);
 			cur = root;
 		}
 		if(read_bit_hf(in)) {
@@ -286,15 +289,15 @@ void decompress_file_hf(FILE* in, FILE* out, tree_hf* root, unsigned long long c
 		}
 	}
 	if (isleaf_hf(cur) && !isleaf_hf(root)) {
-		fwrite(&(cur->code), sizeof(unsigned char), 1, out);
+		fwrite(&(cur->code), sizeof(sym_code_bts_hf), 1, out);
 	}
 }
 
 void complete_decompres_hf(FILE* in, FILE* out, long int shift) {
 	tree_hf* root;
-	unsigned long long count;
+	counter_dhf count;
 	_fseeki64(in, shift, SEEK_SET);
-	if(!fread(&count, sizeof(unsigned long long), 1, in)) return;
+	if(!fread(&count, sizeof(counter_dhf), 1, in)) return;
 	root = tree_from_file_hf(in);
 	decompress_file_hf(in, out, root, count);
 	// depth_tree_free_hf(tmp_tree); //сделать
