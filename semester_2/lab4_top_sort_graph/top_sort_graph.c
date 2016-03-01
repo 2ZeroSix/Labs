@@ -1,8 +1,8 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include "top_sort_graph.h"
 
-static unsigned char err_tsg = 0; //number of last error
-static char* err_tsg_dcp[6] = { //error description
+static unsigned char err_tsg = 0; //номер последней ошибки
+static char* err_tsg_dcp[6] = { //описания ошибок
 	"", //0
 	"bad number of vertices", //1
 	"bad number of edges", //2
@@ -37,60 +37,40 @@ void push_tsg(stack** head, int val) {
 }
 
 void free_stack_tsg(stack** head) {
-	stack* temp;
 	while(head && (*head))
 	{
+		stack* temp;
 		temp = (*head);
 		(*head) = (*head)->next;
 		free(temp);
 	}
 }
 
-void revert_stack_tsg(stack** head) {
-	stack *cur = NULL, *prev1 = NULL, *prev2 = NULL;
-	if(*head)
-		cur = *head;
-	while(cur)
-	{ 
-		if(prev1)
-		{
-			prev1->next = prev2; 
-		}
-		prev2 = prev1;
-		prev1 = cur;
-		cur = cur->next;
-	}
-	if (prev1)
-		prev1->next = prev2;
-	*head = prev1;
-	return;
-}
-
 char depth_sort_tsg(graph_tsg* gh, int pos, stack** stk) {
 	stack_graph_tsg* cur = gh[pos].edge;
-	gh[pos].color = 1;
+	gh[pos].color = 1; // пометка о посещении вершины
 	while(cur){
-		if(gh[cur->vertice].color == 0) {
+		if(gh[cur->vertice].color == 0) { // если не был в вершине ни разу
 			if (!depth_sort_tsg(gh, cur->vertice, stk)) {
 				return 0;
 			}
 		}
-		else if(gh[cur->vertice].color == 1) {
+		else if(gh[cur->vertice].color == 1) { // если уже был в вершине в этой рекурсии
 			return 0;
 		}
 		cur = cur->next;
 	}
-	gh[pos].color = 2;
+	gh[pos].color = 2; // пометка о том, что вершина уже в списке
 	push_tsg(stk, pos);
 	return 1;
 }
 
 stack* sort_tsg(FILE* out, graph_tsg* gh, int count) {
-	int i;
+	short	 i;
 	stack* stk = NULL;
 	for(i = 0; i < count; i++) {
-		if (gh[i].color != 2) {
-			if(!depth_sort_tsg(gh, i, &stk)) {
+		if (gh[i].color != 2) { // если вершина ещё не в списке
+			if(!depth_sort_tsg(gh, i, &stk)) { // если найден цикл
 				free_stack_tsg(&stk);
 				err_tsg = 5;
 				return NULL;
@@ -109,29 +89,14 @@ stack_graph_tsg* push_stack_graph_tsg(graph_tsg gh, int b) {
 
 graph_tsg* read_tsg(FILE* in, int *count) {
 	int N; // число вершин
-	int M; // число
+	int M; // число рёбер
 	int i, a, b;
 	graph_tsg* gh = NULL;
-	switch(fscanf(in, "%d%d", &N, &M)) {
-	case -1:
+	if(fscanf(in, "%d%d", &N, &M) < 2) { // если нет числа рёбер или вершин
 		err_tsg = 4;
 		return NULL;
-		break;
-	case 0: 
-		err_tsg = 4;
-		return NULL;
-		break;
-	case 1:
-		if ((N >= minN) && (N <= maxN)) { //1 ошибка
-			*count = N;
-		}
-		else {
-			err_tsg = 1;
-			return NULL;
-		}
-		gh = (graph_tsg*)calloc(N, sizeof(graph_tsg));
-		break;
-	default:
+	}
+	else {
 		if ((N >= minN) && (N <= maxN)) { //1 ошибка
 			*count = N;
 		}
@@ -144,7 +109,6 @@ graph_tsg* read_tsg(FILE* in, int *count) {
 			return NULL;
 		}
 		gh = (graph_tsg*)calloc(N, sizeof(graph_tsg));
-		break;
 	}
 	for (i = 0; i < M; i++) {
 		if(fscanf(in, "%d%d", &a, &b) < 2) { //4 ошибка
@@ -157,7 +121,9 @@ graph_tsg* read_tsg(FILE* in, int *count) {
 			err_tsg = 3;
 			return NULL;
 		}
-		gh[--a].edge = push_stack_graph_tsg(gh[a], --b);
+		a--; //для удобной работы с массивами
+		b--;
+		gh[a].edge = push_stack_graph_tsg(gh[a], b);
 	}
 	return gh;
 }
@@ -165,13 +131,14 @@ graph_tsg* read_tsg(FILE* in, int *count) {
 void print_tsg(FILE* out, stack* stk) {
 	stack* temp = NULL;
 	while((temp = pop_tsg(&stk))) {
-		fprintf(out, "%d ", temp->value + 1);
+		fprintf(out, "%d ", temp->value + 1); // +1 для восстановления значения полученного на входе, изменённого для удобства работы с массивами
 		free(temp);
 	}
 }
 
-void free_one_graph_tsg(graph_tsg* gh) {
-	stack_graph_tsg* cur = gh->edge;
+//очистка памяти из под списка в одном графе
+void free_one_graph_tsg(graph_tsg gh) {
+	stack_graph_tsg* cur = gh.edge;
 	while(cur){
 		stack_graph_tsg* prev = cur;
 		cur = cur->next;
@@ -182,7 +149,7 @@ void free_one_graph_tsg(graph_tsg* gh) {
 void free_graph_tsg(graph_tsg* gh, int count) {
 	int i;
 	for (i = 0; i < count; i++){
-		free_one_graph_tsg(&(gh[i]));
+		free_one_graph_tsg(gh[i]);
 	}
 	free(gh);
 }
