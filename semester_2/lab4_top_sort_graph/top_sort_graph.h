@@ -5,49 +5,58 @@
 
 #define maxN 1000
 #define minN 0
+#define maxM N*(N-1)
+#define minM 0
+	
+typedef struct _stack_graph_tsg {
+  short vertice;
+  struct _stack_graph_tsg* next;
+}stack_graph_tsg;
 
 typedef struct _graph_tsg {
-	int N; // кол-во вершин
-	int M; // кол-во рёбер
-	char* color;
-	int* a; // массив начал рёбер
-	int* b;	// массив концов рёбер
+	char color; //цвет вершины (нужен при сортировке)
+	stack_graph_tsg* edge; //список номеров вершин в которые есть пути
 }graph_tsg;
+
+
+typedef struct _stack {
+  short value;
+  struct _stack* next;
+}stack;
 
 /**
  * последняя ошибка
  * @return строка с описанием последней ошибки
  */
-char* error_tsg();
+char *error_tsg();
+
+stack* pop_tsg(stack** head);
+void push_tsg(stack** head, int val);
+void free_stack_tsg(stack** head);
+void revert_stack_tsg(stack** head);
+
+char depth_sort_tsg(graph_tsg* gh, int pos, stack** stk);
+
+stack* sort_tsg(FILE* out, graph_tsg* gh, int count);
+
+stack_graph_tsg* push_stack_graph_tsg(graph_tsg gh, int b);
 
 /**
- * очистка памяти из под грава
- * @param gh ненулевой указатель на граф
- */
-void free_graph_tsg(graph_tsg* gh);
+* чтение графа из потока
+* @param  in ненулевой указатель на поток
+* @param  N  ненулевой указатель на память под хранение кол-ва вершин
+* @param  M  ненулевой указатель на память под хранение кол-ва рёбер
+* @return    Если корректные данные, то массив рёбер; Иначе NULL.
+*/
+graph_tsg* read_tsg(FILE* in, int *count);
+
+void print_tsg(FILE* out, stack* stk);
 
 /**
- * вывод массива целых чисел в поток
- * @param  out  ненулевой указатель на поток
- * @param  vertices массив целых чисел (может быть NULL)
- */
-void print_tsg(FILE* out, int* vertices);
-
-/**
- * тополоогическая сортировка графа
- * @param  es граф вида
- * @return    Если возможно отсортировать, то отсортированный массив вершин; иначе NULL.
- */
-int* sort_tsg(graph_tsg* gh);
-
-/**
- * чтение графа из потока
- * @param  in ненулевой указатель на поток
- * @param  N  ненулевой указатель на память под хранение кол-ва вершин
- * @param  M  ненулевой указатель на память под хранение кол-ва рёбер
- * @return    Если корректные данные, то массив рёбер; Иначе NULL.
- */
-graph_tsg* read_tsg(FILE* in);
+* очистка памяти из под графа
+* @param gh ненулевой указатель на граф
+*/
+void free_graph_tsg(graph_tsg* gh, int count);
 
 /**
  * чтение из потока, топологическая сортировка и вывод (включая информацию об ошибках)
