@@ -161,20 +161,26 @@ void write_code_hf(FILE* out, sym_code cur) {
 	static sym_code_bts_hf pos = 0;
 	if (cur.bts) {
 		if (pos + cur.bts >= sym_code_MAXbts_hf) {
-			tmp = ((tmp << (sym_code_MAXbts_hf - pos)) + (cur.code >> (cur.bts - sym_code_MAXbts_hf + pos)));
+			tmp = ((tmp << (sym_code_MAXbts_hf - pos)) | (cur.code >> (cur.bts - sym_code_MAXbts_hf + pos))); // добавление нового кода в буфер вывода
 			fwrite(&tmp, sizeof(sym_code_code_hf), 1, out);
-			cur.bts -= sym_code_MAXbts_hf - pos;
-			cur.code = (cur.code << (sym_code_MAXbts_hf - cur.bts)) >> (sym_code_MAXbts_hf - cur.bts);
+			cur.bts -= sym_code_MAXbts_hf - pos; // уменьшение кол-ва значащих бит на кол-во выведенных
+			cur.code = (cur.code << (sym_code_MAXbts_hf - cur.bts)) >> (sym_code_MAXbts_hf - cur.bts); // зануление выведенных бит
 			pos = 0;
 			tmp = 0;
 		}
-		tmp = (tmp << cur.bts) | cur.code;
-		pos += cur.bts;
+		tmp = (tmp << cur.bts) | cur.code; //добавление нового кода в буфер вывода
+		pos += cur.bts; // увеличение кол-ва значащих бит в буфере на кол-во значащих бит в добавленном коде
 	}
 	else {
 		if (pos) {
-			tmp = tmp << ((sym_code_MAXbts_hf - pos) % sizeof(sym_code_code_hf)); //обрезание незначащих байт
-			fwrite(&tmp, sizeof(unsigned char), (pos - 1 + sizeof(sym_code_code_hf)) / sizeof(sym_code_code_hf), out); //запись значащих в файл
+			//сдвиг последнего вывода на такое минимальное кол-во бит,
+			//которое сравняет позицию первого значащего бита с началом первого значащего байта
+			tmp = tmp << ((sym_code_MAXbts_hf - pos) % sizeof(sym_code_code_hf));
+			//записывается минимальное кол-во байт,
+			//которое может содержать данное кол-во бит
+			fwrite(&tmp, sizeof(unsigned char), (pos - 1 + sizeof(sym_code_code_hf)) / sizeof(sym_code_code_hf), out);
+			//восстановить изначальный код можно при чтении сжатого по 8 байт сдвигом влево
+			//на разницу между максимальным количеством бит и прочтённым
 		}
 	}
 }
@@ -205,10 +211,10 @@ void write_tree_hf(FILE* out, tree_hf* root) {
 }
 
 void compress_file_hf(FILE* in, FILE* out, sym_code* table) {
-	sym_code_bts_hf c[1024];
+	sym_code_bts_hf c[255];
 	sym_code end = {0,0};
-	int count, i;
-	while (count = fread(&c, sizeof(sym_code_bts_hf), 1024, in)) {
+	unsigned char count, i;
+	while (count = fread(&c, sizeof(sym_code_bts_hf), 255, in)) {
 		for (i = 0; i < count; i++)
 			write_code_hf(out, table[c[i]]);
 	}
@@ -243,9 +249,8 @@ sym_code_bts_hf read_bit_hf(FILE* in) {
 	static sym_code_code_hf buf_dec_hf = 0;
 	static sym_code_bts_hf pos_dec_hf = sym_code_MAXbts_hf;
 	if (pos_dec_hf == sym_code_MAXbts_hf) {
+		static char weight = sizeof(sym_code_code_hf) / sizeof(unsigned char);
 		unsigned char count;
-		long int weight = sizeof(sym_code_code_hf) / sizeof(unsigned char);
-		buf_dec_hf = 0;
 		if ((count = fread(&buf_dec_hf, sizeof(unsigned char), weight, in)) < (weight)) {
 			buf_dec_hf = buf_dec_hf << ((sizeof(sym_code_code_hf) - count)*8); // расшифровка хитрости, которую использовал при записи(write_code_hf под первым else) для обрезания незначащих байт в конце вывода
 		}
