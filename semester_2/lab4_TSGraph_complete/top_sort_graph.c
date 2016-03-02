@@ -116,7 +116,7 @@ graph_tsg* read_tsg(FILE* in, int *count) {
 			err_tsg = 4;
 			return NULL;
 		}
-		if((a < minN) || (a > N) || (b < minN) || (b > N)) { //3 ошибка
+		if((a <= minN) || (a > N) || (b <= minN) || (b > N)) { //3 ошибка
 			free_graph_tsg(gh, *count);
 			err_tsg = 3;
 			return NULL;
