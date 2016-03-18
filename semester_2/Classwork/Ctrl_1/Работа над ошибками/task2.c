@@ -98,18 +98,18 @@ void del_leaf(tree** root, int val) {
     }
     else if((*root)->left) {
       tree* tmp = (*root);
-      free(tmp);
       (*root) = (*root)->left;
+      free(tmp);
     }
     else if((*root)->right) {
       tree* tmp = (*root);
-      free(tmp);
       (*root) = (*root)->right;
+      free(tmp);
     }
     else {
       tree* tmp = (*root);
-      free(tmp);
       *root = NULL;
+      free(tmp);
     }
   }
 }
