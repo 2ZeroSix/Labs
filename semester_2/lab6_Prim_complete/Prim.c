@@ -1,3 +1,5 @@
+#define _CRT_SECURE_NO_WARNINGS
+
 #include "Prim.h"
 
 static unsigned char pr_err = 0; //номер последней ошибки
@@ -130,9 +132,9 @@ pr_len** pr_read(FILE* in, pr_vrt_index* N) {
 void pr_complete(FILE* in, FILE* out) {
 	pr_vrt_index N;
 	pr_len** gh;
-	if(gh = pr_read(in, &N)) {
+	if((gh = pr_read(in, &N))) {
 		pr_vrt_index* mingh;
-		if(mingh = pr_mst(gh, N)) {
+		if((mingh = pr_mst(gh, N))) {
 			pr_write_mst(out, mingh, N);
 			free(mingh);
 		}
