@@ -12,6 +12,7 @@
 #define maxM(N) ( (N) * ( (N) - 1 ) / 2 )
 #define minM 0
 
+
 typedef struct _edge_kl {
 	vrt_kl a;
 	vrt_kl b;
@@ -23,11 +24,21 @@ typedef struct _queue_kl {
   struct _queue_kl* next;
 }queue_kl;
 
+enum KL_ERR_CODES {
+	OK = 0,
+	BAD_NUM_OF_VERS,
+	BAD_NUM_OF_EDGES,
+	BAD_VERTEX,
+	BAD_LENGTH,
+	BAD_NUM_OF_LINES,
+	NO_SPANNING_TREE
+} err_kl; //последняя ошибка
+
 /**
  * последняя ошибка
  * @return строка с описанием последней встреченной ошибки
  */
-char * error_kl();
+const char * error_kl();
 
 /**
  * функция сравнения рёбер по весу
@@ -44,28 +55,33 @@ int sort_edge_i_kl(const edge_kl* edge1, const edge_kl* edge2);
 //Система непересекающихся множеств //
 //////////////////////////////////////
 
+typedef struct _disjoint_set_kl {
+	vrt_kl p; // родительская вершина
+	vrt_kl h; // глубина дерева (ранг)
+}disjoint_set_kl;
+
 /**
  * определение к какому множеству принадлежит элемент
- * @param  p массив, в котором хранятся мн-ва
- * @param  x элемент одного из множеств
- * @return   представитель мн-ва, которому принадлежит данный элемент
+ * @param  djs массив структур (родительская вершина; ранг)
+ * @param  x   элемент одного из множеств
+ * @return     представитель мн-ва, которому принадлежит данный элемент
  */
-vrt_kl find_dj_kl(vrt_kl* p, vrt_kl x);
+vrt_kl find_dj_kl(disjoint_set_kl* djs, vrt_kl x);
 
 /**
  * объединение множеств (случайное)
- * @param p массив, в котором хранятся множества
- * @param x элемент одного из множеств
- * @param y элемент одного из множеств
+ * @param djs массив структур (родительская вершина; ранг) 
+ * @param x   элемент одного из множеств
+ * @param y   элемент одного из множеств
  */
-void unite_dj_kl(vrt_kl* p, vrt_kl x, vrt_kl y);
+void unite_dj_kl(disjoint_set_kl* djs, vrt_kl x, vrt_kl y);
 
 /**
  * создание массива хранящего указанное количество одноэлементных множеств
  * @param  count кол-во множеств
- * @return       массив для хранения указанного кол-ва множеств 
+ * @return       массив структур для хранения указанного кол-ва множеств 
  */
-vrt_kl* create_dj_kl(vrt_kl count);
+disjoint_set_kl* create_dj_kl(vrt_kl count);
 
 //////////////////////
 //работа с очередью //
@@ -99,13 +115,13 @@ void print_queue_kl(FILE* out, queue_kl** que);
 
 /**
  * поиск минимального каркаса графа
- * @param  gh ненулевой указатель на граф
- * @param  p  массив, в котором хранятся мн-ва
- * @param  N  кол-во вершин
- * @param  M  кол-во рёбер
- * @return    очередь содержащая минимальный каркас графа
+ * @param  gh  ненулевой указатель на граф
+ * @param  djs массив структур (родительская вершина; ранг) 
+ * @param  N   кол-во вершин
+ * @param  M   кол-во рёбер
+ * @return     очередь содержащая минимальный каркас графа
  */
-queue_kl* search_kl(edge_kl* gh, vrt_kl* p, vrt_kl N, edge_index_kl M);
+queue_kl* search_kl(edge_kl* gh, disjoint_set_kl* djs, vrt_kl N, edge_index_kl M);
 
 /**
  * чтение графа из файла
