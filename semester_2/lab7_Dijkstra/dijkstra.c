@@ -46,6 +46,9 @@ void	dij_write_lengths(FILE* out, dij_len* dist, dij_vrt_index N) {
 			case dij_overMAXlen:
 				fprintf(out, "INT_MAX+ ");
 				break;
+			case dij_overflow:
+				fprintf(out, "INT_MAX+ ");
+				break;
 			default:
 				fprintf(out, "%d ", dist[i]);
 				break;
@@ -58,7 +61,7 @@ void dij_write_path(FILE* out, dij_vrt_index* parent, dij_len distS, dij_vrt_ind
 		case dij_EMPTY:
 			fprintf(out, "no path\n");
 			break;
-		case dij_overMAXlen:
+		case dij_overflow:
 			fprintf(out, "overflow\n");
 			break;
 		default:
@@ -88,31 +91,41 @@ dij_vrt_index* dij_dijkstra(dij_len** gh, dij_vrt_index N, dij_vrt_index S, dij_
 		for(i = 0; i < N; i++) {
 			int jmin = -1, j;
 			for(j = 0; j < N; j++) {
-				if(!used[j] && (distance[j] != dij_EMPTY) && ((jmin == -1) || distance[j] <= distance[jmin])) {
+				if(!used[j] && (distance[j] != dij_EMPTY) && ((jmin == -1) || (distance[j] <= distance[jmin]))) {
 					jmin = j;
 				}
 			}
 			if(jmin == -1) {
-				free(distance);
 				free(used);
+			if(dist){
+				*dist = distance;
+			}
+			else {
+				free(distance);
+			}				
 				return parent;
 			}
 			used[jmin] = 1;
 			for(j = 0; j < N; j++) {
-				if((distance[j] == dij_EMPTY) || ((distance[jmin] + gh[jmin][j] < distance[j]) && (gh[jmin][j] != dij_EMPTY))) {
-					printf("distance[%d] = %d\n",j, distance[j]);
-					printf("distance[%d] = %d\n",jmin, distance[jmin]);
-					printf("gh[%hd][%hd] = %d\n", jmin, j, gh[jmin][j]);
-					if((distance[jmin] != dij_overMAXlen) && ((dij_MAXlen - distance[jmin]) >= gh[jmin][j])) {
+				if((distance[j] == dij_EMPTY) || ((distance[jmin] + gh[jmin][j] < distance[j]) && (gh[jmin][j] > 0) && (distance[jmin] >= 0))) {
+					// printf("distance[%d] = %d\n",j, distance[j]);
+					// printf("distance[%d] = %d\n",jmin, distance[jmin]);
+					// printf("gh[%hd][%hd] = %d\n", jmin, j, gh[jmin][j]);
+					if(((((dij_MAXlen - distance[jmin]) >= gh[jmin][j])) || (distance[j] == dij_EMPTY)) && (distance[jmin] != dij_overMAXlen)){
 						distance[j] = distance[jmin] + gh[jmin][j];
 					}
 					else {
-						distance[j] = dij_overMAXlen;
+						if((distance[j] == dij_overMAXlen) || (distance[j] == dij_overflow)) {
+							distance[j] = dij_overflow;
+						}
+						else {
+							distance[j] = dij_overMAXlen;							
+						}
 					}
 					parent[j] = jmin;
 				}
 			}
-			printf("\n");
+			// printf("\n");
 		}
 		if(dist){
 			*dist = distance;
@@ -130,14 +143,14 @@ dij_len** dij_read(FILE* in, dij_vrt_index* N, dij_vrt_index* S, dij_vrt_index* 
 	dij_vrt_index a, b;
 	dij_len** gh;
 	dij_len weight;
-	printf("read\n");
-	printf("fscanf\n");
+	// printf("read\n");
+	// printf("fscanf\n");
 	if(fscanf(in, "%hd%hd%hd%d", N, S, F, &M) < 4) { //5 ошибка
 		dij_err = 5;
 		return NULL;
 	}
 	else {
-		printf("check\n");
+		// printf("check\n");
 		if ((*N < dij_minN) || (*N > dij_maxN)) { //1 ошибка
 			dij_err = 1;
 			return NULL;
@@ -151,9 +164,9 @@ dij_len** dij_read(FILE* in, dij_vrt_index* N, dij_vrt_index* S, dij_vrt_index* 
 			return NULL;
 		}
 	}
-	printf("init\n");
+	// printf("init\n");
 	gh = dij_init_graph(dij_EMPTY, *N);
-	printf("for\n");
+	// printf("for\n");
 	for (i = 0; i < M; i++) {
 		if(fscanf(in, "%hd%hd%d", &(a), &(b), &(weight)) < 3) { //5 ошибка
 			dij_free_graph(gh, *N);
@@ -185,23 +198,23 @@ dij_len** dij_read(FILE* in, dij_vrt_index* N, dij_vrt_index* S, dij_vrt_index* 
 void dij_complete(FILE* in, FILE* out) {
 	dij_len** gh;
 	dij_vrt_index N, S, F;
-	printf("dij start\n");
+	// printf("dij start\n");
 	if(gh = dij_read(in, &N, &S, &F)) {
 		dij_vrt_index* parent;
 		dij_len* dist;
-		printf("complete read\nN: %hd; S: %hd; F: %hd\n", N, S, F);
+		// printf("complete read\nN: %hd; S: %hd; F: %hd\n", N, S, F);
 		if(parent = dij_dijkstra(gh, N, S, &dist)) {
-			printf("complete dijkstra\n");
+			// printf("complete dijkstra\n");
 			dij_write_lengths(out, dist, N);
 			fprintf(out, "\n");
-			printf("lengths wrote\n");
+			// printf("lengths wrote\n");
 			dij_write_path(out, parent, dist[F], S, F);
-			printf("path wrote\n");
+			// printf("path wrote\n");
 			free(dist);
 			free(parent);
 		}
 		dij_free_graph(gh, N);
 	}
-	printf("dij end\n");
+	// printf("dij end\n");
 	fprintf(out, "%s", dij_error());
 }
