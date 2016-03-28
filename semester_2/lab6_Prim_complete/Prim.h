@@ -13,11 +13,21 @@
 #define maxM(N) ( (N) * ( (N) - 1 ) / 2 )
 #define minM 0
 
+enum PR_ERR_CODES {
+	OK = 0,
+	BAD_NUM_OF_VERS,
+	BAD_NUM_OF_EDGES,
+	BAD_VERTEX,
+	BAD_LENGTH,
+	BAD_NUM_OF_LINES,
+	NO_SPANNING_TREE
+} pr_err; //последняя ошибка
+
 /**
  * последняя ошибка
  * @return строка с описанием последней встреченной ошибки
  */
-char * pr_error();
+const char* pr_error();
 
 /**
  * очистка памяти из под графа

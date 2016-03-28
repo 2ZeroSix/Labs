@@ -2,8 +2,12 @@
 
 #include "Prim.h"
 
-static unsigned char pr_err = 0; //номер последней ошибки
-static char* pr_err_dcp[7] = { //описания ошибок
+#define PR_PROCESS_ERROR(err) {\
+	pr_err = err;\
+	return NULL;\
+}
+
+const char* pr_err_dcp[7] = { //описания ошибок
 	"", //0
 	"bad number of vertices", //1
 	"bad number of edges", //2
@@ -12,7 +16,7 @@ static char* pr_err_dcp[7] = { //описания ошибок
 	"bad number of lines", //5
 	"no spanning tree"}; //6
 
-char * pr_error() {
+const char * pr_error() {
 	return pr_err_dcp[pr_err];
 }
 
@@ -52,8 +56,7 @@ pr_vrt_index* pr_mst(pr_len* gh[], pr_vrt_index N) {
 				free(min);
 				free(used);
 				free(mingh);
-				pr_err = 6;
-				return NULL;
+				PR_PROCESS_ERROR(NO_SPANNING_TREE);
 			}
 			used[jmin] = 1;
 			for(j = 0; j < N; j++) {
@@ -77,21 +80,17 @@ pr_len** pr_read(FILE* in, pr_vrt_index* N) {
 	pr_len** gh;
 	pr_len weight;
 	if(fscanf(in, "%hd%d", N, &M) < 2) { //5 ошибка
-		pr_err = 5;
-		return NULL;
+		PR_PROCESS_ERROR(BAD_NUM_OF_LINES);
 	}
 	else {
 		if ((*N < minN) || (*N > maxN)) { //1 ошибка
-			pr_err = 1;
-			return NULL;
+			PR_PROCESS_ERROR(BAD_NUM_OF_VERS);
 		}
 		if ((M < minM) || (M > maxM(*N))) { //2 ошибка
-			pr_err = 2;
-			return NULL;
+			PR_PROCESS_ERROR(BAD_NUM_OF_EDGES);
 		}
 		if(*N == 0) {
-			pr_err = 6;
-			return NULL;
+			PR_PROCESS_ERROR(NO_SPANNING_TREE);
 		}
 	}
 	gh = (pr_len**)calloc(*N, sizeof(pr_len*));
@@ -105,18 +104,15 @@ pr_len** pr_read(FILE* in, pr_vrt_index* N) {
 	for (i = 0; i < M; i++) {
 		if(fscanf(in, "%hd%hd%d", &(a), &(b), &(weight)) < 3) { //5 ошибка
 			pr_free_graph(gh, *N);
-			pr_err = 5;
-			return NULL;
+			PR_PROCESS_ERROR(BAD_NUM_OF_LINES);
 		}
 		if((a <= minN) || (a > *N) || (b <= minN) || (b > *N)) { //3 ошибка
 			pr_free_graph(gh, *N);
-			pr_err = 3;
-			return NULL;
+			PR_PROCESS_ERROR(BAD_VERTEX);
 		}
 		if((weight < 0)) { // 4 ошибка
 			pr_free_graph(gh, *N);
-			pr_err = 4;
-			return NULL;
+			PR_PROCESS_ERROR(BAD_LENGTH);
 		}
 		gh[b - 1][a - 1] = gh[a - 1][b - 1] = weight;
 	}
