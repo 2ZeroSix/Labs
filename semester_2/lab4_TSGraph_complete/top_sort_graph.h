@@ -14,6 +14,15 @@
 	  struct _stack_graph_tsg* next;
 	}stack_graph_tsg;
 
+	enum TSG_ERR_CODES {
+		OK = 0,
+		BAD_NUM_OF_VERS,
+		BAD_NUM_OF_EDGES,
+		BAD_VERTEX,
+		BAD_NUM_OF_LINES,
+		IMPOSSIBLE_TO_SORT
+	} err_tsg; //последняя ошибка
+
 	typedef struct _graph_tsg {
 		enum COLOR_VER {VER_NOT_USED, VER_USED, VER_ADDED} color; //цвет вершины (нужен при сортировке)
 		stack_graph_tsg* edge; //список номеров вершин в которые есть пути

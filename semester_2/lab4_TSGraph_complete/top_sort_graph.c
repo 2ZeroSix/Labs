@@ -6,15 +6,6 @@
 	return NULL;\
 }
 
-enum TSG_ERR_CODES {
-	OK = 0,
-	BAD_NUM_OF_VERS,
-	BAD_NUM_OF_EDGES,
-	BAD_VERTEX,
-	BAD_NUM_OF_LINES,
-	IMPOSSIBLE_TO_SORT
-} err_tsg = OK; //последняя ошибка
-
 const char* err_tsg_dcp[6] = { //описания ошибок
 	"", //0
 	"bad number of vertices", //1
