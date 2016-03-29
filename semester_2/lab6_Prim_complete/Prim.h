@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include "binary_heap.h"
 
 #define pr_edge_index int
 #define pr_vrt_index short
@@ -39,11 +40,6 @@ typedef _pr_graph{
 	pr_edges* edges; // список рёбер при вершине
 	pr_vrt_index count; // кол-во рёбер при вершине
 }
-
-typedef _pr_que_graph{
-	pr_vrt_index a;
-	pr_len weight;
-}pr_que_graph;
 
 /**
  * очистка памяти из под графа

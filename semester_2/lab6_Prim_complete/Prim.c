@@ -59,9 +59,7 @@ void pr_write_mst(FILE* out, pr_vrt_index* mingh, pr_vrt_index N) {
 	}
 }
 
-void pr_insert_que_graph(pr_que_graph* min, pr_vrt_index count, )
-
-void pr_add_que_graph(pr_que_graph* min, pr_vrt_index count, graph* gh, pr_vrt_index a) {
+void pr_add_que_graph(bh_que* min, pr_vrt_index count, graph* gh, pr_vrt_index a) {
 	pr_edges* tmp = gh[a].edges;
 	pr_insert_que_graph(min, count, a, 0)
 	while (tmp) {
@@ -71,7 +69,7 @@ void pr_add_que_graph(pr_que_graph* min, pr_vrt_index count, graph* gh, pr_vrt_i
 
 pr_vrt_index* pr_mst(graph* gh, pr_vrt_index N) {
 	if(N) {
-		pr_que_graph* min = (pr_que_graph*)calloc(N, sizeof(pr_que_graph));
+		bh_que* min = (bh_que*)calloc(N, sizeof(bh_que));
 		char* used = (char*)calloc(N, sizeof(char));
 		pr_vrt_index* mingh = (pr_vrt_index*)calloc(N, sizeof(pr_vrt_index));
 		pr_vrt_index i, count = 0;
@@ -83,7 +81,7 @@ pr_vrt_index* pr_mst(graph* gh, pr_vrt_index N) {
 			pr_vrt_index jmin;
 			jmin = pr_pop_que_graph(min, count);
 			if (jmin == -1) {
-				pr_free_que_graph(min, count);
+				free(min);
 				free(used);
 				free(mingh);
 				PR_PROCESS_ERROR(NO_SPANNING_TREE);
@@ -104,31 +102,29 @@ graph* pr_read(FILE* in, pr_vrt_index* N) {
 	pr_vrt_index a, b;
 	graph* gh;
 	pr_len weight;
-	if(fscanf(in, "%hd%d", N, &M) < 2) { //5 ошибка
+	if(fscanf(in, "%hd%d", N, &M) < 2) {
 		PR_PROCESS_ERROR(BAD_NUM_OF_LINES);
 	}
-	else {
-		if ((*N < minN) || (*N > maxN)) { //1 ошибка
-			PR_PROCESS_ERROR(BAD_NUM_OF_VERS);
-		}
-		if ((M < minM) || (M > maxM(*N))) { //2 ошибка
-			PR_PROCESS_ERROR(BAD_NUM_OF_EDGES);
-		}
-		if(*N == 0) {
-			PR_PROCESS_ERROR(NO_SPANNING_TREE);
-		}
+	if ((*N < minN) || (*N > maxN)) {
+		PR_PROCESS_ERROR(BAD_NUM_OF_VERS);
+	}
+	if ((M < minM) || (M > maxM(*N))) {
+		PR_PROCESS_ERROR(BAD_NUM_OF_EDGES);
+	}
+	if(*N == 0) {
+		PR_PROCESS_ERROR(NO_SPANNING_TREE);
 	}
 	gh = (graph*)calloc(*N, sizeof(graph));
 	for (i = 0; i < M; i++) {
-		if(fscanf(in, "%hd%hd%d", &(a), &(b), &(weight)) < 3) { //5 ошибка
+		if(fscanf(in, "%hd%hd%d", &(a), &(b), &(weight)) < 3) {
 			pr_free_graph(gh, *N);
 			PR_PROCESS_ERROR(BAD_NUM_OF_LINES);
 		}
-		if((a <= minN) || (a > *N) || (b <= minN) || (b > *N)) { //3 ошибка
+		if((a <= minN) || (a > *N) || (b <= minN) || (b > *N)) {
 			pr_free_graph(gh, *N);
 			PR_PROCESS_ERROR(BAD_VERTEX);
 		}
-		if((weight < 0)) { // 4 ошибка
+		if((weight < 0)) {
 			pr_free_graph(gh, *N);
 			PR_PROCESS_ERROR(BAD_LENGTH);
 		}
