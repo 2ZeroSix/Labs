@@ -20,10 +20,33 @@ const char * pr_error() {
 	return pr_err_dcp[pr_err];
 }
 
+pr_edges* pr_add_edges(pr_edges* edges, b, weight) {
+	pr_edges* tmp = (pr_edges*)calloc(1, sizeof(pr_edges));
+	tmp->b = b;
+	tmp->val = weight;
+	tmp->next = edges;
+	return tmp;
+}
+
+void pr_add_graph(graph* gh, a, b, weight) {
+	gh[a]->edges = pr_add_edges(gh[a]->edges, b, weight);
+	gh[a]->count++;
+}
+
+void pr_free_edges(pr_edges* edges) {
+	if(edges) {
+		while(edges) {
+			pr_edges* tmp = edges;
+			edges = edges->next;
+			free(tmp);
+		}
+	}
+}
+
 void pr_free_graph(pr_len* gh[], pr_vrt_index N) {
 	pr_vrt_index i;
 	for (i = 0; i < N; i++) {
-		free(gh[i]);
+		pr_free_edges(gh[i]->edges);
 	}
 	free(gh);
 }
@@ -36,35 +59,37 @@ void pr_write_mst(FILE* out, pr_vrt_index* mingh, pr_vrt_index N) {
 	}
 }
 
-pr_vrt_index* pr_mst(pr_len* gh[], pr_vrt_index N) {
+void pr_insert_que_graph(pr_que_graph* min, pr_vrt_index count, )
+
+void pr_add_que_graph(pr_que_graph* min, pr_vrt_index count, graph* gh, pr_vrt_index a) {
+	pr_edges* tmp = gh[a].edges;
+	pr_insert_que_graph(min, count, a, 0)
+	while (tmp) {
+		pr_insert_que_graph(min, count, a, tmp)
+	}
+}
+
+pr_vrt_index* pr_mst(graph* gh, pr_vrt_index N) {
 	if(N) {
-		pr_len* min = (pr_len*)calloc(N, sizeof(pr_len));
+		pr_que_graph* min = (pr_que_graph*)calloc(N, sizeof(pr_que_graph));
 		char* used = (char*)calloc(N, sizeof(char));
 		pr_vrt_index* mingh = (pr_vrt_index*)calloc(N, sizeof(pr_vrt_index));
-		pr_vrt_index i;
+		pr_vrt_index i, count = 0;
 		for (i = 0; i < N; i++) {
 			mingh[i] = i;
-			min[i] = pr_EMPTY;
 		}
-		min[0] = 0;
+		pr_add_que_graph(min, count, gh, 0);
 		for(i = 0; i < N; i++) {
-			pr_vrt_index j, jmin = -1;
-			for(j = 0; j < N; j++) {
-				if(!used[j] && (jmin == -1 || min[j] <= min[jmin]) && (min[j] != pr_EMPTY)) jmin = j;
-			}
+			pr_vrt_index jmin;
+			jmin = pr_pop_que_graph(min, count);
 			if (jmin == -1) {
-				free(min);
+				pr_free_que_graph(min, count);
 				free(used);
 				free(mingh);
 				PR_PROCESS_ERROR(NO_SPANNING_TREE);
 			}
 			used[jmin] = 1;
-			for(j = 0; j < N; j++) {
-				if(!used[j] && ((gh[jmin][j] < min[j]) || ((min[j] == pr_EMPTY)))) {
-					min[j] = gh[jmin][j];
-					mingh[j] = jmin;
-				}
-			}
+			pr_upd_que_graph(min, count, mingh, used, &(gh[jmin]));
 		}
 		free(min);
 		free(used);
@@ -74,10 +99,10 @@ pr_vrt_index* pr_mst(pr_len* gh[], pr_vrt_index N) {
 }
 
 
-pr_len** pr_read(FILE* in, pr_vrt_index* N) {
+graph* pr_read(FILE* in, pr_vrt_index* N) {
 	pr_edge_index i, M;
 	pr_vrt_index a, b;
-	pr_len** gh;
+	graph* gh;
 	pr_len weight;
 	if(fscanf(in, "%hd%d", N, &M) < 2) { //5 ошибка
 		PR_PROCESS_ERROR(BAD_NUM_OF_LINES);
@@ -93,14 +118,7 @@ pr_len** pr_read(FILE* in, pr_vrt_index* N) {
 			PR_PROCESS_ERROR(NO_SPANNING_TREE);
 		}
 	}
-	gh = (pr_len**)calloc(*N, sizeof(pr_len*));
-	for(i = 0; i < *N; i++) {
-		pr_vrt_index j;
-		gh[i] = (pr_len*)calloc(*N, sizeof(pr_len));
-		for(j = 0; j < *N; j++) {
-			gh[i][j] = pr_EMPTY;
-		}
-	}
+	gh = (graph*)calloc(*N, sizeof(graph));
 	for (i = 0; i < M; i++) {
 		if(fscanf(in, "%hd%hd%d", &(a), &(b), &(weight)) < 3) { //5 ошибка
 			pr_free_graph(gh, *N);
@@ -114,12 +132,8 @@ pr_len** pr_read(FILE* in, pr_vrt_index* N) {
 			pr_free_graph(gh, *N);
 			PR_PROCESS_ERROR(BAD_LENGTH);
 		}
-		gh[b - 1][a - 1] = gh[a - 1][b - 1] = weight;
-	}
-	for(i = 0; i < *N; i++) {
-		int j;
-		for(j = 0; j < *N; j++) {
-		}
+		pr_add_graph(gh, a, b, weight);
+		pr_add_graph(gh, b, a, weight);	
 	}
 	return gh;
 }
@@ -127,7 +141,7 @@ pr_len** pr_read(FILE* in, pr_vrt_index* N) {
 
 void pr_complete(FILE* in, FILE* out) {
 	pr_vrt_index N;
-	pr_len** gh;
+	graph* gh;
 	if((gh = pr_read(in, &N))) {
 		pr_vrt_index* mingh;
 		if((mingh = pr_mst(gh, N))) {

@@ -29,6 +29,22 @@ enum PR_ERR_CODES {
  */
 const char* pr_error();
 
+typedef _pr_edges{
+	pr_vrt_index b; // конец ребра
+	pr_len val; // вес ребра
+	_pr_edges* next;
+}pr_edges;
+
+typedef _pr_graph{
+	pr_edges* edges; // список рёбер при вершине
+	pr_vrt_index count; // кол-во рёбер при вершине
+}
+
+typedef _pr_que_graph{
+	pr_vrt_index a;
+	pr_len weight;
+}pr_que_graph;
+
 /**
  * очистка памяти из под графа
  * @param gh указатель на граф
