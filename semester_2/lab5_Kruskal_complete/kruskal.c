@@ -119,16 +119,14 @@ edge_kl* read_kl(FILE* in, vrt_kl* N, edge_index_kl* M) {
 	if(fscanf(in, "%hd%d", N, M) < 2) { //5 ошибка
 		KL_PROCESS_ERROR(BAD_NUM_OF_LINES);
 	}
-	else {
-		if ((*N < minN) || (*N > maxN)) { //1 ошибка
-			KL_PROCESS_ERROR(BAD_NUM_OF_VERS);
-		}
-		if ((*M < minM) || (*M > maxM(*N))) { //2 ошибка
-			KL_PROCESS_ERROR(BAD_NUM_OF_EDGES);
-		}
-		if(*N == 0) {
-			KL_PROCESS_ERROR(NO_SPANNING_TREE);
-		}
+	if ((*N < minN) || (*N > maxN)) { //1 ошибка
+		KL_PROCESS_ERROR(BAD_NUM_OF_VERS);
+	}
+	if ((*M < minM) || (*M > maxM(*N))) { //2 ошибка
+		KL_PROCESS_ERROR(BAD_NUM_OF_EDGES);
+	}
+	if(*N == 0) {
+		KL_PROCESS_ERROR(NO_SPANNING_TREE);
 	}
 	gh = (edge_kl*)calloc(*M, sizeof(edge_kl));
 	for (i = 0; i < *M; i++) {
