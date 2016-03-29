@@ -98,18 +98,16 @@ graph_tsg* read_tsg(FILE* in, int *count) {
 	if(fscanf(in, "%d%d", &N, &M) < 2) { // если нет числа рёбер или вершин
 		TSG_PROCESS_ERROR(BAD_NUM_OF_LINES);
 	}
-	else {
-		if ((N >= minN) && (N <= maxN)) { //1 ошибка
-			*count = N;
-		}
-		else {
-			TSG_PROCESS_ERROR(BAD_NUM_OF_VERS);
-		}
-		if ((M < minN) || (M > maxM)) { //2 ошибка
-			TSG_PROCESS_ERROR(BAD_NUM_OF_EDGES);
-		}
-		gh = (graph_tsg*)calloc(N, sizeof(graph_tsg));
+	if ((N >= minN) && (N <= maxN)) { //1 ошибка
+		*count = N;
 	}
+	else {
+		TSG_PROCESS_ERROR(BAD_NUM_OF_VERS);
+	}
+	if ((M < minN) || (M > maxM)) { //2 ошибка
+		TSG_PROCESS_ERROR(BAD_NUM_OF_EDGES);
+	}
+	gh = (graph_tsg*)calloc(N, sizeof(graph_tsg));
 	for (i = 0; i < M; i++) {
 		if(fscanf(in, "%d%d", &a, &b) < 2) { //4 ошибка
 			free_graph_tsg(gh, *count);
