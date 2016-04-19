@@ -71,11 +71,20 @@ sym_code* table_from_tree_hf(tree_hf* root) {
 	}
 }
 
-
+void depth_tree_free_hf(tree_hf* root) {
+	if (root) {
+		tree_hf* left = root->left;
+		tree_hf* right = root->right;
+		free(root);
+		depth_tree_free_hf(left);
+		depth_tree_free_hf(right);
+	}
+}
 int main() {
 	tree_hf* root = tree_from_file_hf(stdin);
 	sym_code* table = table_from_tree_hf(root);
 	int i;
+	depth_tree_free_hf(root);
 	for (i = 0; i < 256; i++) {
 		if(table[i].bts) {
 			int j;
@@ -86,5 +95,6 @@ int main() {
 			printf("\n");
 		}
 	}
+	free(table);
 	return 1;
 }
