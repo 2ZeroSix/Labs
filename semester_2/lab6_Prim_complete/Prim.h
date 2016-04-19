@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include "binary_heap.h"
 
 #define pr_edge_index int
 #define pr_vrt_index short
@@ -13,11 +14,32 @@
 #define maxM(N) ( (N) * ( (N) - 1 ) / 2 )
 #define minM 0
 
+enum PR_ERR_CODES {
+	OK = 0,
+	BAD_NUM_OF_VERS,
+	BAD_NUM_OF_EDGES,
+	BAD_VERTEX,
+	BAD_LENGTH,
+	BAD_NUM_OF_LINES,
+	NO_SPANNING_TREE
+} pr_err; //последняя ошибка
+
 /**
  * последняя ошибка
  * @return строка с описанием последней встреченной ошибки
  */
-char * pr_error();
+const char* pr_error();
+
+typedef _pr_edges{
+	pr_vrt_index b; // конец ребра
+	pr_len val; // вес ребра
+	_pr_edges* next;
+}pr_edges;
+
+typedef _pr_graph{
+	pr_edges* edges; // список рёбер при вершине
+	pr_vrt_index count; // кол-во рёбер при вершине
+}
 
 /**
  * очистка памяти из под графа
