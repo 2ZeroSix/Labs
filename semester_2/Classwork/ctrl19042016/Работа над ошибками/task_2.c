@@ -39,7 +39,7 @@ int pop(node** head)
 }
 
 int main (int argc, char **argv) {
-	FILE *in, *out;
+	FILE *in = NULL, *out = NULL;
 	if ((argc == 3) && (in = fopen(argv[1], "r")) && (out = fopen(argv[2], "w"))) {
 		int N, i;
 		int a, b;
