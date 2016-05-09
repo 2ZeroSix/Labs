@@ -30,23 +30,23 @@ enum PR_ERR_CODES {
  */
 const char* pr_error();
 
-typedef _pr_edges{
+typedef struct _pr_edges{
 	pr_vrt_index b; // конец ребра
 	pr_len val; // вес ребра
-	_pr_edges* next;
+	struct _pr_edges* next;
 }pr_edges;
 
-typedef _pr_graph{
+typedef struct _pr_graph{
 	pr_edges* edges; // список рёбер при вершине
 	pr_vrt_index count; // кол-во рёбер при вершине
-}
+}pr_graph;
 
 /**
  * очистка памяти из под графа
  * @param gh указатель на граф
  * @param N  кол-во вершин
  */
-void pr_free_graph(pr_len* gh[], pr_vrt_index N);
+void pr_free_graph(pr_graph* gh, pr_vrt_index N);
 
 /**
  * вывод минимального остовного дерева
@@ -63,7 +63,7 @@ void pr_write_mst(FILE* out, pr_vrt_index* mingh, pr_vrt_index N);
  * @return    массив в котором по индексам начал рёбер лежат индексы концов рёбер (составляющие минимальное остовное дерево)
  *            признаком отсутствия ребра является равенство индекса элемента массива со значением
  */
-pr_vrt_index* pr_mst(pr_len* gh[], pr_vrt_index N);
+pr_vrt_index* pr_mst(pr_graph* gh, pr_vrt_index N);
 
 /**
  * чтение графа из файла
@@ -72,7 +72,7 @@ pr_vrt_index* pr_mst(pr_len* gh[], pr_vrt_index N);
  * @param  M  ненулевой указатель на область памяти под кол-во рёбер
  * @return    массив рёбер
  */
-pr_len** pr_read(FILE* in, pr_vrt_index* N);
+pr_graph* pr_read(FILE* in, pr_vrt_index* N);
 
 /**
  * полное построение минимального каркаса графа из входного файла и вывод его в выходной
