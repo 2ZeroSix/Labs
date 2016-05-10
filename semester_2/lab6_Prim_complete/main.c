@@ -1,6 +1,10 @@
 #include "Prim.h"
 
 int main() {
-	pr_complete(stdin, stdout);
+	FILE* in = fopen("in.txt", "r");
+	FILE* out = fopen("out.txt", "w");
+	pr_complete(in, out);
+	fclose(in);
+	fclose(out);
 	return 0;
 }

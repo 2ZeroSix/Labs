@@ -13,11 +13,10 @@ void swap(heap* bheap, void *a, void *b, size_t size) {
 #else
 void swap(heap* bheap, void *a, void *b, size_t size) {
   void* tmp = bheap->tmp;
-  if(!tmp) tmp = malloc(size);
+  if(!tmp) bheap->tmp = tmp = malloc(size);
   memcpy(tmp, a, size);
   memcpy(a, b, size);
   memcpy(b, tmp, size);
-  free(tmp);
 }
 #endif
 

@@ -21,7 +21,7 @@ const char * pr_error() {
 }
 
 pr_edges* pr_add_edges(pr_edges* edges, pr_vrt_index b, pr_len weight) {
-	pr_edges* tmp = (pr_edges*)calloc(1, sizeof(pr_edges));
+	pr_edges* tmp = (pr_edges*)malloc(sizeof(pr_edges));
 	tmp->b = b;
 	tmp->val = weight;
 	tmp->next = edges;
@@ -78,8 +78,8 @@ void pr_upd_que_graph(pr_graph* gh, heap* bheap, pr_vrt_index* mingh, pr_vrt_ind
 
 pr_vrt_index* pr_mst(pr_graph* gh, pr_vrt_index N) {
 	if(N) {
-		pr_len* min = (pr_len*)calloc(N, sizeof(pr_len));
-		pr_vrt_index* mingh = (pr_vrt_index*)calloc(N, sizeof(pr_vrt_index));
+		pr_len* min = (pr_len*)malloc(N * sizeof(pr_len));
+		pr_vrt_index* mingh = (pr_vrt_index*)malloc(N * sizeof(pr_vrt_index));
 		pr_vrt_index i;
 		heap* bheap;
 		for (i = 0; i < N; i++) {
@@ -114,7 +114,6 @@ pr_vrt_index* pr_mst(pr_graph* gh, pr_vrt_index N) {
 
 pr_graph* pr_read(FILE* in, pr_vrt_index* N) {
 	pr_edge_index i, M;
-	pr_vrt_index a, b;
 	pr_graph* gh;
 	pr_len weight;
 	if(fscanf(in, "%hd%d", N, &M) < 2) {
@@ -131,6 +130,7 @@ pr_graph* pr_read(FILE* in, pr_vrt_index* N) {
 	}
 	gh = (pr_graph*)calloc(*N, sizeof(pr_graph));
 	for (i = 0; i < M; i++) {
+		pr_vrt_index a, b;
 		if(fscanf(in, "%hd%hd%d", &(a), &(b), &(weight)) < 3) {
 			pr_free_graph(gh, *N);
 			PR_PROCESS_ERROR(BAD_NUM_OF_LINES);
@@ -156,7 +156,7 @@ void pr_complete(FILE* in, FILE* out) {
 	pr_vrt_index N;
 	pr_graph* gh;
 	if((gh = pr_read(in, &N))) {
-		// printf("start\n");
+		printf("start\n");
 		pr_vrt_index* mingh;
 		if((mingh = pr_mst(gh, N))) {
 			pr_write_mst(out, mingh, N);
