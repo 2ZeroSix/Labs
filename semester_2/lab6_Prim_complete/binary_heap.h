@@ -14,6 +14,7 @@
 		size_t count; // текущее кол-во элементов в куче
 		size_t countMAX; // размер памяти выделенной под кучу
 		size_t size; // размер одного элемента
+		void* tmp;
 		int (*comparator)(const void*, const void*); // функция сравнения элементов кучи
 	}heap;
 
@@ -56,9 +57,20 @@
 	 */
 	char insert(heap* bheap, void* new);
 
-
+	/**
+	 * получение позиции элемента в массиве, по его индексу
+	 * @param  bheap указатель на бинарную кучу
+	 * @param  pos   индекс элемента
+	 * @return       позиция элемента
+	 */
 	size_t pos_by_id(heap* bheap, size_t id);
 
+	/**
+	 * получение индекса элемента, по его позиции в массиве
+	 * @param  bheap указатель на бинарную кучу
+	 * @param  pos   позиция элемента
+	 * @return       индекс элемента
+	 */
 	size_t id_by_pos(heap* bheap, size_t pos);
 
 	/**

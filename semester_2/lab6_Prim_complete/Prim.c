@@ -63,13 +63,16 @@ int primcmp(const int* a, const int* b) {
 }
 
 void pr_upd_que_graph(pr_graph* gh, heap* bheap, pr_vrt_index* mingh, pr_vrt_index jmin, pr_len wmin) {
-	pr_vrt_index i, count = gh[jmin].count;
 	pr_edges* cur = gh[jmin].edges;
-	for (i = 0; i < count; i++) {
-		if (primcmp(&(cur->val), &(wmin))) {
-				update_by_index(bheap, cur->b, &(cur->val));
-				mingh[cur->b] = jmin;
+	// printf("Update:\n");
+	while(cur) {
+		// printf("a = %d; b = %d, 1:%d, 2:%d", jmin, cur->b, (((int*)bheap->array)[pos_by_id(bheap, cur->b)]), cur->val);
+		if (primcmp(&(cur->val), &(((int*)bheap->array)[pos_by_id(bheap, cur->b)])) > 0) {
+			// printf("upd\n");
+			if(update_by_index(bheap, cur->b, &(cur->val))) mingh[cur->b] = jmin;
 		}
+		// else printf("\n");
+		cur = cur->next;
 	}
 }
 
@@ -86,10 +89,15 @@ pr_vrt_index* pr_mst(pr_graph* gh, pr_vrt_index N) {
 		min[0] = 0;
 		bheap = build_heap(min, N, N, sizeof(pr_len), (int (*)(const void*, const void*))primcmp);
 		for(i = 0; i < N; i++) {
-			pr_vrt_index jmin;
+			pr_vrt_index jmin, j;
 			pr_len wmin;
+			// for(j = 0; j < bheap->count; j++) printf("%d ", ((pr_len*)bheap->array)[j]);
+			// printf("\n");
+			//id
 			jmin = id_by_pos(bheap, 0);
+			//weight
 			wmin = *(pr_len*)get_max(bheap);
+			// printf("jmin: %d; wmin: %d\n", jmin, wmin);
 			if (wmin == pr_EMPTY) {
 				free(min);
 				free(mingh);
@@ -148,6 +156,7 @@ void pr_complete(FILE* in, FILE* out) {
 	pr_vrt_index N;
 	pr_graph* gh;
 	if((gh = pr_read(in, &N))) {
+		// printf("start\n");
 		pr_vrt_index* mingh;
 		if((mingh = pr_mst(gh, N))) {
 			pr_write_mst(out, mingh, N);
