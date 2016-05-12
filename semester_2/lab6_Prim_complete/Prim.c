@@ -156,7 +156,7 @@ void pr_complete(FILE* in, FILE* out) {
 	pr_vrt_index N;
 	pr_graph* gh;
 	if((gh = pr_read(in, &N))) {
-		printf("start\n");
+		// printf("start\n");
 		pr_vrt_index* mingh;
 		if((mingh = pr_mst(gh, N))) {
 			pr_write_mst(out, mingh, N);
