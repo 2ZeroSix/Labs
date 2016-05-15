@@ -30,7 +30,6 @@ pr_edges* pr_add_edges(pr_edges* edges, pr_vrt_index b, pr_len weight) {
 
 void pr_add_graph(pr_graph* gh, pr_vrt_index a, pr_vrt_index b, pr_len weight) {
 	gh[a].edges = pr_add_edges(gh[a].edges, b, weight);
-	gh[a].count++;
 }
 
 void pr_free_edges(pr_edges* edges) {
@@ -105,7 +104,7 @@ pr_vrt_index* pr_mst(pr_graph* gh, pr_vrt_index N) {
 			}
 			pr_upd_que_graph(gh, bheap, mingh, jmin, wmin);
 		}
-		free(min);
+		del_heap(bheap, 0);
 		return mingh;
 	}
 	return NULL;
@@ -115,7 +114,9 @@ pr_vrt_index* pr_mst(pr_graph* gh, pr_vrt_index N) {
 pr_graph* pr_read(FILE* in, pr_vrt_index* N) {
 	pr_edge_index i, M;
 	pr_graph* gh;
-	pr_len weight;
+		pr_len weight[8];
+		pr_vrt_index a[8], b[8];
+		char count;
 	if(fscanf(in, "%hd%d", N, &M) < 2) {
 		PR_PROCESS_ERROR(BAD_NUM_OF_LINES);
 	}
@@ -129,24 +130,29 @@ pr_graph* pr_read(FILE* in, pr_vrt_index* N) {
 		PR_PROCESS_ERROR(NO_SPANNING_TREE);
 	}
 	gh = (pr_graph*)calloc(*N, sizeof(pr_graph));
-	for (i = 0; i < M; i++) {
-		pr_vrt_index a, b;
-		if(fscanf(in, "%hd%hd%d", &(a), &(b), &(weight)) < 3) {
+	M = M / 8 + ((M % 8) ? 1 : 0);
+	for (i = 0; i < M ; i++) {
+		if(((count = fscanf(in, "%hd%hd%d%hd%hd%d%hd%hd%d%hd%hd%d%hd%hd%d%hd%hd%d%hd%hd%d%hd%hd%d", &(a[0]), &(b[0]), &(weight[0]) , &(a[1]), &(b[1]), &(weight[1]) , &(a[2]), &(b[2]), &(weight[2]) , &(a[3]), &(b[3]), &(weight[3]) , &(a[4]), &(b[4]), &(weight[4]) , &(a[5]), &(b[5]), &(weight[5]) , &(a[6]), &(b[6]), &(weight[6]) , &(a[7]), &(b[7]), &(weight[7]))) % 3) || (count <= 0)) {
+			// printf("%d\n", count);
 			pr_free_graph(gh, *N);
 			PR_PROCESS_ERROR(BAD_NUM_OF_LINES);
 		}
-		if((a <= minN) || (a > *N) || (b <= minN) || (b > *N)) {
-			pr_free_graph(gh, *N);
-			PR_PROCESS_ERROR(BAD_VERTEX);
+		// printf("%d\n", count);
+		count /= 3;
+		for (--count; count >= 0; --count) {
+			if((a[count] <= minN) || (a[count] > *N) || (b[count] <= minN) || (b[count] > *N)) {
+				pr_free_graph(gh, *N);
+				PR_PROCESS_ERROR(BAD_VERTEX);
+			}
+			if((weight[count] < 0)) {
+				pr_free_graph(gh, *N);
+				PR_PROCESS_ERROR(BAD_LENGTH);
+			}
+			a[count]--;
+			b[count]--;
+			pr_add_graph(gh, a[count], b[count], weight[count]);
+			pr_add_graph(gh, b[count], a[count], weight[count]);
 		}
-		if((weight < 0)) {
-			pr_free_graph(gh, *N);
-			PR_PROCESS_ERROR(BAD_LENGTH);
-		}
-		a--;
-		b--;
-		pr_add_graph(gh, a, b, weight);
-		pr_add_graph(gh, b, a, weight);	
 	}
 	return gh;
 }
@@ -160,6 +166,7 @@ void pr_complete(FILE* in, FILE* out) {
 		pr_vrt_index* mingh;
 		if((mingh = pr_mst(gh, N))) {
 			pr_write_mst(out, mingh, N);
+			// printf("complete\n");
 			free(mingh);
 		}
 		pr_free_graph(gh, N);

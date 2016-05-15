@@ -30,6 +30,14 @@ int compare(heap* bheap, size_t a, size_t b) {
 	return bheap->comparator((char*)bheap->array + a*bheap->size, (char*)bheap->array + b*bheap->size);
 }
 
+void del_heap(heap* bheap, int flag) {
+	if(!flag) free(bheap->array);
+	free(bheap->index);
+	free(bheap->rindex);
+	free(bheap->tmp);
+	free(bheap);
+}
+
 heap* make_heap(size_t countMAX, size_t size, int (*comparator)(const void*, const void*)) {
 	if(countMAX && size && comparator) {
 		heap* bheap = (heap*)calloc(1, sizeof(heap));

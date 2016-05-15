@@ -38,7 +38,6 @@ typedef struct _pr_edges{
 
 typedef struct _pr_graph{
 	pr_edges* edges; // список рёбер при вершине
-	pr_vrt_index count; // кол-во рёбер при вершине
 }pr_graph;
 
 /**
