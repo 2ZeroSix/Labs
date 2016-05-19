@@ -1,29 +1,49 @@
 #include "binary_heap.h"
 
- 
-void swap(void *a, void *b, size_t size) {
-  void* tmp;
-  tmp = malloc(size);
+#if  _BINARY_HEAP_LOW_MEM_
+void swap(heap* bheap, void *a, void *b, size_t size) {
+  size_t i;
+  for (i = 0; i < size; i++) {
+	  char tmp;
+    tmp = *((char*) a + i);
+    *((char*) a + i) = *((char*) b + i);
+    *((char*) b + i) = tmp;
+  }
+}
+#else
+void swap(heap* bheap, void *a, void *b, size_t size) {
+  void* tmp = bheap->tmp;
+  if(!tmp) bheap->tmp = tmp = malloc(size);
   memcpy(tmp, a, size);
   memcpy(a, b, size);
   memcpy(b, tmp, size);
-  free(tmp);
+}
+#endif
+
+void swap_heap(heap* bheap, size_t a, size_t b) {
+	swap(bheap, (char*)(bheap->array) + a*(bheap->size), (char*)(bheap->array) + b*(bheap->size), bheap->size);
+	swap(bheap, &(bheap->index[bheap->rindex[a]]), &(bheap->index[bheap->rindex[b]]), sizeof(size_t));
+	swap(bheap, &(bheap->rindex[a]), &(bheap->rindex[b]), sizeof(size_t));
 }
 
-void swap_low_mem(void *a, void *b, size_t size) {
-    char tmp;
-    size_t i;
-    for (i = 0; i < size; i++) {
-        tmp = *((char*) b + i);
-        *((char*) b + i) = *((char*) a + i);
-        *((char*) a + i) = tmp;
-    }
+int compare(heap* bheap, size_t a, size_t b) {
+	return bheap->comparator((char*)bheap->array + a*bheap->size, (char*)bheap->array + b*bheap->size);
+}
+
+void del_heap(heap* bheap, int flag) {
+	if(!flag) free(bheap->array);
+	free(bheap->index);
+	free(bheap->rindex);
+	free(bheap->tmp);
+	free(bheap);
 }
 
 heap* make_heap(size_t countMAX, size_t size, int (*comparator)(const void*, const void*)) {
-	if(countMAX && size) {
-		heap* bheap = (heap*)calloc(heap, 1);
-		bheap->array = calloc(countMAX, size);
+	if(countMAX && size && comparator) {
+		heap* bheap = (heap*)calloc(1, sizeof(heap));
+		bheap->array = malloc(countMAX*size);
+		bheap->index = malloc(countMAX*sizeof(size_t));
+		bheap->rindex = malloc(countMAX*sizeof(size_t));
 		bheap->size = size;
 		bheap->countMAX = countMAX;
 		bheap->comparator = comparator;
@@ -35,53 +55,63 @@ heap* make_heap(size_t countMAX, size_t size, int (*comparator)(const void*, con
 }
 
 void heapify(heap* bheap, size_t i) {
-  size_t leftChild;
-  size_t rightChild;
-  size_t largestChild;
-  size_t headSize = bh->countMAX;
   for (; ; ) {
-    leftChild = 2 * i + 1;
-    rightChild = 2 * i + 2;
-    largestChild = i;
-    int (*comparator)(const void*, const void*) = bheap->comparator;
-    if (leftChild < heapSize && comparator((char*)list + leftChild, (char*)list + largestChild)) {
+	  size_t heapSize = bheap->count;
+	  size_t leftChild = 2 * i + 1;
+	  size_t rightChild = 2 * i + 2;
+	  size_t largestChild = i;
+
+    if (leftChild < heapSize && (compare(bheap, leftChild, largestChild)) > 0) {
       largestChild = leftChild;
     }
-    if (rightChild < heapSize && comparator((char*)list + rightChild, (char*)list + largestChild)) {
+    if (rightChild < heapSize && (compare(bheap, rightChild, largestChild)) > 0) {
       largestChild = rightChild;
     }
     if (largestChild == i) {
       break;
     }
-    swap((char*)list + i, (char*)list + largestChild)
+    swap_heap(bheap, i, largestChild);
     i = largestChild;
   }
 }
 
-heap* build_heap(void* array, size_t count, size_t size) {
-	heap* bheap = make_heapheap(count, size);
-	if(bheap) {
-		bheap->array = array;
+heap* build_heap(void* array, size_t count, size_t countMAX, size_t size, int (*comparator)(const void*, const void*)) {
+	if (array && count && countMAX && size && comparator) {
 		size_t i;
+		heap* bheap = (heap*)calloc(1, sizeof(heap));
+		bheap->array = array;
+		bheap->index = malloc(countMAX*sizeof(size_t));
+		bheap->rindex = malloc(countMAX*sizeof(size_t));
+		for(i = 0; i < count; i++) {
+			bheap->index[i] = i;
+			bheap->rindex[i] = i;
+		}	
+		bheap->size = size;
+		bheap->count = count;
+		bheap->countMAX = countMAX;
+		bheap->comparator = comparator;
+		
 		for(i = count / 2; i > 0; i--)
 			heapify(bheap, i);
 		heapify(bheap, i);
+		return bheap;
 	}
-	return bheap;
+	return NULL;
 }
 
 char insert(heap* bheap, void* new) {
-	size_t cur = bheap->count;
-	size_t parent = (cur - 1) / 2;
-	size_t size = bheap->size;
 	void* array = bheap->array;;
-	int (*comparator)(const void*, const void*) = bheap->comparator;
+	size_t cur = bheap->count;
+	size_t size = bheap->size;
+	size_t parent = (cur - 1) / 2;
 	if(cur >= bheap->countMAX) {
 		return 0;
 	}
+	bheap->index[cur] = cur;
+	bheap->rindex[cur] = cur;
 	memcpy((char*)array + cur*size, new, size);
-	while(cur && (comparator((char*)array + (cur*size), (char*)array + (parent*size)) > 0)) {
-		swap((char*)array + cur*size, (char*)array + (parent*size), size);
+	while(cur && (compare(bheap, cur, parent) > 0)) {
+		swap_heap(bheap, cur, parent);
 		cur = parent;
 		parent = (cur - 1) / 2;
 	}
@@ -89,24 +119,66 @@ char insert(heap* bheap, void* new) {
 	return 1;
 }
 
-void* get_max(heap* bheap) {
-	swap(bheap->array, (char*)(bheap->array) + bheap->count, bheap->size);
-	bheap->count--;
-	return (char*)(bheap->array) + (bheap->count + 1);
+size_t pos_by_id(heap* bheap, size_t id) {
+	return bheap->index[id];
 }
 
-void* extract_max(heap* bheap) {
+size_t id_by_pos(heap* bheap, size_t pos) {
+	return bheap->rindex[pos];
+}
+
+void* get_max(heap* bheap) {
 	if (isEmpty(bheap)) {
 		return NULL;
 	}
-	void* result = calloc(bheap->size);
-	memcpy(result, bheap->array, bheap->size);
-	memcpy(bheap->array, (char*)(bheap->array) + bheap->count, bheap->size);
 	bheap->count--;
+	swap_heap(bheap, 0, bheap->count);
+	heapify(bheap, 0);
+	return (char*)(bheap->array) + (bheap->count * bheap->size);
+}
+
+void* extract_max(heap* bheap) {
+	void* result;
+	if (isEmpty(bheap)) {
+		return NULL;
+	}
+	result = malloc(bheap->size);
+	memcpy(result, bheap->array, bheap->size);
+	bheap->count--;
+	swap_heap(bheap, 0, bheap->count);
 	heapify(bheap, 0);
 	return result;
 }
 
 char isEmpty(heap* bheap) {
-	return bheap->count;
+	return ((bheap->count) ? 0 : 1);
+}
+
+char update_by_index(heap* bheap, size_t id, void* upd) {
+	void* array = bheap->array;
+	size_t size = bheap->size;
+	size_t cur;
+	if (id < bheap->countMAX) {
+		cur = bheap->index[id];
+	}
+	else {
+		return 0;
+	}
+	if (cur >= bheap->count) {
+		return 0;
+	}
+	if (bheap->comparator(((char*)array + (cur * size)), (upd)) > 0) {
+		memcpy(((char*)array + (cur * size)), (upd), (size));
+		heapify(bheap, cur);
+	}
+	else {
+		memcpy(((char*)array + (cur * size)), (upd), (size));
+		size_t parent = (cur - 1) / 2;
+		while(cur && (compare(bheap, cur, parent) > 0)) {
+			swap_heap(bheap, cur, parent);
+			cur = parent;
+			parent = (cur - 1) / 2;
+		}
+	}
+	return 1;
 }
