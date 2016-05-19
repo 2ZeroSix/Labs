@@ -90,7 +90,7 @@ pr_vrt_index* pr_mst(pr_edge_index** gh, pr_vrt_index N) {
 			wmin = *(pr_len*)get_max(bheap);
 			// printf("jmin: %d; wmin: %d\n", jmin, wmin);
 			if (wmin == pr_EMPTY) {
-				free(min);
+				del_heap(bheap, 0);
 				free(mingh);
 				PR_PROCESS_ERROR(NO_SPANNING_TREE);
 			}
