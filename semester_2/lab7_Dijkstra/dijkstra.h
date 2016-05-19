@@ -15,6 +15,16 @@
 #define dij_maxM(N) ( (N) * ( (N) - 1 ) / 2 )
 #define dij_minM 0
 
+enum DIJ_ERR_CODES {
+	OK = 0,
+	BAD_NUM_OF_VERS,
+	BAD_NUM_OF_EDGES,
+	BAD_VERTEX,
+	BAD_LENGTH,
+	BAD_NUM_OF_LINES,
+} pr_err; //последняя ошибка
+
+
 
 /**
  * придумать описание

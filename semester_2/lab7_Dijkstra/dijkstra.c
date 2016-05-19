@@ -1,6 +1,12 @@
 #define _CRT_SECURE_NO_WARNINGS
 
 #include "dijkstra.h"
+#include "binary_heap.h"
+
+#define DIJ_PROCESS_ERROR(err) {\
+	dij_err = err;\
+	return NULL;\
+}
 
 static unsigned char dij_err = 0; //номер последней ошибки
 static char* dij_err_dcp[6] = { //описания ошибок
@@ -77,8 +83,8 @@ void dij_write_path(FILE* out, dij_vrt_index* parent, dij_len distS, dij_vrt_ind
 
 // a < b
 int dij_cmp(const int* a, const int* b) {
-	if ((*a == dij_overMAXlen) || (*a == dij_overflow)) {
-		if ((*b == dij_overMAXlen) || (*b == dij_overflow)) {
+	if (*a == dij_EMPTY) {
+		if (*b == dij_EMPTY) {
 			return 0;
 		}
 		else {
@@ -86,46 +92,55 @@ int dij_cmp(const int* a, const int* b) {
 		}
 	}
 	else {
-		if ((*b == dij_overMAXlen) || (*b == dij_overflow)) {
+		if (*b == dij_EMPTY) {
 			return 1;
 		}
 		else {
-			return (*a == dij_EMPTY) ? ((*b == dij_EMPTY) ? 0 : -1) : ((*b == dij_EMPTY) ? 1 : *b - *a);
+			return ((*a == dij_overMAXlen) || (*a == dij_overflow)) ?
+			(((*b == dij_overMAXlen) || (*b == dij_overflow)) ? 0 : -1) :
+			(((*b == dij_overMAXlen) || (*b == dij_overflow)) ? 1 : *b - *a);
 		}
 	}
 }
 
+void dij_upd_que_graph(dij_len** gh, dij_vrt_index N, heap* bheap, dij_vrt_index* mingh, dij_vrt_index jmin, dij_len wmin) {
+	pr_vrt_index i;
+	for( i = 0; i < N; ++i) {
+		if (primcmp(&(gh[jmin][i]), &(((int*)bheap->array)[pos_by_id(bheap, i)])) > 0) {
+			if(update_by_index(bheap, i, &(gh[jmin][i]))) mingh[i] = jmin;
+		}
+	}
+}
 
 dij_vrt_index* dij_dijkstra(dij_len** gh, dij_vrt_index N, dij_vrt_index S, dij_len** dist) {
 	if(N) {
 		dij_len* distance = (dij_len*)calloc(N, sizeof(dij_len));
-		char* used = (char*)calloc(N, sizeof(char));
 		dij_vrt_index* parent = (dij_vrt_index*)calloc(N, sizeof(dij_vrt_index));
 		dij_vrt_index i;
+		heap* bheap;
 		for (i = 0; i < N; i++) {
 			parent[i] = i;
 			distance[i] = dij_EMPTY;
 		}
 		distance[S] = 0;
+		bheap = build_heap(distance, N, N, sizeof(dij_len), (int (*)(const void*, const void*))dij_cmp);
 		for(i = 0; i < N; i++) {
-			int jmin = -1, j;
-			for(j = 0; j < N; j++) {
-				if(!used[j] && (distance[j] != dij_EMPTY) && ((jmin == -1) || (distance[j] <= distance[jmin]))) {
-					jmin = j;
+			dij_vrt_index jmin;
+			dij_len wmin;
+			jmin = id_by_pos(bheap, 0);
+			wmin = *(dij_len)get_max(bheap);
+			if(wmin == dij_EMPTY) {
+				del_heap(bheap, 1);
+				if(dist){
+					*dist = distance;
 				}
-			}
-			if(jmin == -1) {
-				free(used);
-			if(dist){
-				*dist = distance;
-			}
-			else {
-				free(distance);
-			}				
+				else {
+					free(distance);
+				}				
 				return parent;
 			}
-			used[jmin] = 1;
-			for(j = 0; j < N; j++) {
+			dij_upd_que_graph(gh, N, bheap, parent, jmin, wmin);
+/*			for(j = 0; j < N; j++) {
 				if((distance[j] == dij_EMPTY) || ((distance[jmin] + gh[jmin][j] < distance[j]) && (gh[jmin][j] > 0) && (distance[jmin] >= 0))) {
 					// printf("distance[%d] = %d\n",j, distance[j]);
 					// printf("distance[%d] = %d\n",jmin, distance[jmin]);
@@ -143,16 +158,16 @@ dij_vrt_index* dij_dijkstra(dij_len** gh, dij_vrt_index N, dij_vrt_index S, dij_
 					}
 					parent[j] = jmin;
 				}
-			}
+			}*/
 			// printf("\n");
 		}
+		del_heap(bheap, 1);
 		if(dist){
 			*dist = distance;
 		}
 		else {
 			free(distance);
 		}
-		free(used);
 		return parent;
 	}
 	else {
@@ -169,23 +184,17 @@ dij_len** dij_read(FILE* in, dij_vrt_index* N, dij_vrt_index* S, dij_vrt_index* 
 	// printf("read\n");
 	// printf("fscanf\n");
 	if(fscanf(in, "%hd%hd%hd%d", N, S, F, &M) < 4) { //5 ошибка
-		dij_err = 5;
-		return NULL;
+		DIJ_PROCESS_ERROR(BAD_NUM_OF_LINES);
 	}
-	else {
-		// printf("check\n");
-		if ((*N < dij_minN) || (*N > dij_maxN)) { //1 ошибка
-			dij_err = 1;
-			return NULL;
-		}
-		if ((M < dij_minM) || (M > dij_maxM(*N))) { //2 ошибка
-			dij_err = 2;
-			return NULL;
-		}
-		if((*S <= dij_minN) || (*S > *N) || (*F <= dij_minN) || (*F > *N)) { //3 ошибка
-			dij_err = 3;
-			return NULL;
-		}
+	// printf("check\n");
+	if ((*N < dij_minN) || (*N > dij_maxN)) { //1 ошибка
+		DIJ_PROCESS_ERROR(BAD_NUM_OF_VERS);
+	}
+	if ((M < dij_minM) || (M > dij_maxM(*N))) { //2 ошибка
+		DIJ_PROCESS_ERROR(BAD_NUM_OF_EDGES);
+	}
+	if((*S <= dij_minN) || (*S > *N) || (*F <= dij_minN) || (*F > *N)) { //3 ошибка
+		DIJ_PROCESS_ERROR(BAD_VERTEX);
 	}
 	// printf("init\n");
 	gh = dij_init_graph(dij_EMPTY, *N);
@@ -193,18 +202,15 @@ dij_len** dij_read(FILE* in, dij_vrt_index* N, dij_vrt_index* S, dij_vrt_index* 
 	for (i = 0; i < M; i++) {
 		if(fscanf(in, "%hd%hd%d", &(a), &(b), &(weight)) < 3) { //5 ошибка
 			dij_free_graph(gh, *N);
-			dij_err = 5;
-			return NULL;
+			DIJ_PROCESS_ERROR(BAD_NUM_OF_LINES);
 		}
 		if((a <= dij_minN) || (a > *N) || (b <= dij_minN) || (b > *N)) { //3 ошибка
 			dij_free_graph(gh, *N);
-			dij_err = 3;
-			return NULL;
+			DIJ_PROCESS_ERROR(BAD_VERTEX);
 		}
 		if((weight < 0)) { // 4 ошибка
 			dij_free_graph(gh, *N);
-			dij_err = 4;
-			return NULL;
+			DIJ_PROCESS_ERROR(BAD_LENGTH);
 		}
 		gh[b - 1][a - 1] = gh[a - 1][b - 1] = weight;
 	}
