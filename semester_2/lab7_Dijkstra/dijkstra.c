@@ -75,10 +75,29 @@ void dij_write_path(FILE* out, dij_vrt_index* parent, dij_len distS, dij_vrt_ind
 	}
 }
 
-dij_vrt_index* dij_dijkstra(dij_len** gh, dij_vrt_index N, dij_vrt_index S, dij_len** dist) {
-	if(!N) {
-		return NULL;
+// a < b
+int dij_cmp(const int* a, const int* b) {
+	if ((*a == dij_overMAXlen) || (*a == dij_overflow)) {
+		if ((*b == dij_overMAXlen) || (*b == dij_overflow)) {
+			return 0;
+		}
+		else {
+			return -1;
+		}
 	}
+	else {
+		if ((*b == dij_overMAXlen) || (*b == dij_overflow)) {
+			return 1;
+		}
+		else {
+			return (*a == dij_EMPTY) ? ((*b == dij_EMPTY) ? 0 : -1) : ((*b == dij_EMPTY) ? 1 : *b - *a);
+		}
+	}
+}
+
+
+dij_vrt_index* dij_dijkstra(dij_len** gh, dij_vrt_index N, dij_vrt_index S, dij_len** dist) {
+	if(N) {
 		dij_len* distance = (dij_len*)calloc(N, sizeof(dij_len));
 		char* used = (char*)calloc(N, sizeof(char));
 		dij_vrt_index* parent = (dij_vrt_index*)calloc(N, sizeof(dij_vrt_index));
@@ -135,6 +154,10 @@ dij_vrt_index* dij_dijkstra(dij_len** gh, dij_vrt_index N, dij_vrt_index S, dij_
 		}
 		free(used);
 		return parent;
+	}
+	else {
+		return NULL;
+	}
 }
 
 
