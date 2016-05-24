@@ -31,11 +31,18 @@ enum PR_ERR_CODES {
 const char* pr_error();
 
 /**
+ * инициализация графа
+ * @param  N кол-во вершин
+ * @return   граф из N вершин без связей
+ */
+pr_len** pr_init_graph(pr_vrt_index N);
+
+/**
  * очистка памяти из под графа
- * @param gh указатель на граф
+ * @param gh граф
  * @param N  кол-во вершин
  */
-void pr_free_graph(pr_edge_index** gh, pr_vrt_index N);
+void pr_free_graph(pr_len** gh, pr_vrt_index N);
 
 /**
  * вывод минимального остовного дерева
@@ -46,22 +53,41 @@ void pr_free_graph(pr_edge_index** gh, pr_vrt_index N);
 void pr_write_mst(FILE* out, pr_vrt_index* mingh, pr_vrt_index N);
 
 /**
- * поиск минимального остоввного дерева по алгоритму Прима
- * @param  gh ненулевой указатель на граф
- * @param  N  кол-во вершин
- * @return    массив в котором по индексам начал рёбер лежат индексы концов рёбер (составляющие минимальное остовное дерево)
- *            признаком отсутствия ребра является равенство индекса элемента массива со значением
+ * операция сравнения весов с учётом pr_EMPTY
+ * @param  a вес
+ * @param  b вес
+ * @return	 >0 если b > a
+ *           =0 если b = a
+ *           <0 если b < a
  */
-pr_vrt_index* pr_mst(pr_edge_index** gh, pr_vrt_index N);
+int primcmp(const int* a, const int* b);
+
+/**
+ * обновление минимальных расстояний до вершин
+ * @param gh    граф
+ * @param N     кол-во вершин
+ * @param bheap указатель на бинарную кучу
+ * @param mingh массив предков
+ * @param jmin  от какой вершины обновлять
+ */
+void pr_upd_que_graph(pr_len** gh, pr_vrt_index N, heap* bheap, pr_vrt_index* mingh, pr_vrt_index jmin);
+
+/**
+ * поиск минимального остовного дерева по алгоритму Прима
+ * @param  gh граф
+ * @param  N  кол-во вершин
+ * @return    массив предков
+ */
+pr_vrt_index* pr_mst(pr_len** gh, pr_vrt_index N);
 
 /**
  * чтение графа из файла
  * @param  in ненулевой указатель на входной файл
  * @param  N  ненулевой указатель на область памяти под кол-во вершин
  * @param  M  ненулевой указатель на область памяти под кол-во рёбер
- * @return    массив рёбер
+ * @return    граф
  */
-pr_edge_index** pr_read(FILE* in, pr_vrt_index* N);
+pr_len** pr_read(FILE* in, pr_vrt_index* N);
 
 /**
  * полное построение минимального каркаса графа из входного файла и вывод его в выходной

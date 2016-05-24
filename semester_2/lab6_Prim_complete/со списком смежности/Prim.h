@@ -41,6 +41,15 @@ typedef struct _pr_graph{
 }pr_graph;
 
 /**
+ * добавление ребра в граф
+ * @param gh     ненулевой указатель на граф
+ * @param a      начало ребра
+ * @param b      конец ребра
+ * @param weight вес ребра
+ */
+void pr_add_graph(pr_graph* gh, pr_vrt_index a, pr_vrt_index b, pr_len weight);
+
+/**
  * очистка памяти из под графа
  * @param gh указатель на граф
  * @param N  кол-во вершин
