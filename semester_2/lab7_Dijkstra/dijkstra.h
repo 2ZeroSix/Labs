@@ -2,6 +2,7 @@
 #define _DIJKSTRA_H_
 #include <stdio.h>
 #include <stdlib.h>
+#include <limits.h>
 
 #define dij_edge_index int
 #define dij_vrt_index short

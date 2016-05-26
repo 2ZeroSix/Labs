@@ -84,21 +84,34 @@ void dij_write_path(FILE* out, dij_vrt_index* parent, dij_len distS, dij_vrt_ind
 // a < b
 int dij_cmp(const int* a, const int* b) {
 	if (*a == dij_EMPTY) {
-		if (*b == dij_EMPTY) {
-			return 0;
-		}
-		else {
-			return -1;
-		}
+		return (*b == dij_EMPTY) ? 0 : -1;
 	}
 	else {
 		if (*b == dij_EMPTY) {
 			return 1;
 		}
 		else {
-			return ((*a == dij_overMAXlen) || (*a == dij_overflow)) ?
-			(((*b == dij_overMAXlen) || (*b == dij_overflow)) ? 0 : -1) :
-			(((*b == dij_overMAXlen) || (*b == dij_overflow)) ? 1 : *b - *a);
+			if(*a == dij_overMAXlen) {
+				return (*b == dij_overMAXlen) ? 0 : -1;
+			}
+			else {
+				if(*b == dij_overMAXlen) {
+					return 1;
+				}
+				else {
+					if (*a == dij_overflow) {
+						return (*b == dij_overflow) ? 0 : -1;
+					}
+					else {
+						if (*b == dij_ overeflow) {
+							return 1;
+						}
+						else {
+							return *b - a*;
+						}
+					}
+				}
+			}
 		}
 	}
 }
@@ -106,8 +119,23 @@ int dij_cmp(const int* a, const int* b) {
 void dij_upd_que_graph(dij_len** gh, dij_vrt_index N, heap* bheap, dij_vrt_index* mingh, dij_vrt_index jmin, dij_len wmin) {
 	pr_vrt_index i;
 	for( i = 0; i < N; ++i) {
-		if (primcmp(&(gh[jmin][i]), &(((int*)bheap->array)[pos_by_id(bheap, i)])) > 0) {
-			if(update_by_index(bheap, i, &(gh[jmin][i]))) mingh[i] = jmin;
+		dij_len new_range;
+		dij_len old_range = ((int*)bheap->array)[pos_by_id(bheap, i)];
+		dij_len edge = gh[jmin][j];
+
+		if (dij_cmp(&(gh[jmin][i]), &(old_range)) > 0) {
+			if((gh[jmin][j] - (INT_MAX - wmin)) > 0) {
+				new_weight =
+			}
+			if(old_range == dij_overflow) {
+				new_range = dij_overflow;
+			}
+			else if (old_range == dij_overMAXlen) {
+				if() {
+
+				}
+			}
+			if(update_by_index(bheap, i, &(new_weight))) mingh[i] = jmin;
 		}
 	}
 }
@@ -140,26 +168,6 @@ dij_vrt_index* dij_dijkstra(dij_len** gh, dij_vrt_index N, dij_vrt_index S, dij_
 				return parent;
 			}
 			dij_upd_que_graph(gh, N, bheap, parent, jmin, wmin);
-/*			for(j = 0; j < N; j++) {
-				if((distance[j] == dij_EMPTY) || ((distance[jmin] + gh[jmin][j] < distance[j]) && (gh[jmin][j] > 0) && (distance[jmin] >= 0))) {
-					// printf("distance[%d] = %d\n",j, distance[j]);
-					// printf("distance[%d] = %d\n",jmin, distance[jmin]);
-					// printf("gh[%hd][%hd] = %d\n", jmin, j, gh[jmin][j]);
-					if(((((dij_MAXlen - distance[jmin]) >= gh[jmin][j])) || (distance[j] == dij_EMPTY)) && (distance[jmin] != dij_overMAXlen)){
-						distance[j] = distance[jmin] + gh[jmin][j];
-					}
-					else {
-						if((distance[j] == dij_overMAXlen) || (distance[j] == dij_overflow)) {
-							distance[j] = dij_overflow;
-						}
-						else {
-							distance[j] = dij_overMAXlen;							
-						}
-					}
-					parent[j] = jmin;
-				}
-			}*/
-			// printf("\n");
 		}
 		del_heap(bheap, 1);
 		if(dist){
