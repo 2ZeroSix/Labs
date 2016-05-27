@@ -8,9 +8,9 @@
 #define dij_vrt_index short
 #define dij_len int
 #define dij_MAXlen INT_MAX
-#define dij_overMAXlen (short)-2
-#define dij_overflow (short)-3
-#define dij_EMPTY (short)-1
+#define dij_overMAXlen (dij_len)-2
+#define dij_overflow (dij_len)-3
+#define dij_EMPTY (dij_len)-1
 #define dij_maxN 5000
 #define dij_minN 0
 #define dij_maxM(N) ( (N) * ( (N) - 1 ) / 2 )
@@ -23,7 +23,7 @@ enum DIJ_ERR_CODES {
 	BAD_VERTEX,
 	BAD_LENGTH,
 	BAD_NUM_OF_LINES,
-} pr_err; //последняя ошибка
+} dij_err; //последняя ошибка
 
 
 
