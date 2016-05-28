@@ -137,7 +137,6 @@ void dij_upd_que_graph(dij_len** gh, dij_vrt_index N, heap* bheap, dij_vrt_index
 dij_vrt_index* dij_dijkstra(dij_len** gh, dij_vrt_index N, dij_vrt_index S, dij_len** dist) {
 	if(N) {
 		dij_len* min_distance = (dij_len*)calloc(N, sizeof(dij_len));
-		dij_len* distance = (dij_len*)calloc(N, sizeof(dij_len));
 		dij_vrt_index* parent = (dij_vrt_index*)calloc(N, sizeof(dij_vrt_index));
 		dij_vrt_index i;
 		heap* bheap;
@@ -151,9 +150,10 @@ dij_vrt_index* dij_dijkstra(dij_len** gh, dij_vrt_index N, dij_vrt_index S, dij_
 			dij_vrt_index jmin;
 			dij_len wmin;
 			jmin = id_by_pos(bheap, 0);
-			distance[jmin] = wmin = *(dij_len*)get_max(bheap);
+			wmin = *(dij_len*)get_max(bheap);
 			if(wmin == dij_empty) {
 				if(dist)	{
+					dij_len* distance = (dij_len*)calloc(N, sizeof(dij_len));
 					dij_vrt_index i;
 					for(i = 0; i < N; i++) distance[i] = min_distance[pos_by_id(bheap, i)];
 					*dist = distance;
@@ -164,6 +164,7 @@ dij_vrt_index* dij_dijkstra(dij_len** gh, dij_vrt_index N, dij_vrt_index S, dij_
 			dij_upd_que_graph(gh, N, bheap, parent, jmin, wmin);
 		}
 		if(dist)	{
+			dij_len* distance = (dij_len*)calloc(N, sizeof(dij_len));
 			dij_vrt_index i;
 			for(i = 0; i < N; i++) distance[i] = min_distance[pos_by_id(bheap, i)];
 			*dist = distance;
