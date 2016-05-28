@@ -1,7 +1,4 @@
-#define _CRT_SECURE_NO_WARNINGS
-
 #include "dijkstra.h"
-#include "binary_heap.h"
 
 #define DIJ_PROCESS_ERROR(err) {\
 	dij_err = err;\
@@ -16,7 +13,7 @@ static char* dij_err_dcp[6] = { //описания ошибок
 	"bad length", //4
 	"bad number of lines"}; //5
 
-char * dij_error() {
+const char * dij_error() {
 	return dij_err_dcp[dij_err];
 }
 
@@ -45,10 +42,10 @@ void	dij_write_lengths(FILE* out, dij_len* dist, dij_vrt_index N) {
 	dij_vrt_index i;
 	for(i = 0; i < N; i++) {
 		switch (dist[i]) {
-			case dij_EMPTY:
+			case dij_empty:
 				fprintf(out, "oo ");
 				break;
-			case dij_overMAXlen:
+			case dij_overmaxlen:
 				fprintf(out, "INT_MAX+ ");
 				break;
 			case dij_overflow:
@@ -61,9 +58,9 @@ void	dij_write_lengths(FILE* out, dij_len* dist, dij_vrt_index N) {
 	}
 }
 
-void dij_write_path(FILE* out, dij_vrt_index* parent, dij_len distS, dij_vrt_index S, dij_vrt_index F) {
-	switch(distS) {
-		case dij_EMPTY:
+void dij_write_path(FILE* out, dij_vrt_index* parent, dij_len distF, dij_vrt_index S, dij_vrt_index F) {
+	switch(distF) {
+		case dij_empty:
 			fprintf(out, "no path\n");
 			break;
 		case dij_overflow:
@@ -83,16 +80,16 @@ void dij_write_path(FILE* out, dij_vrt_index* parent, dij_len distS, dij_vrt_ind
 // ((a < b) ? 1 : ((a == b) ? 0 : -1))
 // 0 < 1 < ... < INT_MAX < overflow < INT_MAX+ < empty
 int dij_cmp(const int* a, const int* b) {
-	if (*a == dij_EMPTY) {
-		return (*b == dij_EMPTY) ? 0 : -1;
+	if (*a == dij_empty) {
+		return (*b == dij_empty) ? 0 : -1;
 	}
-	else if (*b == dij_EMPTY) {
+	else if (*b == dij_empty) {
 		return 1;
 	}
-	else if(*a == dij_overMAXlen) {
-		return (*b == dij_overMAXlen) ? 0 : -1;
+	else if(*a == dij_overmaxlen) {
+		return (*b == dij_overmaxlen) ? 0 : -1;
 	}
-	else if(*b == dij_overMAXlen) {
+	else if(*b == dij_overmaxlen) {
 		return 1;
 	}
 	else if (*a == dij_overflow) {
@@ -106,31 +103,33 @@ int dij_cmp(const int* a, const int* b) {
 	}
 }
 
-void dij_upd_que_graph(dij_len** gh, dij_vrt_index N, heap* bheap, dij_vrt_index* mingh, dij_vrt_index jmin, dij_len wmin) {
+void dij_upd_que_graph(dij_len** gh, dij_vrt_index N, heap* bheap, dij_vrt_index* parent, dij_vrt_index jmin, dij_len wmin) {
 	dij_vrt_index i;
 	for( i = 0; i < N; ++i) {
 		dij_len new_range;
 		dij_len old_range = ((int*)bheap->array)[pos_by_id(bheap, i)];
 		dij_len edge = gh[jmin][i];
-		if (wmin == dij_overflow) {
+		//определение new_range
+		if (edge == dij_empty) { // нового пути нет
+			new_range = dij_empty;
+		}
+		else if (wmin == dij_overflow) {	// новый путь переполнен
 			new_range = dij_overflow;
 		}
-		else if (edge == dij_EMPTY) {
-			new_range = dij_EMPTY;
-		}
-		else if ((wmin == dij_overMAXlen) || ((wmin - (INT_MAX - edge)) > 0)) {
-			if (old_range == dij_overMAXlen) {
+		else if ((wmin == dij_overmaxlen) || ((wmin - (dij_maxlen - edge)) > 0)) { // новый больше dij_maxlen
+			if (old_range == dij_overmaxlen) {
 				new_range = dij_overflow;
 			}
 			else {
-				new_range = dij_overMAXlen;
+				new_range = dij_overmaxlen;
 			}
 		}
-		else {
+		else { // новый путь не удовлетворяет условиям особых случаев
 			new_range = wmin + edge;
 		}
+		//new_range определён
 		if (dij_cmp(&(new_range), &(old_range)) > 0) {
-			if(update_by_index(bheap, i, &(new_range))) mingh[i] = jmin;
+			if(update_by_index(bheap, i, &(new_range))) parent[i] = jmin;
 		}
 	}
 }
@@ -144,30 +143,32 @@ dij_vrt_index* dij_dijkstra(dij_len** gh, dij_vrt_index N, dij_vrt_index S, dij_
 		heap* bheap;
 		for (i = 0; i < N; i++) {
 			parent[i] = i;
-			distance[i] = dij_EMPTY;
-			min_distance[i] = dij_EMPTY;
+			min_distance[i] = dij_empty;
 		}
-		// printf("%d\n", S);
 		min_distance[S] = 0;
 		bheap = build_heap(min_distance, N, N, sizeof(dij_len), (int (*)(const void*, const void*))dij_cmp);
 		for(i = 0; i < N; i++) {
-			// for (int j = 0; j < N; j++) {
-			// 	printf("%d : %d; ", parent[j], min_distance[pos_by_id(bheap, j)]);
-			// }
-			// printf("\n");
 			dij_vrt_index jmin;
 			dij_len wmin;
 			jmin = id_by_pos(bheap, 0);
 			distance[jmin] = wmin = *(dij_len*)get_max(bheap);
-			if(wmin == dij_EMPTY) {
+			if(wmin == dij_empty) {
+				if(dist)	{
+					dij_vrt_index i;
+					for(i = 0; i < N; i++) distance[i] = min_distance[pos_by_id(bheap, i)];
+					*dist = distance;
+				}
 				del_heap(bheap, 0);
-				*dist = distance;
 				return parent;
 			}
 			dij_upd_que_graph(gh, N, bheap, parent, jmin, wmin);
 		}
+		if(dist)	{
+			dij_vrt_index i;
+			for(i = 0; i < N; i++) distance[i] = min_distance[pos_by_id(bheap, i)];
+			*dist = distance;
+		}
 		del_heap(bheap, 0);
-		*dist = distance;
 		return parent;
 	}
 	else {
@@ -181,12 +182,9 @@ dij_len** dij_read(FILE* in, dij_vrt_index* N, dij_vrt_index* S, dij_vrt_index* 
 	dij_vrt_index a, b;
 	dij_len** gh;
 	dij_len weight;
-	// printf("read\n");
-	// printf("fscanf\n");
 	if(fscanf(in, "%hd%hd%hd%d", N, S, F, &M) < 4) { //5 ошибка
 		DIJ_PROCESS_ERROR(BAD_NUM_OF_LINES);
 	}
-	// printf("check\n");
 	if ((*N < dij_minN) || (*N > dij_maxN)) { //1 ошибка
 		DIJ_PROCESS_ERROR(BAD_NUM_OF_VERS);
 	}
@@ -196,9 +194,7 @@ dij_len** dij_read(FILE* in, dij_vrt_index* N, dij_vrt_index* S, dij_vrt_index* 
 	if((*S <= dij_minN) || (*S > *N) || (*F <= dij_minN) || (*F > *N)) { //3 ошибка
 		DIJ_PROCESS_ERROR(BAD_VERTEX);
 	}
-	// printf("init\n");
-	gh = dij_init_graph(dij_EMPTY, *N);
-	// printf("for\n");
+	gh = dij_init_graph(dij_empty, *N);
 	for (i = 0; i < M; i++) {
 		if(fscanf(in, "%hd%hd%d", &(a), &(b), &(weight)) < 3) { //5 ошибка
 			dij_free_graph(gh, *N);
@@ -227,23 +223,17 @@ dij_len** dij_read(FILE* in, dij_vrt_index* N, dij_vrt_index* S, dij_vrt_index* 
 void dij_complete(FILE* in, FILE* out) {
 	dij_len** gh;
 	dij_vrt_index N, S, F;
-	// printf("dij start\n");
 	if(gh = dij_read(in, &N, &S, &F)) {
 		dij_vrt_index* parent;
 		dij_len* dist;
-		// printf("complete read\nN: %hd; S: %hd; F: %hd\n", N, S, F);
 		if(parent = dij_dijkstra(gh, N, S, &dist)) {
-			// printf("complete dijkstra\n");
 			dij_write_lengths(out, dist, N);
 			fprintf(out, "\n");
-			// printf("lengths wrote\n");
 			dij_write_path(out, parent, dist[F], S, F);
-			// printf("path wrote\n");
 			free(dist);
 			free(parent);
 		}
 		dij_free_graph(gh, N);
 	}
-	// printf("dij end\n");
 	fprintf(out, "%s", dij_error());
 }
